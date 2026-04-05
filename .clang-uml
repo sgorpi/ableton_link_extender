@@ -1,0 +1,85 @@
+# Compile using cmake with -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+# For example:
+#    cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON  .
+#    cmake --build build --config Release -j 12
+# With that, the diagrams can be generated with clang-uml.
+#
+#
+# clang-uml --progress --generator plantuml --render_diagrams --plantuml-cmd="/usr/bin/plantuml -tsvg doc/diagrams/{}.puml"
+#
+compilation_database_dir: build
+output_directory: doc/diagrams
+remove_compile_flags:
+  - r: '-isystem.*'
+  - '/home/hedde/Projects/music/AbletonLinkExtender/link/include'
+  - '/home/hedde/Projects/music/AbletonLinkExtender/link/modules/asio-standalone/asio/include'
+add_compile_flags:
+  - '-I/home/hedde/Projects/music/AbletonLinkExtender/link/include'
+  - '-I/home/hedde/Projects/music/AbletonLinkExtender/link/modules/asio-standalone/asio/include'
+generate_links:
+  #link: "https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}"
+  link: "../../{{ element.source.path }}#L{{ element.source.line }}"
+  tooltip: "{{ element.source.path}}#L{{ element.source.line }}"
+diagrams:
+  # includes_link:
+  #   type: include
+  #   glob:
+  #     include:
+  #       - source/main.cpp
+  #   ###generate_system_headers: false
+  #   include:
+  #     namespaces:
+  #       - ableton
+  #       - ableton::link
+  #       - ableton::discovery
+  #   exclude:
+  #     namespaces:
+  #       - std
+  #     elements:
+  #       - r: '.*asio.*'
+
+  cls_all:
+    type: class
+    glob:
+      include:
+        - source/main.cpp
+    include:
+      namespaces:
+        - ableton
+        - ableton::link
+        - ableton::linkaudio
+        - ableton::discovery
+        - ableton::platforms
+        - ableton::util
+    exclude:
+      namespaces:
+        - std
+      access:
+        - private
+      elements:
+        - r: '.*Mock.*'
+        - r: '.*Test.*'
+        #- r: '.*Injected.*'
+
+  cls_ext:
+    type: class
+    glob:
+      include:
+        - source/main.cpp
+    include:
+      namespaces:
+        - ableton::extender
+    exclude:
+      namespaces:
+        - std
+      access:
+        - private
+        - protected
+        - public
+      element_types:
+        - enum
+      elements:
+        - r: '.*Mock.*'
+        - r: '.*Test.*'
+        #- r: '.*Injected.*'
+

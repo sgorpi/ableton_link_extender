@@ -1,0 +1,1764 @@
+@startuml
+class "ableton::discovery::InterfaceScanner<Callback,IoContext>" as C_0010801333231220822629
+class C_0010801333231220822629 [[../../link/include/ableton/discovery/InterfaceScanner.hpp#L35{link/include/ableton/discovery/InterfaceScanner.hpp#L35}]] {
++InterfaceScanner(const std::chrono::seconds period, util::Injected<Callback> callback, util::Injected<IoContext> io) : void [[[../../link/include/ableton/discovery/InterfaceScanner.hpp#L40{link/include/ableton/discovery/InterfaceScanner.hpp#L40}]]]
+..
++enable(const bool bEnable) : void [[[../../link/include/ableton/discovery/InterfaceScanner.hpp#L50{link/include/ableton/discovery/InterfaceScanner.hpp#L50}]]]
++scan() : void [[[../../link/include/ableton/discovery/InterfaceScanner.hpp#L62{link/include/ableton/discovery/InterfaceScanner.hpp#L62}]]]
+__
+}
+class "ableton::discovery::InterfaceScanner<std::shared_ptr<ableton::discovery::PeerGateways::Callback>,IoType &>" as C_0003563244451697180624
+class C_0003563244451697180624 [[../../link/include/ableton/discovery/PeerGateways.hpp#L169{link/include/ableton/discovery/PeerGateways.hpp#L169}]] {
+__
+}
+class "ableton::discovery::PeerGateways<NodeState,GatewayFactory,IoContext>" as C_0013802940721661779804
+class C_0013802940721661779804 [[../../link/include/ableton/discovery/PeerGateways.hpp#L34{link/include/ableton/discovery/PeerGateways.hpp#L34}]] {
++PeerGateways(const std::chrono::seconds rescanPeriod, NodeState state, GatewayFactory factory, util::Injected<IoContext> io) : void [[[../../link/include/ableton/discovery/PeerGateways.hpp#L44{link/include/ableton/discovery/PeerGateways.hpp#L44}]]]
++PeerGateways(const PeerGateways<NodeState,GatewayFactory,IoContext> &) = deleted : void [[[../../link/include/ableton/discovery/PeerGateways.hpp#L62{link/include/ableton/discovery/PeerGateways.hpp#L62}]]]
++PeerGateways(PeerGateways<NodeState,GatewayFactory,IoContext> &&) = deleted : void [[[../../link/include/ableton/discovery/PeerGateways.hpp#L65{link/include/ableton/discovery/PeerGateways.hpp#L65}]]]
++~PeerGateways() : void [[[../../link/include/ableton/discovery/PeerGateways.hpp#L56{link/include/ableton/discovery/PeerGateways.hpp#L56}]]]
+..
++operator=(const PeerGateways<NodeState,GatewayFactory,IoContext> &) = deleted : PeerGateways<NodeState,GatewayFactory,IoContext> & [[[../../link/include/ableton/discovery/PeerGateways.hpp#L63{link/include/ableton/discovery/PeerGateways.hpp#L63}]]]
++operator=(PeerGateways<NodeState,GatewayFactory,IoContext> &&) = deleted : PeerGateways<NodeState,GatewayFactory,IoContext> & [[[../../link/include/ableton/discovery/PeerGateways.hpp#L66{link/include/ableton/discovery/PeerGateways.hpp#L66}]]]
+..
++enable(const bool bEnable) : void [[[../../link/include/ableton/discovery/PeerGateways.hpp#L68{link/include/ableton/discovery/PeerGateways.hpp#L68}]]]
++repairGateway(const IpAddress & gatewayAddr) : void [[[../../link/include/ableton/discovery/PeerGateways.hpp#L91{link/include/ableton/discovery/PeerGateways.hpp#L91}]]]
++updateNodeState(const NodeState & state) : void [[[../../link/include/ableton/discovery/PeerGateways.hpp#L80{link/include/ableton/discovery/PeerGateways.hpp#L80}]]]
++withGateways<Handler>(Handler handler) : void
+__
+}
+class "ableton::discovery::PeerGateways::Callback" as C_0010714917652904163251
+class C_0010714917652904163251 [[../../link/include/ableton/discovery/PeerGateways.hpp#L102{link/include/ableton/discovery/PeerGateways.hpp#L102}]] {
++operator()<AddrRange>(const AddrRange & range) : void
+..
++Callback(NodeState state, GatewayFactory factory, IoType & io) : void [[[../../link/include/ableton/discovery/PeerGateways.hpp#L104{link/include/ableton/discovery/PeerGateways.hpp#L104}]]]
+__
++mFactory : GatewayFactory [[[../../link/include/ableton/discovery/PeerGateways.hpp#L162{link/include/ableton/discovery/PeerGateways.hpp#L162}]]]
++mGateways : GatewayMap [[[../../link/include/ableton/discovery/PeerGateways.hpp#L164{link/include/ableton/discovery/PeerGateways.hpp#L164}]]]
++mIo : IoType & [[[../../link/include/ableton/discovery/PeerGateways.hpp#L163{link/include/ableton/discovery/PeerGateways.hpp#L163}]]]
++mState : NodeState [[[../../link/include/ableton/discovery/PeerGateways.hpp#L161{link/include/ableton/discovery/PeerGateways.hpp#L161}]]]
+}
+class "ableton::discovery::NetworkByteStreamSerializable" as C_0011676131053884799887
+class C_0011676131053884799887 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L56{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L56}]] {
+__
+}
+class "ableton::discovery::Deserialize<T>" as C_0002512565736647136797
+class C_0002512565736647136797 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L72{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L72}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<T, It>
+__
+}
+class "ableton::discovery::Deserialize<unsigned char>" as C_0006424294050233763729
+class C_0006424294050233763729 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L139{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L139}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<uint8_t, It>
+__
+}
+class "ableton::discovery::Deserialize<unsigned short>" as C_0011064066113342029543
+class C_0011064066113342029543 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L156{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L156}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<uint16_t, It>
+__
+}
+class "ableton::discovery::Deserialize<unsigned int>" as C_0013546123254254775234
+class C_0013546123254254775234 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L175{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L175}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<uint32_t, It>
+__
+}
+class "ableton::discovery::Deserialize<int>" as C_0011911876659799547412
+class C_0011911876659799547412 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L194{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L194}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<int32_t, It>
+__
+}
+class "ableton::discovery::Deserialize<unsigned long>" as C_0012838556365628964914
+class C_0012838556365628964914 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L213{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L213}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<uint64_t, It>
+__
+}
+class "ableton::discovery::Deserialize<long>" as C_0000699250995018310177
+class C_0000699250995018310177 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L232{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L232}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<int64_t, It>
+__
+}
+class "ableton::discovery::Deserialize<bool>" as C_0014521211024571418724
+class C_0014521211024571418724 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L256{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L256}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<_Bool, It>
+__
+}
+class "ableton::discovery::Deserialize<std::chrono::duration<long>>" as C_0017556403166313372610
+class C_0017556403166313372610 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L282{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L282}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<std::chrono::microseconds, It>
+__
+}
+class "ableton::discovery::Deserialize<std::array<T,_Nm>>" as C_0004141783550612757629
+class C_0004141783550612757629 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L357{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L357}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<std::array<T, Size>, It>
+__
+}
+class "ableton::discovery::Deserialize<std::vector<T>>" as C_0018317091001461730051
+class C_0018317091001461730051 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L385{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L385}]] {
+{static} +fromNetworkByteStream<It>(It bytesBegin, It bytesEnd) : std::pair<std::vector<T, Alloc>, It>
+__
+}
+class "ableton::discovery::Deserialize<std::tuple<X,Y>>" as C_0011193628347038778664
+class C_0011193628347038778664 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L418{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L418}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<std::tuple<X, Y>, It>
+__
+}
+class "ableton::discovery::Deserialize<std::tuple<X,Y,Z>>" as C_0005582217907409001752
+class C_0005582217907409001752 [[../../link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L449{link/include/ableton/discovery/NetworkByteStreamSerializable.hpp#L449}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<std::tuple<X, Y, Z>, It>
+__
+}
+class "ableton::discovery::PayloadEntryHeader" as C_0008358062763648939093
+class C_0008358062763648939093 [[../../link/include/ableton/discovery/Payload.hpp#L32{link/include/ableton/discovery/Payload.hpp#L32}]] {
+{static} +fromNetworkByteStream<It>(It begin, const It end) : std::pair<PayloadEntryHeader, It>
+__
++key : Key [[[../../link/include/ableton/discovery/Payload.hpp#L37{link/include/ableton/discovery/Payload.hpp#L37}]]]
++size : Size [[[../../link/include/ableton/discovery/Payload.hpp#L38{link/include/ableton/discovery/Payload.hpp#L38}]]]
+}
+class "ableton::discovery::PayloadEntry<EntryType>" as C_0008803437031140057065
+class C_0008803437031140057065 [[../../link/include/ableton/discovery/Payload.hpp#L66{link/include/ableton/discovery/Payload.hpp#L66}]] {
++PayloadEntry(EntryType entryVal) : void [[[../../link/include/ableton/discovery/Payload.hpp#L68{link/include/ableton/discovery/Payload.hpp#L68}]]]
+__
++header : PayloadEntryHeader [[[../../link/include/ableton/discovery/Payload.hpp#L74{link/include/ableton/discovery/Payload.hpp#L74}]]]
++value : EntryType [[[../../link/include/ableton/discovery/Payload.hpp#L75{link/include/ableton/discovery/Payload.hpp#L75}]]]
+}
+class "ableton::discovery::PayloadEntry<First>" as C_0010098493565584955814
+class C_0010098493565584955814 [[../../link/include/ableton/discovery/Payload.hpp#L157{link/include/ableton/discovery/Payload.hpp#L157}]] {
+__
+}
+class "ableton::discovery::Payload<First,Rest>" as C_0007354179710940522949
+class C_0007354179710940522949 [[../../link/include/ableton/discovery/Payload.hpp#L149{link/include/ableton/discovery/Payload.hpp#L149}]] {
++Payload(First first, Rest rest) : void [[[../../link/include/ableton/discovery/Payload.hpp#L151{link/include/ableton/discovery/Payload.hpp#L151}]]]
++Payload(PayloadEntry<First> first, Rest rest) : void [[[../../link/include/ableton/discovery/Payload.hpp#L157{link/include/ableton/discovery/Payload.hpp#L157}]]]
+__
++mFirst : PayloadEntry<First> [[[../../link/include/ableton/discovery/Payload.hpp#L187{link/include/ableton/discovery/Payload.hpp#L187}]]]
++mRest : Rest [[[../../link/include/ableton/discovery/Payload.hpp#L188{link/include/ableton/discovery/Payload.hpp#L188}]]]
+}
+class "ableton::discovery::Payload<First,typename Rest::template PayloadSum<RhsFirst,RhsRest>>" as C_0016726667155816225509
+class C_0016726667155816225509 [[../../link/include/ableton/discovery/Payload.hpp#L164{link/include/ableton/discovery/Payload.hpp#L164}]] {
+__
+}
+class "ableton::discovery::Payload< >" as C_0000890742123370368023
+class C_0000890742123370368023 [[../../link/include/ableton/discovery/Payload.hpp#L192{link/include/ableton/discovery/Payload.hpp#L192}]] {
+__
+}
+class "ableton::discovery::Payload<RhsFirst,RhsRest>" as C_0005277782623133209182
+class C_0005277782623133209182 [[../../link/include/ableton/discovery/Payload.hpp#L195{link/include/ableton/discovery/Payload.hpp#L195}]] {
+__
+}
+class "ableton::discovery::Payload<First,decltype(makePayload(std::move(rest)...))>" as C_0011436920561936035426
+class C_0011436920561936035426 [[../../link/include/ableton/discovery/Payload.hpp#L226{link/include/ableton/discovery/Payload.hpp#L226}]] {
+__
+}
+class "ableton::discovery::PayloadBuilder<First,Rest...>" as C_0016766644618547657595
+class C_0016766644618547657595 [[../../link/include/ableton/discovery/Payload.hpp#L224{link/include/ableton/discovery/Payload.hpp#L224}]] {
++operator()(First first, Rest... rest) : Payload<First,decltype(makePayload(std::move(rest)...))> [[[../../link/include/ableton/discovery/Payload.hpp#L226{link/include/ableton/discovery/Payload.hpp#L226}]]]
+__
+}
+class "ableton::discovery::Payload" as C_0004847241280408100073
+class C_0004847241280408100073 [[../../link/include/ableton/discovery/Payload.hpp#L236{link/include/ableton/discovery/Payload.hpp#L236}]] {
+__
+}
+class "ableton::discovery::PayloadBuilder< >" as C_0012590555721609716177
+class C_0012590555721609716177 [[../../link/include/ableton/discovery/Payload.hpp#L234{link/include/ableton/discovery/Payload.hpp#L234}]] {
++operator()() : ableton::discovery::Payload<> [[[../../link/include/ableton/discovery/Payload.hpp#L236{link/include/ableton/discovery/Payload.hpp#L236}]]]
+__
+}
+class "ableton::discovery::ParsePayload<First,Rest...>" as C_0017713990521407097466
+class C_0017713990521407097466 [[../../link/include/ableton/discovery/Payload.hpp#L244{link/include/ableton/discovery/Payload.hpp#L244}]] {
+{static} +collectHandlers<It,FirstHandler,RestHandlers...>(detail::HandlerMap<It> & map, FirstHandler handler, RestHandlers... rest) : void
+{static} +parse<It,Handlers...>(It begin, It end, Handlers... handlers) : void
+__
+}
+class "ableton::discovery::ParsePayload< >" as C_0007445534281458187237
+class C_0007445534281458187237 [[../../link/include/ableton/discovery/Payload.hpp#L280{link/include/ableton/discovery/Payload.hpp#L280}]] {
+{static} +collectHandlers<It>(detail::HandlerMap<It> &) : void
+__
+}
+class "ableton::discovery::Service<NodeState,GatewayFactory,IoContext>" as C_0010578368793271117596
+class C_0010578368793271117596 [[../../link/include/ableton/discovery/Service.hpp#L30{link/include/ableton/discovery/Service.hpp#L30}]] {
++Service(NodeState state, GatewayFactory factory, util::Injected<IoContext> io) : void [[[../../link/include/ableton/discovery/Service.hpp#L35{link/include/ableton/discovery/Service.hpp#L35}]]]
+..
++enable(const bool bEnable) : void [[[../../link/include/ableton/discovery/Service.hpp#L42{link/include/ableton/discovery/Service.hpp#L42}]]]
++isEnabled() const : bool [[[../../link/include/ableton/discovery/Service.hpp#L48{link/include/ableton/discovery/Service.hpp#L48}]]]
++repairGateway(const IpAddress & gatewayAddr) : void [[[../../link/include/ableton/discovery/Service.hpp#L63{link/include/ableton/discovery/Service.hpp#L63}]]]
++updateNodeState(const NodeState & state) : void [[[../../link/include/ableton/discovery/Service.hpp#L58{link/include/ableton/discovery/Service.hpp#L58}]]]
++withGateways<Handler>(Handler handler) : void
+__
+}
+class "ableton::discovery::MulticastTag" as C_0000385411989440441507
+class C_0000385411989440441507 [[../../link/include/ableton/discovery/IpInterface.hpp#L42{link/include/ableton/discovery/IpInterface.hpp#L42}]] {
+__
+}
+class "ableton::discovery::UnicastTag" as C_0017850078988099263980
+class C_0017850078988099263980 [[../../link/include/ableton/discovery/IpInterface.hpp#L45{link/include/ableton/discovery/IpInterface.hpp#L45}]] {
+__
+}
+class "ableton::discovery::IpInterface<IoContext,std::size_t MaxPacketSize>" as C_0018261845080078739121
+class C_0018261845080078739121 [[../../link/include/ableton/discovery/IpInterface.hpp#L50{link/include/ableton/discovery/IpInterface.hpp#L50}]] {
++IpInterface(util::Injected<IoContext> io, const IpAddress & addr) : void [[[../../link/include/ableton/discovery/IpInterface.hpp#L55{link/include/ableton/discovery/IpInterface.hpp#L55}]]]
++IpInterface(const IpInterface<IoContext,MaxPacketSize> &) = deleted : void [[[../../link/include/ableton/discovery/IpInterface.hpp#L62{link/include/ableton/discovery/IpInterface.hpp#L62}]]]
++IpInterface(IpInterface<IoContext,MaxPacketSize> && rhs) : void [[[../../link/include/ableton/discovery/IpInterface.hpp#L65{link/include/ableton/discovery/IpInterface.hpp#L65}]]]
+..
++operator=(const IpInterface<IoContext,MaxPacketSize> &) = deleted : IpInterface<IoContext,MaxPacketSize> & [[[../../link/include/ableton/discovery/IpInterface.hpp#L63{link/include/ableton/discovery/IpInterface.hpp#L63}]]]
+..
++endpoint() const : UdpEndpoint [[[../../link/include/ableton/discovery/IpInterface.hpp#L93{link/include/ableton/discovery/IpInterface.hpp#L93}]]]
++receive<Handler>(Handler handler, UnicastTag) : void
++receive<Handler>(Handler handler, MulticastTag) : void
++send(const uint8_t *const pData, const size_t numBytes, const UdpEndpoint & to) : std::size_t [[[../../link/include/ableton/discovery/IpInterface.hpp#L73{link/include/ableton/discovery/IpInterface.hpp#L73}]]]
+__
+}
+class "ableton::discovery::IpInterface::SocketReceiver<Tag,Handler>" as C_0002204141851795717953
+class C_0002204141851795717953 [[../../link/include/ableton/discovery/IpInterface.hpp#L97{link/include/ableton/discovery/IpInterface.hpp#L97}]] {
++operator()<It>(const UdpEndpoint & from, const It messageBegin, const It messageEnd) : void
+..
++SocketReceiver(Handler handler) : void [[[../../link/include/ableton/discovery/IpInterface.hpp#L99{link/include/ableton/discovery/IpInterface.hpp#L99}]]]
+__
++mHandler : Handler [[[../../link/include/ableton/discovery/IpInterface.hpp#L110{link/include/ableton/discovery/IpInterface.hpp#L110}]]]
+}
+class "ableton::discovery::PeerState<NodeState>" as C_0000450715258589324147
+class C_0000450715258589324147 [[../../link/include/ableton/discovery/MessageTypes.hpp#L37{link/include/ableton/discovery/MessageTypes.hpp#L37}]] {
+__
++peerState : NodeState [[[../../link/include/ableton/discovery/MessageTypes.hpp#L39{link/include/ableton/discovery/MessageTypes.hpp#L39}]]]
++ttl : int [[[../../link/include/ableton/discovery/MessageTypes.hpp#L40{link/include/ableton/discovery/MessageTypes.hpp#L40}]]]
+}
+class "ableton::discovery::ByeBye<NodeId>" as C_0008791563982771445444
+class C_0008791563982771445444 [[../../link/include/ableton/discovery/MessageTypes.hpp#L44{link/include/ableton/discovery/MessageTypes.hpp#L44}]] {
+__
++peerId : NodeId [[[../../link/include/ableton/discovery/MessageTypes.hpp#L46{link/include/ableton/discovery/MessageTypes.hpp#L46}]]]
+}
+class "ableton::discovery::v1::MessageHeader<NodeId>" as C_0003927926216785781661
+class C_0003927926216785781661 [[../../link/include/ableton/discovery/v1/Messages.hpp#L46{link/include/ableton/discovery/v1/Messages.hpp#L46}]] {
+{static} +fromNetworkByteStream<It>(It begin, const It end) : std::pair<MessageHeader<NodeId>, It>
+__
++groupId : SessionGroupId [[[../../link/include/ableton/discovery/v1/Messages.hpp#L50{link/include/ableton/discovery/v1/Messages.hpp#L50}]]]
++ident : NodeId [[[../../link/include/ableton/discovery/v1/Messages.hpp#L51{link/include/ableton/discovery/v1/Messages.hpp#L51}]]]
++messageType : MessageType [[[../../link/include/ableton/discovery/v1/Messages.hpp#L48{link/include/ableton/discovery/v1/Messages.hpp#L48}]]]
++ttl : uint8_t [[[../../link/include/ableton/discovery/v1/Messages.hpp#L49{link/include/ableton/discovery/v1/Messages.hpp#L49}]]]
+}
+class "ableton::discovery::v1::MessageHeader<ableton::discovery::UdpMessenger::NodeId>" as C_0006851389819286352582
+class C_0006851389819286352582 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L320{link/include/ableton/discovery/UdpMessenger.hpp#L320}]] {
+__
+}
+class "ableton::discovery::v1::MessageHeader<ableton::extender::TunnelGateway::NodeId>" as C_0013562556874899788780
+class C_0013562556874899788780 [[../../include/TunnelGateway.hpp#L110{include/TunnelGateway.hpp#L110}]] {
+__
+}
+class "ableton::discovery::UdpSendException" as C_0004567008859247160437
+class C_0004567008859247160437 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L38{link/include/ableton/discovery/UdpMessenger.hpp#L38}]] {
++UdpSendException(const std::runtime_error & e, IpAddress ifAddr) : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L40{link/include/ableton/discovery/UdpMessenger.hpp#L40}]]]
+__
++interfaceAddr : IpAddress [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L46{link/include/ableton/discovery/UdpMessenger.hpp#L46}]]]
+}
+class "ableton::discovery::UdpMessenger<Interface,NodeStateT,IoContext>" as C_0010328755427029039962
+class C_0010328755427029039962 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L86{link/include/ableton/discovery/UdpMessenger.hpp#L86}]] {
++UdpMessenger(util::Injected<Interface> iface, NodeState state, util::Injected<IoContext> io, const uint8_t ttl, const uint8_t ttlRatio) : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L95{link/include/ableton/discovery/UdpMessenger.hpp#L95}]]]
++UdpMessenger(const UdpMessenger<Interface,NodeStateT,IoContext> &) = deleted : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L110{link/include/ableton/discovery/UdpMessenger.hpp#L110}]]]
++UdpMessenger(UdpMessenger<Interface,NodeStateT,IoContext> && rhs) : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L113{link/include/ableton/discovery/UdpMessenger.hpp#L113}]]]
++~UdpMessenger() : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L118{link/include/ableton/discovery/UdpMessenger.hpp#L118}]]]
+..
++operator=(const UdpMessenger<Interface,NodeStateT,IoContext> &) = deleted : UdpMessenger<Interface,NodeStateT,IoContext> & [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L111{link/include/ableton/discovery/UdpMessenger.hpp#L111}]]]
+..
++broadcastState() : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L138{link/include/ableton/discovery/UdpMessenger.hpp#L138}]]]
++receive<Handler>(Handler handler) : void
++updateState(NodeState state) : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L133{link/include/ableton/discovery/UdpMessenger.hpp#L133}]]]
+__
+}
+class "ableton::discovery::PeerState<ableton::discovery::UdpMessenger::NodeState>" as C_0013667285622749176957
+class C_0013667285622749176957 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L355{link/include/ableton/discovery/UdpMessenger.hpp#L355}]] {
+__
+}
+class "ableton::discovery::ByeBye<ableton::discovery::UdpMessenger::NodeId>" as C_0017901378165358784580
+class C_0017901378165358784580 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L356{link/include/ableton/discovery/UdpMessenger.hpp#L356}]] {
+__
+}
+class "ableton::discovery::UdpMessenger::Impl" as C_0013489500845632598080
+class C_0013489500845632598080 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L151{link/include/ableton/discovery/UdpMessenger.hpp#L151}]] {
++operator()<Tag,It>(Tag tag, const UdpEndpoint & from, const It messageBegin, const It messageEnd) : void
+..
++Impl(util::Injected<Interface> iface, NodeState state, util::Injected<IoContext> io, const uint8_t ttl, const uint8_t ttlRatio) : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L153{link/include/ableton/discovery/UdpMessenger.hpp#L153}]]]
++broadcastState() : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L204{link/include/ableton/discovery/UdpMessenger.hpp#L204}]]]
++listen<Tag>(Tag tag) : void
++receiveByeBye(NodeId nodeId) : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L340{link/include/ableton/discovery/UdpMessenger.hpp#L340}]]]
++receivePeerState<It>(v1::MessageHeader<NodeId> header, It payloadBegin, It payloadEnd) : void
++sendByeBye() : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L179{link/include/ableton/discovery/UdpMessenger.hpp#L179}]]]
++sendPeerState(const v1::MessageType messageType, const UdpEndpoint & to) : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L247{link/include/ableton/discovery/UdpMessenger.hpp#L247}]]]
++sendResponse(const UdpEndpoint & to) : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L254{link/include/ableton/discovery/UdpMessenger.hpp#L254}]]]
++setReceiveHandler<Handler>(Handler handler) : void
++updateState(NodeState state) : void [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L202{link/include/ableton/discovery/UdpMessenger.hpp#L202}]]]
+__
++mByeByeHandler : std::function<void (ByeBye<NodeId>)> [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L356{link/include/ableton/discovery/UdpMessenger.hpp#L356}]]]
++mInterface : util::Injected<Interface> [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L349{link/include/ableton/discovery/UdpMessenger.hpp#L349}]]]
++mIo : util::Injected<IoContext> [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L348{link/include/ableton/discovery/UdpMessenger.hpp#L348}]]]
++mLastBroadcastTime : TimePoint [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L352{link/include/ableton/discovery/UdpMessenger.hpp#L352}]]]
++mPeerStateHandler : std::function<void (PeerState<NodeState>)> [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L355{link/include/ableton/discovery/UdpMessenger.hpp#L355}]]]
++mState : NodeState [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L350{link/include/ableton/discovery/UdpMessenger.hpp#L350}]]]
++mTimer : Timer [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L351{link/include/ableton/discovery/UdpMessenger.hpp#L351}]]]
++mTtl : uint8_t [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L353{link/include/ableton/discovery/UdpMessenger.hpp#L353}]]]
++mTtlRatio : uint8_t [[[../../link/include/ableton/discovery/UdpMessenger.hpp#L354{link/include/ableton/discovery/UdpMessenger.hpp#L354}]]]
+}
+class "ableton::discovery::PeerGateway<Messenger,PeerObserver,IoContext>" as C_0005620174876014784655
+class C_0005620174876014784655 [[../../link/include/ableton/discovery/PeerGateway.hpp#L33{link/include/ableton/discovery/PeerGateway.hpp#L33}]] {
++PeerGateway(util::Injected<Messenger> messenger, util::Injected<PeerObserver> observer, util::Injected<IoContext> io) : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L44{link/include/ableton/discovery/PeerGateway.hpp#L44}]]]
++PeerGateway(const PeerGateway<Messenger,PeerObserver,IoContext> &) = deleted : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L52{link/include/ableton/discovery/PeerGateway.hpp#L52}]]]
++PeerGateway(PeerGateway<Messenger,PeerObserver,IoContext> && rhs) : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L55{link/include/ableton/discovery/PeerGateway.hpp#L55}]]]
+..
++operator=(const PeerGateway<Messenger,PeerObserver,IoContext> &) = deleted : PeerGateway<Messenger,PeerObserver,IoContext> & [[[../../link/include/ableton/discovery/PeerGateway.hpp#L53{link/include/ableton/discovery/PeerGateway.hpp#L53}]]]
+..
++updateState(NodeState state) : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L60{link/include/ableton/discovery/PeerGateway.hpp#L60}]]]
+__
+}
+class "ableton::discovery::PeerState<ableton::discovery::PeerGateway::NodeState>" as C_0004205106482456937806
+class C_0004205106482456937806 [[../../link/include/ableton/discovery/PeerGateway.hpp#L94{link/include/ableton/discovery/PeerGateway.hpp#L94}]] {
+__
+}
+class "ableton::discovery::ByeBye<ableton::discovery::PeerGateway::NodeId>" as C_0010864505122247594342
+class C_0010864505122247594342 [[../../link/include/ableton/discovery/PeerGateway.hpp#L100{link/include/ableton/discovery/PeerGateway.hpp#L100}]] {
+__
+}
+class "ableton::discovery::PeerGateway::Impl" as C_0014540213220201370165
+class C_0014540213220201370165 [[../../link/include/ableton/discovery/PeerGateway.hpp#L66{link/include/ableton/discovery/PeerGateway.hpp#L66}]] {
++operator()(const PeerState<NodeState> & msg) : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L94{link/include/ableton/discovery/PeerGateway.hpp#L94}]]]
++operator()(const ByeBye<NodeId> & msg) : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L100{link/include/ableton/discovery/PeerGateway.hpp#L100}]]]
+..
++Impl(util::Injected<Messenger> messenger, util::Injected<PeerObserver> observer, util::Injected<IoContext> io) : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L68{link/include/ableton/discovery/PeerGateway.hpp#L68}]]]
++findPeer(const NodeId & peerId) : typename PeerTimeouts::iterator [[[../../link/include/ableton/discovery/PeerGateway.hpp#L190{link/include/ableton/discovery/PeerGateway.hpp#L190}]]]
++listen() : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L91{link/include/ableton/discovery/PeerGateway.hpp#L91}]]]
++onByeBye(const NodeId & peerId) : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L127{link/include/ableton/discovery/PeerGateway.hpp#L127}]]]
++onPeerState(const NodeState & nodeState, const int ttl) : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L106{link/include/ableton/discovery/PeerGateway.hpp#L106}]]]
++pruneExpiredPeers() : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L137{link/include/ableton/discovery/PeerGateway.hpp#L137}]]]
++scheduleNextPruning() : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L158{link/include/ableton/discovery/PeerGateway.hpp#L158}]]]
++updateState(NodeState state) : void [[[../../link/include/ableton/discovery/PeerGateway.hpp#L78{link/include/ableton/discovery/PeerGateway.hpp#L78}]]]
+__
++mIo : util::Injected<IoContext> [[[../../link/include/ableton/discovery/PeerGateway.hpp#L200{link/include/ableton/discovery/PeerGateway.hpp#L200}]]]
++mMessenger : util::Injected<Messenger> [[[../../link/include/ableton/discovery/PeerGateway.hpp#L198{link/include/ableton/discovery/PeerGateway.hpp#L198}]]]
++mObserver : util::Injected<PeerObserver> [[[../../link/include/ableton/discovery/PeerGateway.hpp#L199{link/include/ableton/discovery/PeerGateway.hpp#L199}]]]
++mPeerTimeouts : PeerTimeouts [[[../../link/include/ableton/discovery/PeerGateway.hpp#L202{link/include/ableton/discovery/PeerGateway.hpp#L202}]]]
++mPruneTimer : Timer [[[../../link/include/ableton/discovery/PeerGateway.hpp#L201{link/include/ableton/discovery/PeerGateway.hpp#L201}]]]
+}
+class "ableton::discovery::PeerGateway::Impl::TimeoutCompare" as C_0015875017611847239944
+class C_0015875017611847239944 [[../../link/include/ableton/discovery/PeerGateway.hpp#L182{link/include/ableton/discovery/PeerGateway.hpp#L182}]] {
++operator()(const PeerTimeout & lhs, const PeerTimeout & rhs) const : bool [[[../../link/include/ableton/discovery/PeerGateway.hpp#L184{link/include/ableton/discovery/PeerGateway.hpp#L184}]]]
+__
+}
+class "ableton::discovery::IpInterface<typename util::Injected<IoContext>::type &,v1::kMaxMessageSize>" as C_0001033370335415138704
+class C_0001033370335415138704 [[../../link/include/ableton/discovery/PeerGateway.hpp#L218{link/include/ableton/discovery/PeerGateway.hpp#L218}]] {
+__
+}
+class "ableton::discovery::UdpMessenger<ableton::discovery::IpInterface<typename util::Injected<IoContext>::type &,v1::kMaxMessageSize>,StateQuery,IoContext>" as C_0017020981135476273418
+class C_0017020981135476273418 [[../../link/include/ableton/discovery/PeerGateway.hpp#L218{link/include/ableton/discovery/PeerGateway.hpp#L218}]] {
+__
+}
+class "ableton::discovery::IpInterface<typename util::Injected<typename Injected<type-parameter-0-2>::type &>::type &,v1::kMaxMessageSize>" as C_0016724000551276772567
+class C_0016724000551276772567 [[../../link/include/ableton/discovery/PeerGateway.hpp#L224{link/include/ableton/discovery/PeerGateway.hpp#L224}]] {
+__
+}
+class "ableton::discovery::UdpMessenger<ableton::discovery::IpInterface<typename util::Injected<typename Injected<type-parameter-0-2>::type &>::type &,v1::kMaxMessageSize>,StateQuery,typename Injected<type-parameter-0-2>::type &>" as C_0003493492831138280571
+class C_0003493492831138280571 [[../../link/include/ableton/discovery/PeerGateway.hpp#L224{link/include/ableton/discovery/PeerGateway.hpp#L224}]] {
+__
+}
+class "ableton::discovery::PeerGateway<ableton::discovery::Messenger<ableton::discovery::IpInterface<typename util::Injected<typename Injected<type-parameter-0-2>::type &>::type &,v1::kMaxMessageSize>,StateQuery,typename Injected<type-parameter-0-2>::type &>,PeerObserver,IoContext>" as C_0007302803573088901537
+class C_0007302803573088901537 [[../../link/include/ableton/discovery/PeerGateway.hpp#L224{link/include/ableton/discovery/PeerGateway.hpp#L224}]] {
+__
+}
+class "ableton::discovery::IpInterface<typename util::Injected<typename Injected<typename Injected<type-parameter-0-2>::type &>::type &>::type &,v1::kMaxMessageSize>" as C_0001188318156174048628
+class C_0001188318156174048628 [[../../link/include/ableton/link/Gateway.hpp#L89{link/include/ableton/link/Gateway.hpp#L89}]] {
+__
+}
+class "ableton::discovery::UdpMessenger<ableton::discovery::IpInterface<typename util::Injected<typename Injected<typename Injected<type-parameter-0-2>::type &>::type &>::type &,v1::kMaxMessageSize>,ableton::link::PeerState,typename Injected<typename Injected<type-parameter-0-2>::type &>::type &>" as C_0014884097652378661816
+class C_0014884097652378661816 [[../../link/include/ableton/link/Gateway.hpp#L89{link/include/ableton/link/Gateway.hpp#L89}]] {
+__
+}
+class "ableton::discovery::PeerGateway<ableton::discovery::Messenger<ableton::discovery::IpInterface<typename util::Injected<typename Injected<typename Injected<type-parameter-0-2>::type &>::type &>::type &,v1::kMaxMessageSize>,ableton::link::PeerState,typename Injected<typename Injected<type-parameter-0-2>::type &>::type &>,PeerObserver,typename Injected<type-parameter-0-2>::type &>" as C_0012143698072862709836
+class C_0012143698072862709836 [[../../link/include/ableton/link/Gateway.hpp#L89{link/include/ableton/link/Gateway.hpp#L89}]] {
+__
+}
+class "ableton::discovery::Service<std::pair<ableton::link::NodeState,ableton::link::GhostXForm>,ableton::link::Controller::GatewayFactory,typename util::Injected<IoContext>::type &>" as C_0010876146078925346743
+class C_0010876146078925346743 [[../../link/include/ableton/link/Controller.hpp#L806{link/include/ableton/link/Controller.hpp#L806}]] {
+__
+}
+class "ableton::discovery::PeerGateways<ableton::extender::NodeState,ableton::extender::Controller::GatewayFactory,IoType &>" as C_0007860177675989104079
+class C_0007860177675989104079 [[../../include/Controller.hpp#L172{include/Controller.hpp#L172}]] {
+__
+}
+class "ableton::discovery::ParsePayload<Entries...>" as C_0004079989425912614956
+class C_0004079989425912614956 [[../../link/include/ableton/discovery/Payload.hpp#L241{link/include/ableton/discovery/Payload.hpp#L241}]] {
+__
+}
+class "ableton::discovery::PayloadBuilder<Entries...>" as C_0012496071311098332204
+class C_0012496071311098332204 [[../../link/include/ableton/discovery/Payload.hpp#L213{link/include/ableton/discovery/Payload.hpp#L213}]] {
+__
+}
+class "ableton::discovery::Payload<Entries...>" as C_0012940325434723429245
+class C_0012940325434723429245 [[../../link/include/ableton/discovery/Payload.hpp#L146{link/include/ableton/discovery/Payload.hpp#L146}]] {
+__
+}
+class "ableton::util::Injected<T>" as C_0013581892756519222113
+class C_0013581892756519222113 [[../../link/include/ableton/util/Injected.hpp#L33{link/include/ableton/util/Injected.hpp#L33}]] {
++Injected() = default : void [[[../../link/include/ableton/util/Injected.hpp#L37{link/include/ableton/util/Injected.hpp#L37}]]]
++Injected(T t) : void [[[../../link/include/ableton/util/Injected.hpp#L39{link/include/ableton/util/Injected.hpp#L39}]]]
++Injected(const Injected<T> &) = default : void [[[../../link/include/ableton/util/Injected.hpp#L44{link/include/ableton/util/Injected.hpp#L44}]]]
++Injected(Injected<T> && rhs) : void [[[../../link/include/ableton/util/Injected.hpp#L47{link/include/ableton/util/Injected.hpp#L47}]]]
+..
++operator=(const Injected<T> &) = default : Injected<T> & [[[../../link/include/ableton/util/Injected.hpp#L45{link/include/ableton/util/Injected.hpp#L45}]]]
++operator=(Injected<T> && rhs) : Injected<T> & [[[../../link/include/ableton/util/Injected.hpp#L52{link/include/ableton/util/Injected.hpp#L52}]]]
+..
++operator*() : T & [[[../../link/include/ableton/util/Injected.hpp#L62{link/include/ableton/util/Injected.hpp#L62}]]]
++operator*() const : const T & [[[../../link/include/ableton/util/Injected.hpp#L64{link/include/ableton/util/Injected.hpp#L64}]]]
++operator->() : T * [[[../../link/include/ableton/util/Injected.hpp#L58{link/include/ableton/util/Injected.hpp#L58}]]]
++operator->() const : const T * [[[../../link/include/ableton/util/Injected.hpp#L60{link/include/ableton/util/Injected.hpp#L60}]]]
+__
++val : T [[[../../link/include/ableton/util/Injected.hpp#L66{link/include/ableton/util/Injected.hpp#L66}]]]
+}
+class "ableton::util::Injected<T &>" as C_0002080611009329811424
+class C_0002080611009329811424 [[../../link/include/ableton/util/Injected.hpp#L78{link/include/ableton/util/Injected.hpp#L78}]] {
++Injected(T & t) : void [[[../../link/include/ableton/util/Injected.hpp#L82{link/include/ableton/util/Injected.hpp#L82}]]]
++Injected(const Injected<type-parameter-0-0 &> &) = default : void [[[../../link/include/ableton/util/Injected.hpp#L87{link/include/ableton/util/Injected.hpp#L87}]]]
++Injected(Injected<type-parameter-0-0 &> && rhs) : void [[[../../link/include/ableton/util/Injected.hpp#L90{link/include/ableton/util/Injected.hpp#L90}]]]
+..
++operator=(const Injected<type-parameter-0-0 &> &) = default : Injected<type-parameter-0-0 &> & [[[../../link/include/ableton/util/Injected.hpp#L88{link/include/ableton/util/Injected.hpp#L88}]]]
++operator=(Injected<type-parameter-0-0 &> && rhs) : Injected<type-parameter-0-0 &> & [[[../../link/include/ableton/util/Injected.hpp#L95{link/include/ableton/util/Injected.hpp#L95}]]]
+..
++operator*() : T & [[[../../link/include/ableton/util/Injected.hpp#L105{link/include/ableton/util/Injected.hpp#L105}]]]
++operator*() const : const T & [[[../../link/include/ableton/util/Injected.hpp#L107{link/include/ableton/util/Injected.hpp#L107}]]]
++operator->() : T * [[[../../link/include/ableton/util/Injected.hpp#L101{link/include/ableton/util/Injected.hpp#L101}]]]
++operator->() const : const T * [[[../../link/include/ableton/util/Injected.hpp#L103{link/include/ableton/util/Injected.hpp#L103}]]]
+__
++ref : std::reference_wrapper<T> [[[../../link/include/ableton/util/Injected.hpp#L109{link/include/ableton/util/Injected.hpp#L109}]]]
+}
+class "ableton::util::Injected<std::shared_ptr<T>>" as C_0018095692230321134971
+class C_0018095692230321134971 [[../../link/include/ableton/util/Injected.hpp#L121{link/include/ableton/util/Injected.hpp#L121}]] {
++Injected(std::shared_ptr<T> pT) : void [[[../../link/include/ableton/util/Injected.hpp#L125{link/include/ableton/util/Injected.hpp#L125}]]]
++Injected(const Injected<shared_ptr<type-parameter-0-0>> &) = default : void [[[../../link/include/ableton/util/Injected.hpp#L130{link/include/ableton/util/Injected.hpp#L130}]]]
++Injected(Injected<shared_ptr<type-parameter-0-0>> && rhs) : void [[[../../link/include/ableton/util/Injected.hpp#L133{link/include/ableton/util/Injected.hpp#L133}]]]
+..
++operator=(const Injected<shared_ptr<type-parameter-0-0>> &) = default : Injected<shared_ptr<type-parameter-0-0>> & [[[../../link/include/ableton/util/Injected.hpp#L131{link/include/ableton/util/Injected.hpp#L131}]]]
++operator=(Injected<shared_ptr<type-parameter-0-0>> && rhs) : Injected<shared_ptr<type-parameter-0-0>> & [[[../../link/include/ableton/util/Injected.hpp#L138{link/include/ableton/util/Injected.hpp#L138}]]]
+..
++operator*() : T & [[[../../link/include/ableton/util/Injected.hpp#L148{link/include/ableton/util/Injected.hpp#L148}]]]
++operator*() const : const T & [[[../../link/include/ableton/util/Injected.hpp#L150{link/include/ableton/util/Injected.hpp#L150}]]]
++operator->() : T * [[[../../link/include/ableton/util/Injected.hpp#L144{link/include/ableton/util/Injected.hpp#L144}]]]
++operator->() const : const T * [[[../../link/include/ableton/util/Injected.hpp#L146{link/include/ableton/util/Injected.hpp#L146}]]]
+__
++shared : std::shared_ptr<T> [[[../../link/include/ableton/util/Injected.hpp#L152{link/include/ableton/util/Injected.hpp#L152}]]]
+}
+class "ableton::util::Injected<std::unique_ptr<T>>" as C_0007967254320476320108
+class C_0007967254320476320108 [[../../link/include/ableton/util/Injected.hpp#L164{link/include/ableton/util/Injected.hpp#L164}]] {
++Injected(std::unique_ptr<T> pT) : void [[[../../link/include/ableton/util/Injected.hpp#L168{link/include/ableton/util/Injected.hpp#L168}]]]
++Injected(const Injected<unique_ptr<type-parameter-0-0,default_delete<type-parameter-0-0>>> &) = default : void [[[../../link/include/ableton/util/Injected.hpp#L173{link/include/ableton/util/Injected.hpp#L173}]]]
++Injected(Injected<unique_ptr<type-parameter-0-0,default_delete<type-parameter-0-0>>> && rhs) : void [[[../../link/include/ableton/util/Injected.hpp#L176{link/include/ableton/util/Injected.hpp#L176}]]]
+..
++operator=(const Injected<unique_ptr<type-parameter-0-0,default_delete<type-parameter-0-0>>> &) = default : Injected<unique_ptr<type-parameter-0-0,default_delete<type-parameter-0-0>>> & [[[../../link/include/ableton/util/Injected.hpp#L174{link/include/ableton/util/Injected.hpp#L174}]]]
++operator=(Injected<unique_ptr<type-parameter-0-0,default_delete<type-parameter-0-0>>> && rhs) : Injected<unique_ptr<type-parameter-0-0,default_delete<type-parameter-0-0>>> & [[[../../link/include/ableton/util/Injected.hpp#L181{link/include/ableton/util/Injected.hpp#L181}]]]
+..
++operator*() : T & [[[../../link/include/ableton/util/Injected.hpp#L191{link/include/ableton/util/Injected.hpp#L191}]]]
++operator*() const : const T & [[[../../link/include/ableton/util/Injected.hpp#L193{link/include/ableton/util/Injected.hpp#L193}]]]
++operator->() : T * [[[../../link/include/ableton/util/Injected.hpp#L187{link/include/ableton/util/Injected.hpp#L187}]]]
++operator->() const : const T * [[[../../link/include/ableton/util/Injected.hpp#L189{link/include/ableton/util/Injected.hpp#L189}]]]
+__
++unique : std::unique_ptr<T> [[[../../link/include/ableton/util/Injected.hpp#L195{link/include/ableton/util/Injected.hpp#L195}]]]
+}
+class "ableton::util::Injected<Callback>" as C_0001698883805709756903
+class C_0001698883805709756903 [[../../link/include/ableton/discovery/InterfaceScanner.hpp#L41{link/include/ableton/discovery/InterfaceScanner.hpp#L41}]] {
+__
+}
+class "ableton::util::Injected<IoContext>" as C_0001131375505872234058
+class C_0001131375505872234058 [[../../link/include/ableton/discovery/InterfaceScanner.hpp#L42{link/include/ableton/discovery/InterfaceScanner.hpp#L42}]] {
+__
+}
+class "ableton::util::SafeAsyncHandler<Delegate>" as C_0000840982938376525986
+class C_0000840982938376525986 [[../../link/include/ableton/util/SafeAsyncHandler.hpp#L38{link/include/ableton/util/SafeAsyncHandler.hpp#L38}]] {
++SafeAsyncHandler(const std::shared_ptr<Delegate> & pDelegate) : void [[[../../link/include/ableton/util/SafeAsyncHandler.hpp#L40{link/include/ableton/util/SafeAsyncHandler.hpp#L40}]]]
+..
++operator()<T...>(T &&... t) const : void
+__
++mpDelegate : std::weak_ptr<Delegate> [[[../../link/include/ableton/util/SafeAsyncHandler.hpp#L55{link/include/ableton/util/SafeAsyncHandler.hpp#L55}]]]
+}
+class "ableton::util::Injected<Interface>" as C_0005730378100413264976
+class C_0005730378100413264976 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L95{link/include/ableton/discovery/UdpMessenger.hpp#L95}]] {
+__
+}
+class "ableton::util::Injected<Messenger>" as C_0006889781714772074265
+class C_0006889781714772074265 [[../../link/include/ableton/discovery/PeerGateway.hpp#L44{link/include/ableton/discovery/PeerGateway.hpp#L44}]] {
+__
+}
+class "ableton::util::Injected<PeerObserver>" as C_0004203259649320686375
+class C_0004203259649320686375 [[../../link/include/ableton/discovery/PeerGateway.hpp#L45{link/include/ableton/discovery/PeerGateway.hpp#L45}]] {
+__
+}
+class "ableton::util::Injected<IoContext &>" as C_0009222341400250365243
+class C_0009222341400250365243 [[../../link/include/ableton/link/PingResponder.hpp#L47{link/include/ableton/link/PingResponder.hpp#L47}]] {
+__
+}
+class "ableton::util::Injected<Peers>" as C_0004391464078061842940
+class C_0004391464078061842940 [[../../link/include/ableton/link/Sessions.hpp#L55{link/include/ableton/link/Sessions.hpp#L55}]] {
+__
+}
+class "ableton::util::Injected<IoType &>" as C_0017875042668168701430
+class C_0017875042668168701430 [[../../link/include/ableton/link/Controller.hpp#L742{link/include/ableton/link/Controller.hpp#L742}]] {
+__
+}
+class "ableton::util::NullLog" as C_0000397181047301399976
+class C_0000397181047301399976 [[../../link/include/ableton/util/Log.hpp#L15{link/include/ableton/util/Log.hpp#L15}]] {
+__
+}
+class "ableton::util::StdLog" as C_0006922602263282024425
+class C_0006922602263282024425 [[../../link/include/ableton/util/Log.hpp#L35{link/include/ableton/util/Log.hpp#L35}]] {
++StdLog(std::string channelName = "") : void [[[../../link/include/ableton/util/Log.hpp#L37{link/include/ableton/util/Log.hpp#L37}]]]
+__
++mChannelName : std::string [[[../../link/include/ableton/util/Log.hpp#L93{link/include/ableton/util/Log.hpp#L93}]]]
+}
+class "ableton::util::StdLog::StdLogStream" as C_0002407369522403782728
+class C_0002407369522403782728 [[../../link/include/ableton/util/Log.hpp#L43{link/include/ableton/util/Log.hpp#L43}]] {
++operator<T>(const T & rhs) : std::ostream &
+..
++StdLogStream(std::ostream & ioStream, const std::string & channelName) : void [[[../../link/include/ableton/util/Log.hpp#L45{link/include/ableton/util/Log.hpp#L45}]]]
++StdLogStream(StdLogStream && rhs) : void [[[../../link/include/ableton/util/Log.hpp#L52{link/include/ableton/util/Log.hpp#L52}]]]
++~StdLogStream() : void [[[../../link/include/ableton/util/Log.hpp#L59{link/include/ableton/util/Log.hpp#L59}]]]
+__
++mChannelName : const std::string & [[[../../link/include/ableton/util/Log.hpp#L75{link/include/ableton/util/Log.hpp#L75}]]]
++mpIoStream : std::ostream * [[[../../link/include/ableton/util/Log.hpp#L74{link/include/ableton/util/Log.hpp#L74}]]]
+}
+class "ableton::util::Injected<Log>" as C_0002960393695025038999
+class C_0002960393695025038999 [[../../link/include/ableton/util/Log.hpp#L104{link/include/ableton/util/Log.hpp#L104}]] {
+__
+}
+class "ableton::util::Timestamped<Log>" as C_0007261919447689901158
+class C_0007261919447689901158 [[../../link/include/ableton/util/Log.hpp#L98{link/include/ableton/util/Log.hpp#L98}]] {
++Timestamped() = default : void [[[../../link/include/ableton/util/Log.hpp#L102{link/include/ableton/util/Log.hpp#L102}]]]
++Timestamped(util::Injected<Log> log) : void [[[../../link/include/ableton/util/Log.hpp#L104{link/include/ableton/util/Log.hpp#L104}]]]
+..
++logTimestamp<Stream>(Stream && streamRef) const : Stream
+__
++mLog : util::Injected<Log> [[[../../link/include/ableton/util/Log.hpp#L109{link/include/ableton/util/Log.hpp#L109}]]]
+}
+class "ableton::link::NodeId" as C_0012617968137351947864
+class C_0012617968137351947864 [[../../link/include/ableton/link/NodeId.hpp#L36{link/include/ableton/link/NodeId.hpp#L36}]] {
++NodeId() = default : void [[[../../link/include/ableton/link/NodeId.hpp#L38{link/include/ableton/link/NodeId.hpp#L38}]]]
++NodeId(NodeIdArray rhs) : void [[[../../link/include/ableton/link/NodeId.hpp#L40{link/include/ableton/link/NodeId.hpp#L40}]]]
+..
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<NodeId, It>
+{static} +random<Random>() : NodeId
+__
+}
+class "ableton::link::SessionMembership" as C_0008175913117146309467
+class C_0008175913117146309467 [[../../link/include/ableton/link/SessionId.hpp#L34{link/include/ableton/link/SessionId.hpp#L34}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<SessionMembership, It>
+__
+{static} +key : const std::int32_t [[[../../link/include/ableton/link/SessionId.hpp#L36{link/include/ableton/link/SessionId.hpp#L36}]]]
++sessionId : SessionId [[[../../link/include/ableton/link/SessionId.hpp#L59{link/include/ableton/link/SessionId.hpp#L59}]]]
+}
+class "ableton::link::Beats" as C_0015108871955745513405
+class C_0015108871955745513405 [[../../link/include/ableton/link/Beats.hpp#L31{link/include/ableton/link/Beats.hpp#L31}]] {
++Beats() = default : void [[[../../link/include/ableton/link/Beats.hpp#L33{link/include/ableton/link/Beats.hpp#L33}]]]
++Beats(const double beats) : void [[[../../link/include/ableton/link/Beats.hpp#L35{link/include/ableton/link/Beats.hpp#L35}]]]
++Beats(const std::int64_t microBeats) : void [[[../../link/include/ableton/link/Beats.hpp#L40{link/include/ableton/link/Beats.hpp#L40}]]]
+..
++operator-() const : Beats [[[../../link/include/ableton/link/Beats.hpp#L49{link/include/ableton/link/Beats.hpp#L49}]]]
+..
++floating() const : double [[[../../link/include/ableton/link/Beats.hpp#L45{link/include/ableton/link/Beats.hpp#L45}]]]
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<Beats, It>
++microBeats() const : std::int64_t [[[../../link/include/ableton/link/Beats.hpp#L47{link/include/ableton/link/Beats.hpp#L47}]]]
+__
+}
+class "ableton::link::StartStopState" as C_0012358011593250270552
+class C_0012358011593250270552 [[../../link/include/ableton/link/StartStopState.hpp#L36{link/include/ableton/link/StartStopState.hpp#L36}]] {
++StartStopState() = default : void [[[../../link/include/ableton/link/StartStopState.hpp#L43{link/include/ableton/link/StartStopState.hpp#L43}]]]
++StartStopState(const bool aIsPlaying, const Beats aBeats, const std::chrono::microseconds aTimestamp) : void [[[../../link/include/ableton/link/StartStopState.hpp#L45{link/include/ableton/link/StartStopState.hpp#L45}]]]
+..
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<StartStopState, It>
+__
++beats : Beats [[[../../link/include/ableton/link/StartStopState.hpp#L90{link/include/ableton/link/StartStopState.hpp#L90}]]]
++isPlaying : bool [[[../../link/include/ableton/link/StartStopState.hpp#L89{link/include/ableton/link/StartStopState.hpp#L89}]]]
+{static} +key : const std::int32_t [[[../../link/include/ableton/link/StartStopState.hpp#L38{link/include/ableton/link/StartStopState.hpp#L38}]]]
++timestamp : std::chrono::microseconds [[[../../link/include/ableton/link/StartStopState.hpp#L91{link/include/ableton/link/StartStopState.hpp#L91}]]]
+}
+class "ableton::link::ClientStartStopState" as C_0017288818338831973044
+class C_0017288818338831973044 [[../../link/include/ableton/link/StartStopState.hpp#L100{link/include/ableton/link/StartStopState.hpp#L100}]] {
++ClientStartStopState() = default : void [[[../../link/include/ableton/link/StartStopState.hpp#L102{link/include/ableton/link/StartStopState.hpp#L102}]]]
++ClientStartStopState(const bool aIsPlaying, const std::chrono::microseconds aTime, const std::chrono::microseconds aTimestamp) : void [[[../../link/include/ableton/link/StartStopState.hpp#L104{link/include/ableton/link/StartStopState.hpp#L104}]]]
+__
++isPlaying : bool [[[../../link/include/ableton/link/StartStopState.hpp#L124{link/include/ableton/link/StartStopState.hpp#L124}]]]
++time : std::chrono::microseconds [[[../../link/include/ableton/link/StartStopState.hpp#L125{link/include/ableton/link/StartStopState.hpp#L125}]]]
++timestamp : std::chrono::microseconds [[[../../link/include/ableton/link/StartStopState.hpp#L126{link/include/ableton/link/StartStopState.hpp#L126}]]]
+}
+class "ableton::link::ApiStartStopState" as C_0017326837616585458791
+class C_0017326837616585458791 [[../../link/include/ableton/link/StartStopState.hpp#L129{link/include/ableton/link/StartStopState.hpp#L129}]] {
++ApiStartStopState() = default : void [[[../../link/include/ableton/link/StartStopState.hpp#L131{link/include/ableton/link/StartStopState.hpp#L131}]]]
++ApiStartStopState(const bool aIsPlaying, const std::chrono::microseconds aTime) : void [[[../../link/include/ableton/link/StartStopState.hpp#L133{link/include/ableton/link/StartStopState.hpp#L133}]]]
+__
++isPlaying : bool [[[../../link/include/ableton/link/StartStopState.hpp#L149{link/include/ableton/link/StartStopState.hpp#L149}]]]
++time : std::chrono::microseconds [[[../../link/include/ableton/link/StartStopState.hpp#L150{link/include/ableton/link/StartStopState.hpp#L150}]]]
+}
+class "ableton::link::Tempo" as C_0011912240950756466864
+class C_0011912240950756466864 [[../../link/include/ableton/link/Tempo.hpp#L30{link/include/ableton/link/Tempo.hpp#L30}]] {
++Tempo() = default : void [[[../../link/include/ableton/link/Tempo.hpp#L32{link/include/ableton/link/Tempo.hpp#L32}]]]
++Tempo(const double bpm) : void [[[../../link/include/ableton/link/Tempo.hpp#L35{link/include/ableton/link/Tempo.hpp#L35}]]]
++Tempo(const std::chrono::microseconds microsPerBeat) : void [[[../../link/include/ableton/link/Tempo.hpp#L40{link/include/ableton/link/Tempo.hpp#L40}]]]
+..
++beatsToMicros(const Beats beats) const : std::chrono::microseconds [[[../../link/include/ableton/link/Tempo.hpp#L60{link/include/ableton/link/Tempo.hpp#L60}]]]
++bpm() const : double [[[../../link/include/ableton/link/Tempo.hpp#L45{link/include/ableton/link/Tempo.hpp#L45}]]]
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<Tempo, It>
++microsPerBeat() const : std::chrono::microseconds [[[../../link/include/ableton/link/Tempo.hpp#L47{link/include/ableton/link/Tempo.hpp#L47}]]]
++microsToBeats(const std::chrono::microseconds micros) const : Beats [[[../../link/include/ableton/link/Tempo.hpp#L53{link/include/ableton/link/Tempo.hpp#L53}]]]
+__
+}
+class "ableton::link::Timeline" as C_0011645384771427925717
+class C_0011645384771427925717 [[../../link/include/ableton/link/Timeline.hpp#L39{link/include/ableton/link/Timeline.hpp#L39}]] {
++fromBeats(const Beats beats) const : std::chrono::microseconds [[[../../link/include/ableton/link/Timeline.hpp#L49{link/include/ableton/link/Timeline.hpp#L49}]]]
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<Timeline, It>
++toBeats(const std::chrono::microseconds time) const : Beats [[[../../link/include/ableton/link/Timeline.hpp#L44{link/include/ableton/link/Timeline.hpp#L44}]]]
+__
++beatOrigin : Beats [[[../../link/include/ableton/link/Timeline.hpp#L93{link/include/ableton/link/Timeline.hpp#L93}]]]
+{static} +key : const std::int32_t [[[../../link/include/ableton/link/Timeline.hpp#L41{link/include/ableton/link/Timeline.hpp#L41}]]]
++tempo : Tempo [[[../../link/include/ableton/link/Timeline.hpp#L92{link/include/ableton/link/Timeline.hpp#L92}]]]
++timeOrigin : std::chrono::microseconds [[[../../link/include/ableton/link/Timeline.hpp#L94{link/include/ableton/link/Timeline.hpp#L94}]]]
+}
+class "ableton::link::NodeState" as C_0009894789101290506274
+class C_0009894789101290506274 [[../../link/include/ableton/link/NodeState.hpp#L33{link/include/ableton/link/NodeState.hpp#L33}]] {
+{static} +fromPayload<It>(NodeId nodeId, It begin, It end) : NodeState
++ident() const : NodeId [[[../../link/include/ableton/link/NodeState.hpp#L38{link/include/ableton/link/NodeState.hpp#L38}]]]
+__
++nodeId : NodeId [[[../../link/include/ableton/link/NodeState.hpp#L68{link/include/ableton/link/NodeState.hpp#L68}]]]
++sessionId : SessionId [[[../../link/include/ableton/link/NodeState.hpp#L69{link/include/ableton/link/NodeState.hpp#L69}]]]
++startStopState : StartStopState [[[../../link/include/ableton/link/NodeState.hpp#L71{link/include/ableton/link/NodeState.hpp#L71}]]]
++timeline : Timeline [[[../../link/include/ableton/link/NodeState.hpp#L70{link/include/ableton/link/NodeState.hpp#L70}]]]
+}
+class "ableton::link::GhostXForm" as C_0013510428399531029150
+class C_0013510428399531029150 [[../../link/include/ableton/link/GhostXForm.hpp#L32{link/include/ableton/link/GhostXForm.hpp#L32}]] {
++ghostToHost(const microseconds ghostTime) const : microseconds [[[../../link/include/ableton/link/GhostXForm.hpp#L40{link/include/ableton/link/GhostXForm.hpp#L40}]]]
++hostToGhost(const microseconds hostTime) const : microseconds [[[../../link/include/ableton/link/GhostXForm.hpp#L34{link/include/ableton/link/GhostXForm.hpp#L34}]]]
+__
++intercept : microseconds [[[../../link/include/ableton/link/GhostXForm.hpp#L57{link/include/ableton/link/GhostXForm.hpp#L57}]]]
++slope : double [[[../../link/include/ableton/link/GhostXForm.hpp#L56{link/include/ableton/link/GhostXForm.hpp#L56}]]]
+}
+class "ableton::link::HostTime" as C_0001004110101939441328
+class C_0001004110101939441328 [[../../link/include/ableton/link/PayloadEntries.hpp#L31{link/include/ableton/link/PayloadEntries.hpp#L31}]] {
++HostTime() = default : void [[[../../link/include/ableton/link/PayloadEntries.hpp#L36{link/include/ableton/link/PayloadEntries.hpp#L36}]]]
++HostTime(const std::chrono::microseconds tm) : void [[[../../link/include/ableton/link/PayloadEntries.hpp#L38{link/include/ableton/link/PayloadEntries.hpp#L38}]]]
+..
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<HostTime, It>
+__
+{static} +key : const std::int32_t [[[../../link/include/ableton/link/PayloadEntries.hpp#L33{link/include/ableton/link/PayloadEntries.hpp#L33}]]]
++time : std::chrono::microseconds [[[../../link/include/ableton/link/PayloadEntries.hpp#L64{link/include/ableton/link/PayloadEntries.hpp#L64}]]]
+}
+class "ableton::link::GHostTime" as C_0006838210346904933162
+class C_0006838210346904933162 [[../../link/include/ableton/link/PayloadEntries.hpp#L67{link/include/ableton/link/PayloadEntries.hpp#L67}]] {
++GHostTime() = default : void [[[../../link/include/ableton/link/PayloadEntries.hpp#L72{link/include/ableton/link/PayloadEntries.hpp#L72}]]]
++GHostTime(const std::chrono::microseconds tm) : void [[[../../link/include/ableton/link/PayloadEntries.hpp#L74{link/include/ableton/link/PayloadEntries.hpp#L74}]]]
+..
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<GHostTime, It>
+__
+{static} +key : const std::int32_t [[[../../link/include/ableton/link/PayloadEntries.hpp#L69{link/include/ableton/link/PayloadEntries.hpp#L69}]]]
++time : std::chrono::microseconds [[[../../link/include/ableton/link/PayloadEntries.hpp#L100{link/include/ableton/link/PayloadEntries.hpp#L100}]]]
+}
+class "ableton::link::PrevGHostTime" as C_0005274031750804997186
+class C_0005274031750804997186 [[../../link/include/ableton/link/PayloadEntries.hpp#L103{link/include/ableton/link/PayloadEntries.hpp#L103}]] {
++PrevGHostTime() = default : void [[[../../link/include/ableton/link/PayloadEntries.hpp#L108{link/include/ableton/link/PayloadEntries.hpp#L108}]]]
++PrevGHostTime(const std::chrono::microseconds tm) : void [[[../../link/include/ableton/link/PayloadEntries.hpp#L110{link/include/ableton/link/PayloadEntries.hpp#L110}]]]
+..
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<PrevGHostTime, It>
+__
+{static} +key : const std::int32_t [[[../../link/include/ableton/link/PayloadEntries.hpp#L105{link/include/ableton/link/PayloadEntries.hpp#L105}]]]
++time : std::chrono::microseconds [[[../../link/include/ableton/link/PayloadEntries.hpp#L136{link/include/ableton/link/PayloadEntries.hpp#L136}]]]
+}
+class "ableton::link::MeasurementEndpointV4" as C_0006978172778918437492
+class C_0006978172778918437492 [[../../link/include/ableton/link/MeasurementEndpointV4.hpp#L31{link/include/ableton/link/MeasurementEndpointV4.hpp#L31}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<MeasurementEndpointV4, It>
+__
++ep : discovery::UdpEndpoint [[[../../link/include/ableton/link/MeasurementEndpointV4.hpp#L72{link/include/ableton/link/MeasurementEndpointV4.hpp#L72}]]]
+{static} +key : const std::int32_t [[[../../link/include/ableton/link/MeasurementEndpointV4.hpp#L33{link/include/ableton/link/MeasurementEndpointV4.hpp#L33}]]]
+}
+class "ableton::link::MeasurementEndpointV6" as C_0006509993737937731193
+class C_0006509993737937731193 [[../../link/include/ableton/link/MeasurementEndpointV6.hpp#L31{link/include/ableton/link/MeasurementEndpointV6.hpp#L31}]] {
+{static} +fromNetworkByteStream<It>(It begin, It end) : std::pair<MeasurementEndpointV6, It>
+__
++ep : discovery::UdpEndpoint [[[../../link/include/ableton/link/MeasurementEndpointV6.hpp#L72{link/include/ableton/link/MeasurementEndpointV6.hpp#L72}]]]
+{static} +key : const std::int32_t [[[../../link/include/ableton/link/MeasurementEndpointV6.hpp#L33{link/include/ableton/link/MeasurementEndpointV6.hpp#L33}]]]
+}
+class "ableton::link::PeerState" as C_0000308584798729065537
+class C_0000308584798729065537 [[../../link/include/ableton/link/PeerState.hpp#L36{link/include/ableton/link/PeerState.hpp#L36}]] {
+{static} +fromPayload<It>(NodeId id, It begin, It end) : PeerState
++ident() const : IdType [[[../../link/include/ableton/link/PeerState.hpp#L40{link/include/ableton/link/PeerState.hpp#L40}]]]
++sessionId() const : SessionId [[[../../link/include/ableton/link/PeerState.hpp#L42{link/include/ableton/link/PeerState.hpp#L42}]]]
++startStopState() const : StartStopState [[[../../link/include/ableton/link/PeerState.hpp#L46{link/include/ableton/link/PeerState.hpp#L46}]]]
++timeline() const : Timeline [[[../../link/include/ableton/link/PeerState.hpp#L44{link/include/ableton/link/PeerState.hpp#L44}]]]
+__
++endpoint : discovery::UdpEndpoint [[[../../link/include/ableton/link/PeerState.hpp#L82{link/include/ableton/link/PeerState.hpp#L82}]]]
++nodeState : NodeState [[[../../link/include/ableton/link/PeerState.hpp#L81{link/include/ableton/link/PeerState.hpp#L81}]]]
+}
+class "ableton::link::v1::MessageHeader" as C_0003013356585916227042
+class C_0003013356585916227042 [[../../link/include/ableton/link/v1/Messages.hpp#L42{link/include/ableton/link/v1/Messages.hpp#L42}]] {
+{static} +fromNetworkByteStream<It>(It begin, const It end) : std::pair<MessageHeader, It>
+__
++messageType : MessageType [[[../../link/include/ableton/link/v1/Messages.hpp#L44{link/include/ableton/link/v1/Messages.hpp#L44}]]]
+}
+class "ableton::link::Measurement<Clock,IoContext>" as C_0014262394471254652999
+class C_0014262394471254652999 [[../../link/include/ableton/link/Measurement.hpp#L38{link/include/ableton/link/Measurement.hpp#L38}]] {
++Measurement(const PeerState & state, Callback callback, discovery::IpAddress address, Clock clock, util::Injected<IoContext> io) : void [[[../../link/include/ableton/link/Measurement.hpp#L46{link/include/ableton/link/Measurement.hpp#L46}]]]
++Measurement(const Measurement<Clock,IoContext> &) = deleted : void [[[../../link/include/ableton/link/Measurement.hpp#L58{link/include/ableton/link/Measurement.hpp#L58}]]]
++Measurement(const Measurement<Clock,IoContext> &&) = deleted : void [[[../../link/include/ableton/link/Measurement.hpp#L60{link/include/ableton/link/Measurement.hpp#L60}]]]
+..
++operator=(Measurement<Clock,IoContext> &) = deleted : Measurement<Clock,IoContext> & [[[../../link/include/ableton/link/Measurement.hpp#L59{link/include/ableton/link/Measurement.hpp#L59}]]]
++operator=(Measurement<Clock,IoContext> &&) = deleted : Measurement<Clock,IoContext> & [[[../../link/include/ableton/link/Measurement.hpp#L61{link/include/ableton/link/Measurement.hpp#L61}]]]
+__
+{static} +kNumberDataPoints : const std::size_t [[[../../link/include/ableton/link/Measurement.hpp#L43{link/include/ableton/link/Measurement.hpp#L43}]]]
+{static} +kNumberMeasurements : const std::size_t [[[../../link/include/ableton/link/Measurement.hpp#L44{link/include/ableton/link/Measurement.hpp#L44}]]]
++mIo : util::Injected<IoContext> [[[../../link/include/ableton/link/Measurement.hpp#L256{link/include/ableton/link/Measurement.hpp#L256}]]]
++mpImpl : std::shared_ptr<Impl> [[[../../link/include/ableton/link/Measurement.hpp#L257{link/include/ableton/link/Measurement.hpp#L257}]]]
+}
+class "ableton::link::Measurement::Impl" as C_0014207555924708176052
+class C_0014207555924708176052 [[../../link/include/ableton/link/Measurement.hpp#L63{link/include/ableton/link/Measurement.hpp#L63}]] {
++operator()<It>(const discovery::UdpEndpoint & from, const It messageBegin, const It messageEnd) : void
+..
++Impl(const PeerState & state, Callback callback, discovery::IpAddress address, Clock clock, util::Injected<IoContext> io) : void [[[../../link/include/ableton/link/Measurement.hpp#L70{link/include/ableton/link/Measurement.hpp#L70}]]]
++fail() : void [[[../../link/include/ableton/link/Measurement.hpp#L237{link/include/ableton/link/Measurement.hpp#L237}]]]
++finish() : void [[[../../link/include/ableton/link/Measurement.hpp#L229{link/include/ableton/link/Measurement.hpp#L229}]]]
++listen() : void [[[../../link/include/ableton/link/Measurement.hpp#L124{link/include/ableton/link/Measurement.hpp#L124}]]]
++resetTimer() : void [[[../../link/include/ableton/link/Measurement.hpp#L100{link/include/ableton/link/Measurement.hpp#L100}]]]
++sendPing<Payload>(discovery::UdpEndpoint to, const Payload & payload) : void
+__
++mCallback : Callback [[[../../link/include/ableton/link/Measurement.hpp#L248{link/include/ableton/link/Measurement.hpp#L248}]]]
++mClock : Clock [[[../../link/include/ableton/link/Measurement.hpp#L249{link/include/ableton/link/Measurement.hpp#L249}]]]
++mData : std::vector<double> [[[../../link/include/ableton/link/Measurement.hpp#L247{link/include/ableton/link/Measurement.hpp#L247}]]]
++mEndpoint : discovery::UdpEndpoint [[[../../link/include/ableton/link/Measurement.hpp#L246{link/include/ableton/link/Measurement.hpp#L246}]]]
++mLog : Log [[[../../link/include/ableton/link/Measurement.hpp#L252{link/include/ableton/link/Measurement.hpp#L252}]]]
++mMeasurementsStarted : std::size_t [[[../../link/include/ableton/link/Measurement.hpp#L251{link/include/ableton/link/Measurement.hpp#L251}]]]
++mSessionId : SessionId [[[../../link/include/ableton/link/Measurement.hpp#L245{link/include/ableton/link/Measurement.hpp#L245}]]]
++mSocket : Socket [[[../../link/include/ableton/link/Measurement.hpp#L244{link/include/ableton/link/Measurement.hpp#L244}]]]
++mSuccess : bool [[[../../link/include/ableton/link/Measurement.hpp#L253{link/include/ableton/link/Measurement.hpp#L253}]]]
++mTimer : Timer [[[../../link/include/ableton/link/Measurement.hpp#L250{link/include/ableton/link/Measurement.hpp#L250}]]]
+}
+class "ableton::link::PingResponder<Clock,IoContext>" as C_0002062278969528170761
+class C_0002062278969528170761 [[../../link/include/ableton/link/PingResponder.hpp#L37{link/include/ableton/link/PingResponder.hpp#L37}]] {
++PingResponder(discovery::IpAddress address, SessionId sessionId, GhostXForm ghostXForm, Clock clock, IoType io) : void [[[../../link/include/ableton/link/PingResponder.hpp#L43{link/include/ableton/link/PingResponder.hpp#L43}]]]
++PingResponder(const PingResponder<Clock,IoContext> &) = deleted : void [[[../../link/include/ableton/link/PingResponder.hpp#L58{link/include/ableton/link/PingResponder.hpp#L58}]]]
++PingResponder(PingResponder<Clock,IoContext> &&) = deleted : void [[[../../link/include/ableton/link/PingResponder.hpp#L59{link/include/ableton/link/PingResponder.hpp#L59}]]]
+..
++address() const : discovery::IpAddress [[[../../link/include/ableton/link/PingResponder.hpp#L69{link/include/ableton/link/PingResponder.hpp#L69}]]]
++endpoint() const : discovery::UdpEndpoint [[[../../link/include/ableton/link/PingResponder.hpp#L67{link/include/ableton/link/PingResponder.hpp#L67}]]]
++socket() const : Socket [[[../../link/include/ableton/link/PingResponder.hpp#L71{link/include/ableton/link/PingResponder.hpp#L71}]]]
++updateNodeState(const SessionId & sessionId, const GhostXForm & xform) : void [[[../../link/include/ableton/link/PingResponder.hpp#L61{link/include/ableton/link/PingResponder.hpp#L61}]]]
+__
+}
+class "ableton::link::PingResponder::Impl" as C_0016144381113229487086
+class C_0016144381113229487086 [[../../link/include/ableton/link/PingResponder.hpp#L74{link/include/ableton/link/PingResponder.hpp#L74}]] {
++operator()<It>(const discovery::UdpEndpoint & from, const It begin, const It end) : void
+..
++Impl(discovery::IpAddress address, SessionId sessionId, GhostXForm ghostXForm, Clock clock, IoType io) : void [[[../../link/include/ableton/link/PingResponder.hpp#L76{link/include/ableton/link/PingResponder.hpp#L76}]]]
++listen() : void [[[../../link/include/ableton/link/PingResponder.hpp#L89{link/include/ableton/link/PingResponder.hpp#L89}]]]
++reply<It>(It begin, It end, const discovery::UdpEndpoint & to) : void
+__
++mClock : Clock [[[../../link/include/ableton/link/PingResponder.hpp#L149{link/include/ableton/link/PingResponder.hpp#L149}]]]
++mGhostXForm : GhostXForm [[[../../link/include/ableton/link/PingResponder.hpp#L148{link/include/ableton/link/PingResponder.hpp#L148}]]]
++mLog : typename IoType::type::Log [[[../../link/include/ableton/link/PingResponder.hpp#L150{link/include/ableton/link/PingResponder.hpp#L150}]]]
++mSessionId : SessionId [[[../../link/include/ableton/link/PingResponder.hpp#L147{link/include/ableton/link/PingResponder.hpp#L147}]]]
++mSocket : Socket [[[../../link/include/ableton/link/PingResponder.hpp#L151{link/include/ableton/link/PingResponder.hpp#L151}]]]
+}
+class "ableton::link::MeasurementService<Clock,IoContext>" as C_0017491529114499315868
+class C_0017491529114499315868 [[../../link/include/ableton/link/MeasurementService.hpp#L39{link/include/ableton/link/MeasurementService.hpp#L39}]] {
++MeasurementService(discovery::IpAddress address, SessionId sessionId, GhostXForm ghostXForm, Clock clock, IoType io) : void [[[../../link/include/ableton/link/MeasurementService.hpp#L45{link/include/ableton/link/MeasurementService.hpp#L45}]]]
++MeasurementService(const MeasurementService<Clock,IoContext> &) = deleted : void [[[../../link/include/ableton/link/MeasurementService.hpp#L60{link/include/ableton/link/MeasurementService.hpp#L60}]]]
++MeasurementService(MeasurementService<Clock,IoContext> &&) = deleted : void [[[../../link/include/ableton/link/MeasurementService.hpp#L61{link/include/ableton/link/MeasurementService.hpp#L61}]]]
+..
++endpoint() const : discovery::UdpEndpoint [[[../../link/include/ableton/link/MeasurementService.hpp#L68{link/include/ableton/link/MeasurementService.hpp#L68}]]]
++measurePeer<Handler>(const PeerState & state, const Handler handler) : void
++updateNodeState(const SessionId & sessionId, const GhostXForm & xform) : void [[[../../link/include/ableton/link/MeasurementService.hpp#L63{link/include/ableton/link/MeasurementService.hpp#L63}]]]
+__
+}
+class "ableton::link::MeasurementService::CompletionCallback<Handler>" as C_0011198482714382928025
+class C_0011198482714382928025 [[../../link/include/ableton/link/MeasurementService.hpp#L96{link/include/ableton/link/MeasurementService.hpp#L96}]] {
++operator()(std::vector<double> & data) : void [[[../../link/include/ableton/link/MeasurementService.hpp#L98{link/include/ableton/link/MeasurementService.hpp#L98}]]]
+__
++mHandler : Handler [[[../../link/include/ableton/link/MeasurementService.hpp#L127{link/include/ableton/link/MeasurementService.hpp#L127}]]]
++mMeasurementService : MeasurementService<Clock,IoContext> & [[[../../link/include/ableton/link/MeasurementService.hpp#L125{link/include/ableton/link/MeasurementService.hpp#L125}]]]
++mNodeId : NodeId [[[../../link/include/ableton/link/MeasurementService.hpp#L126{link/include/ableton/link/MeasurementService.hpp#L126}]]]
+}
+class "ableton::link::MeasurementService<Clock,typename util::Injected<IoContext>::type &>" as C_0011111560964845290770
+class C_0011111560964845290770 [[../../link/include/ableton/link/Gateway.hpp#L87{link/include/ableton/link/Gateway.hpp#L87}]] {
+__
+}
+class "ableton::link::Gateway<PeerObserver,Clock,IoContext>" as C_0008638512425111603009
+class C_0008638512425111603009 [[../../link/include/ableton/link/Gateway.hpp#L32{link/include/ableton/link/Gateway.hpp#L32}]] {
++Gateway(util::Injected<IoContext> io, discovery::IpAddress addr, util::Injected<PeerObserver> observer, NodeState nodeState, GhostXForm ghostXForm, Clock clock) : void [[[../../link/include/ableton/link/Gateway.hpp#L35{link/include/ableton/link/Gateway.hpp#L35}]]]
++Gateway(const Gateway<PeerObserver,Clock,IoContext> & rhs) = deleted : void [[[../../link/include/ableton/link/Gateway.hpp#L55{link/include/ableton/link/Gateway.hpp#L55}]]]
++Gateway(Gateway<PeerObserver,Clock,IoContext> && rhs) : void [[[../../link/include/ableton/link/Gateway.hpp#L58{link/include/ableton/link/Gateway.hpp#L58}]]]
+..
++operator=(const Gateway<PeerObserver,Clock,IoContext> & rhs) = deleted : Gateway<PeerObserver,Clock,IoContext> & [[[../../link/include/ableton/link/Gateway.hpp#L56{link/include/ableton/link/Gateway.hpp#L56}]]]
++operator=(Gateway<PeerObserver,Clock,IoContext> && rhs) : Gateway<PeerObserver,Clock,IoContext> & [[[../../link/include/ableton/link/Gateway.hpp#L65{link/include/ableton/link/Gateway.hpp#L65}]]]
+..
++measurePeer<Handler>(const PeerState & peer, Handler handler) : void
++updateNodeState(std::pair<NodeState,GhostXForm> state) : void [[[../../link/include/ableton/link/Gateway.hpp#L73{link/include/ableton/link/Gateway.hpp#L73}]]]
+__
+}
+class "ableton::link::Peers<IoContext,SessionMembershipCallback,SessionTimelineCallback,SessionStartStopStateCallback>" as C_0000948620248279302697
+class C_0000948620248279302697 [[../../link/include/ableton/link/Peers.hpp#L44{link/include/ableton/link/Peers.hpp#L44}]] {
++Peers(util::Injected<IoContext> io, SessionMembershipCallback membership, SessionTimelineCallback timeline, SessionStartStopStateCallback startStop) : void [[[../../link/include/ableton/link/Peers.hpp#L52{link/include/ableton/link/Peers.hpp#L52}]]]
+..
++forgetSession(const SessionId & sid) : void [[[../../link/include/ableton/link/Peers.hpp#L103{link/include/ableton/link/Peers.hpp#L103}]]]
++resetPeers() : void [[[../../link/include/ableton/link/Peers.hpp#L111{link/include/ableton/link/Peers.hpp#L111}]]]
++sessionPeers(const SessionId & sid) const : std::vector<Peer> [[[../../link/include/ableton/link/Peers.hpp#L64{link/include/ableton/link/Peers.hpp#L64}]]]
++setSessionTimeline(const SessionId & sid, const Timeline & tl) : void [[[../../link/include/ableton/link/Peers.hpp#L85{link/include/ableton/link/Peers.hpp#L85}]]]
++uniqueSessionPeerCount(const SessionId & sid) const : std::size_t [[[../../link/include/ableton/link/Peers.hpp#L74{link/include/ableton/link/Peers.hpp#L74}]]]
+__
+}
+class "ableton::link::Peers::GatewayObserver" as C_0001127802194691244914
+class C_0001127802194691244914 [[../../link/include/ableton/link/Peers.hpp#L116{link/include/ableton/link/Peers.hpp#L116}]] {
++GatewayObserver(std::shared_ptr<Impl> pImpl, discovery::IpAddress addr) : void [[[../../link/include/ableton/link/Peers.hpp#L121{link/include/ableton/link/Peers.hpp#L121}]]]
++GatewayObserver(const GatewayObserver &) = deleted : void [[[../../link/include/ableton/link/Peers.hpp#L126{link/include/ableton/link/Peers.hpp#L126}]]]
++GatewayObserver(GatewayObserver && rhs) : void [[[../../link/include/ableton/link/Peers.hpp#L128{link/include/ableton/link/Peers.hpp#L128}]]]
++~GatewayObserver() : void [[[../../link/include/ableton/link/Peers.hpp#L134{link/include/ableton/link/Peers.hpp#L134}]]]
+__
++mAddr : discovery::IpAddress [[[../../link/include/ableton/link/Peers.hpp#L167{link/include/ableton/link/Peers.hpp#L167}]]]
++mpImpl : std::shared_ptr<Impl> [[[../../link/include/ableton/link/Peers.hpp#L166{link/include/ableton/link/Peers.hpp#L166}]]]
+}
+class "ableton::link::Peers::Impl" as C_0001035599776538190079
+class C_0001035599776538190079 [[../../link/include/ableton/link/Peers.hpp#L177{link/include/ableton/link/Peers.hpp#L177}]] {
++Impl(util::Injected<IoContext> io, SessionMembershipCallback membership, SessionTimelineCallback timeline, SessionStartStopStateCallback startStop) : void [[[../../link/include/ableton/link/Peers.hpp#L179{link/include/ableton/link/Peers.hpp#L179}]]]
++gatewayClosed(const discovery::IpAddress & gatewayAddr) : void [[[../../link/include/ableton/link/Peers.hpp#L281{link/include/ableton/link/Peers.hpp#L281}]]]
++hasPeerWith<Predicate>(const SessionId & sessionId, Predicate predicate) : _Bool
++peerLeftGateway(const NodeId & nodeId, const discovery::IpAddress & gatewayAddr) : void [[[../../link/include/ableton/link/Peers.hpp#L258{link/include/ableton/link/Peers.hpp#L258}]]]
++sawPeerOnGateway(PeerState peerState, discovery::IpAddress gatewayAddr) : void [[[../../link/include/ableton/link/Peers.hpp#L190{link/include/ableton/link/Peers.hpp#L190}]]]
++sessionStartStopStateExists(const SessionId & sessionId, const StartStopState & startStopState) : bool [[[../../link/include/ableton/link/Peers.hpp#L313{link/include/ableton/link/Peers.hpp#L313}]]]
++sessionTimelineExists(const SessionId & session, const Timeline & timeline) : bool [[[../../link/include/ableton/link/Peers.hpp#L306{link/include/ableton/link/Peers.hpp#L306}]]]
+__
++mIo : util::Injected<IoContext> [[[../../link/include/ableton/link/Peers.hpp#L337{link/include/ableton/link/Peers.hpp#L337}]]]
++mPeers : std::vector<Peer> [[[../../link/include/ableton/link/Peers.hpp#L341{link/include/ableton/link/Peers.hpp#L341}]]]
++mSessionMembershipCallback : SessionMembershipCallback [[[../../link/include/ableton/link/Peers.hpp#L338{link/include/ableton/link/Peers.hpp#L338}]]]
++mSessionStartStopStateCallback : SessionStartStopStateCallback [[[../../link/include/ableton/link/Peers.hpp#L340{link/include/ableton/link/Peers.hpp#L340}]]]
++mSessionTimelineCallback : SessionTimelineCallback [[[../../link/include/ableton/link/Peers.hpp#L339{link/include/ableton/link/Peers.hpp#L339}]]]
+}
+class "ableton::link::Peers::Impl::PeerIdComp" as C_0005432132762106152081
+class C_0005432132762106152081 [[../../link/include/ableton/link/Peers.hpp#L321{link/include/ableton/link/Peers.hpp#L321}]] {
++operator()(const Peer & lhs, const Peer & rhs) const : bool [[[../../link/include/ableton/link/Peers.hpp#L323{link/include/ableton/link/Peers.hpp#L323}]]]
+__
+}
+class "ableton::link::Peers::Impl::AddrComp" as C_0000589431344028888711
+class C_0000589431344028888711 [[../../link/include/ableton/link/Peers.hpp#L329{link/include/ableton/link/Peers.hpp#L329}]] {
++operator()(const Peer & lhs, const Peer & rhs) const : bool [[[../../link/include/ableton/link/Peers.hpp#L331{link/include/ableton/link/Peers.hpp#L331}]]]
+__
+}
+class "ableton::link::Peers::SessionMemberPred" as C_0008852077351697300514
+class C_0008852077351697300514 [[../../link/include/ableton/link/Peers.hpp#L344{link/include/ableton/link/Peers.hpp#L344}]] {
++operator()(const Peer & peer) const : bool [[[../../link/include/ableton/link/Peers.hpp#L346{link/include/ableton/link/Peers.hpp#L346}]]]
+__
++sid : const SessionId & [[[../../link/include/ableton/link/Peers.hpp#L348{link/include/ableton/link/Peers.hpp#L348}]]]
+}
+class "ableton::link::Optional<T>" as C_0018217046274144954853
+class C_0018217046274144954853 [[../../link/include/ableton/link/Optional.hpp#L32{link/include/ableton/link/Optional.hpp#L32}]] {
++Optional() : void [[[../../link/include/ableton/link/Optional.hpp#L34{link/include/ableton/link/Optional.hpp#L34}]]]
++Optional(T value) : void [[[../../link/include/ableton/link/Optional.hpp#L39{link/include/ableton/link/Optional.hpp#L39}]]]
++Optional(const Optional<T> &) = default : void [[[../../link/include/ableton/link/Optional.hpp#L45{link/include/ableton/link/Optional.hpp#L45}]]]
++Optional(Optional<T> && other) : void [[[../../link/include/ableton/link/Optional.hpp#L47{link/include/ableton/link/Optional.hpp#L47}]]]
+..
++operator=(const Optional<T> &) = default : Optional<T> & [[[../../link/include/ableton/link/Optional.hpp#L53{link/include/ableton/link/Optional.hpp#L53}]]]
++operator=(Optional<T> && other) : Optional<T> & [[[../../link/include/ableton/link/Optional.hpp#L55{link/include/ableton/link/Optional.hpp#L55}]]]
+..
++operator*() const : const T & [[[../../link/include/ableton/link/Optional.hpp#L64{link/include/ableton/link/Optional.hpp#L64}]]]
++operator*() : T & [[[../../link/include/ableton/link/Optional.hpp#L70{link/include/ableton/link/Optional.hpp#L70}]]]
++operator->() const : const T * [[[../../link/include/ableton/link/Optional.hpp#L76{link/include/ableton/link/Optional.hpp#L76}]]]
++operator->() : T * [[[../../link/include/ableton/link/Optional.hpp#L82{link/include/ableton/link/Optional.hpp#L82}]]]
+..
++operator bool() const : bool [[[../../link/include/ableton/link/Optional.hpp#L62{link/include/ableton/link/Optional.hpp#L62}]]]
+__
+}
+class "ableton::link::TripleBuffer<T>" as C_0010154884633107695036
+class C_0010154884633107695036 [[../../link/include/ableton/link/TripleBuffer.hpp#L36{link/include/ableton/link/TripleBuffer.hpp#L36}]] {
++TripleBuffer() : void [[[../../link/include/ableton/link/TripleBuffer.hpp#L39{link/include/ableton/link/TripleBuffer.hpp#L39}]]]
++TripleBuffer(const T & initial) : void [[[../../link/include/ableton/link/TripleBuffer.hpp#L45{link/include/ableton/link/TripleBuffer.hpp#L45}]]]
++TripleBuffer(const TripleBuffer<T> &) = deleted : void [[[../../link/include/ableton/link/TripleBuffer.hpp#L51{link/include/ableton/link/TripleBuffer.hpp#L51}]]]
+..
++operator=(const TripleBuffer<T> &) = deleted : TripleBuffer<T> & [[[../../link/include/ableton/link/TripleBuffer.hpp#L52{link/include/ableton/link/TripleBuffer.hpp#L52}]]]
+..
++read() noexcept : T [[[../../link/include/ableton/link/TripleBuffer.hpp#L54{link/include/ableton/link/TripleBuffer.hpp#L54}]]]
++readNew() : Optional<T> [[[../../link/include/ableton/link/TripleBuffer.hpp#L60{link/include/ableton/link/TripleBuffer.hpp#L60}]]]
++write<U>(U && value) : void
+__
+}
+class "ableton::link::SessionState" as C_0006528244793579092272
+class C_0006528244793579092272 [[../../link/include/ableton/link/SessionState.hpp#L37{link/include/ableton/link/SessionState.hpp#L37}]] {
+__
++ghostXForm : GhostXForm [[[../../link/include/ableton/link/SessionState.hpp#L41{link/include/ableton/link/SessionState.hpp#L41}]]]
++startStopState : StartStopState [[[../../link/include/ableton/link/SessionState.hpp#L40{link/include/ableton/link/SessionState.hpp#L40}]]]
++timeline : Timeline [[[../../link/include/ableton/link/SessionState.hpp#L39{link/include/ableton/link/SessionState.hpp#L39}]]]
+}
+class "ableton::link::ClientState" as C_0016988520896126150923
+class C_0016988520896126150923 [[../../link/include/ableton/link/SessionState.hpp#L44{link/include/ableton/link/SessionState.hpp#L44}]] {
+__
++startStopState : ClientStartStopState [[[../../link/include/ableton/link/SessionState.hpp#L58{link/include/ableton/link/SessionState.hpp#L58}]]]
++timeline : Timeline [[[../../link/include/ableton/link/SessionState.hpp#L57{link/include/ableton/link/SessionState.hpp#L57}]]]
+}
+class "ableton::link::TripleBuffer<ableton::link::ClientState>" as C_0014273705094975702091
+class C_0014273705094975702091 [[../../link/include/ableton/link/SessionState.hpp#L88{link/include/ableton/link/SessionState.hpp#L88}]] {
+__
+}
+class "ableton::link::ControllerClientState" as C_0007373617270378440618
+class C_0007373617270378440618 [[../../link/include/ableton/link/SessionState.hpp#L61{link/include/ableton/link/SessionState.hpp#L61}]] {
++ControllerClientState(ClientState state) : void [[[../../link/include/ableton/link/SessionState.hpp#L63{link/include/ableton/link/SessionState.hpp#L63}]]]
+..
++get() const : ClientState [[[../../link/include/ableton/link/SessionState.hpp#L77{link/include/ableton/link/SessionState.hpp#L77}]]]
++getRt() const : ClientState [[[../../link/include/ableton/link/SessionState.hpp#L83{link/include/ableton/link/SessionState.hpp#L83}]]]
++update<Fn>(Fn fn) : void
+__
+}
+class "ableton::link::RtClientState" as C_0005798267089558824068
+class C_0005798267089558824068 [[../../link/include/ableton/link/SessionState.hpp#L91{link/include/ableton/link/SessionState.hpp#L91}]] {
+__
++startStopState : ClientStartStopState [[[../../link/include/ableton/link/SessionState.hpp#L94{link/include/ableton/link/SessionState.hpp#L94}]]]
++startStopStateTimestamp : std::chrono::microseconds [[[../../link/include/ableton/link/SessionState.hpp#L96{link/include/ableton/link/SessionState.hpp#L96}]]]
++timeline : Timeline [[[../../link/include/ableton/link/SessionState.hpp#L93{link/include/ableton/link/SessionState.hpp#L93}]]]
++timelineTimestamp : std::chrono::microseconds [[[../../link/include/ableton/link/SessionState.hpp#L95{link/include/ableton/link/SessionState.hpp#L95}]]]
+}
+class "ableton::link::Optional<ableton::link::Timeline>" as C_0004871818730877239039
+class C_0004871818730877239039 [[../../link/include/ableton/link/SessionState.hpp#L101{link/include/ableton/link/SessionState.hpp#L101}]] {
+__
+}
+class "ableton::link::Optional<ableton::link::ClientStartStopState>" as C_0011589413040359344663
+class C_0011589413040359344663 [[../../link/include/ableton/link/SessionState.hpp#L102{link/include/ableton/link/SessionState.hpp#L102}]] {
+__
+}
+class "ableton::link::IncomingClientState" as C_0011204211524726445450
+class C_0011204211524726445450 [[../../link/include/ableton/link/SessionState.hpp#L99{link/include/ableton/link/SessionState.hpp#L99}]] {
+__
++startStopState : OptionalClientStartStopState [[[../../link/include/ableton/link/SessionState.hpp#L102{link/include/ableton/link/SessionState.hpp#L102}]]]
++timeline : OptionalTimeline [[[../../link/include/ableton/link/SessionState.hpp#L101{link/include/ableton/link/SessionState.hpp#L101}]]]
++timelineTimestamp : std::chrono::microseconds [[[../../link/include/ableton/link/SessionState.hpp#L103{link/include/ableton/link/SessionState.hpp#L103}]]]
+}
+class "ableton::link::ApiState" as C_0009432981908971746053
+class C_0009432981908971746053 [[../../link/include/ableton/link/SessionState.hpp#L106{link/include/ableton/link/SessionState.hpp#L106}]] {
+__
++startStopState : ApiStartStopState [[[../../link/include/ableton/link/SessionState.hpp#L109{link/include/ableton/link/SessionState.hpp#L109}]]]
++timeline : Timeline [[[../../link/include/ableton/link/SessionState.hpp#L108{link/include/ableton/link/SessionState.hpp#L108}]]]
+}
+class "ableton::link::SessionMeasurement" as C_0005688216107647678470
+class C_0005688216107647678470 [[../../link/include/ableton/link/Sessions.hpp#L31{link/include/ableton/link/Sessions.hpp#L31}]] {
+__
++timestamp : std::chrono::microseconds [[[../../link/include/ableton/link/Sessions.hpp#L34{link/include/ableton/link/Sessions.hpp#L34}]]]
++xform : GhostXForm [[[../../link/include/ableton/link/Sessions.hpp#L33{link/include/ableton/link/Sessions.hpp#L33}]]]
+}
+class "ableton::link::Session" as C_0009091506509306271937
+class C_0009091506509306271937 [[../../link/include/ableton/link/Sessions.hpp#L37{link/include/ableton/link/Sessions.hpp#L37}]] {
+__
++measurement : SessionMeasurement [[[../../link/include/ableton/link/Sessions.hpp#L41{link/include/ableton/link/Sessions.hpp#L41}]]]
++sessionId : SessionId [[[../../link/include/ableton/link/Sessions.hpp#L39{link/include/ableton/link/Sessions.hpp#L39}]]]
++timeline : Timeline [[[../../link/include/ableton/link/Sessions.hpp#L40{link/include/ableton/link/Sessions.hpp#L40}]]]
+}
+class "ableton::link::Sessions<Peers,MeasurePeer,JoinSessionCallback,IoContext,Clock>" as C_0001368357810380146546
+class C_0001368357810380146546 [[../../link/include/ableton/link/Sessions.hpp#L49{link/include/ableton/link/Sessions.hpp#L49}]] {
++Sessions(Session init, util::Injected<Peers> peers, MeasurePeer measure, JoinSessionCallback join, util::Injected<IoContext> io, Clock clock) : void [[[../../link/include/ableton/link/Sessions.hpp#L54{link/include/ableton/link/Sessions.hpp#L54}]]]
+..
++resetSession(Session session) : void [[[../../link/include/ableton/link/Sessions.hpp#L70{link/include/ableton/link/Sessions.hpp#L70}]]]
++resetTimeline(Timeline timeline) : void [[[../../link/include/ableton/link/Sessions.hpp#L76{link/include/ableton/link/Sessions.hpp#L76}]]]
++sawSessionTimeline(SessionId sid, Timeline timeline) : Timeline [[[../../link/include/ableton/link/Sessions.hpp#L80{link/include/ableton/link/Sessions.hpp#L80}]]]
+__
+}
+class "ableton::link::Sessions::MeasurementResultsHandler" as C_0004145133301196481424
+class C_0004145133301196481424 [[../../link/include/ableton/link/Sessions.hpp#L244{link/include/ableton/link/Sessions.hpp#L244}]] {
++operator()(GhostXForm xform) const : void [[[../../link/include/ableton/link/Sessions.hpp#L246{link/include/ableton/link/Sessions.hpp#L246}]]]
+__
++mSessionId : SessionId [[[../../link/include/ableton/link/Sessions.hpp#L261{link/include/ableton/link/Sessions.hpp#L261}]]]
++mSessions : Sessions<Peers,MeasurePeer,JoinSessionCallback,IoContext,Clock> & [[[../../link/include/ableton/link/Sessions.hpp#L260{link/include/ableton/link/Sessions.hpp#L260}]]]
+}
+class "ableton::link::Sessions::SessionIdComp" as C_0009965850489372808437
+class C_0009965850489372808437 [[../../link/include/ableton/link/Sessions.hpp#L264{link/include/ableton/link/Sessions.hpp#L264}]] {
++operator()(const Session & lhs, const Session & rhs) const : bool [[[../../link/include/ableton/link/Sessions.hpp#L266{link/include/ableton/link/Sessions.hpp#L266}]]]
+__
+}
+class "ableton::link::Peers<IoType &,std::reference_wrapper<ableton::link::Controller::SessionPeerCounter>,ableton::link::Controller::SessionTimelineCallback,ableton::link::Controller::SessionStartStopStateCallback>" as C_0009061327468577160716
+class C_0009061327468577160716 [[../../link/include/ableton/link/Controller.hpp#L794{link/include/ableton/link/Controller.hpp#L794}]] {
+__
+}
+class "ableton::link::Sessions<ableton::link::Peers<IoType &,std::reference_wrapper<ableton::link::Controller::SessionPeerCounter>,ableton::link::Controller::SessionTimelineCallback,ableton::link::Controller::SessionStartStopStateCallback> &,ableton::link::Controller::MeasurePeer,ableton::link::Controller::JoinSessionCallback,typename util::Injected<IoContext>::type &,Clock>" as C_0015723257742234779664
+class C_0015723257742234779664 [[../../link/include/ableton/link/Controller.hpp#L801{link/include/ableton/link/Controller.hpp#L801}]] {
+__
+}
+class "ableton::link::Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext>" as C_0017261369167630401119
+class C_0017261369167630401119 [[../../link/include/ableton/link/Controller.hpp#L125{link/include/ableton/link/Controller.hpp#L125}]] {
++Controller(Tempo tempo, PeerCountCallback peerCallback, TempoCallback tempoCallback, StartStopStateCallback startStopStateCallback, Clock clock) : void [[[../../link/include/ableton/link/Controller.hpp#L128{link/include/ableton/link/Controller.hpp#L128}]]]
++Controller(const Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> &) = deleted : void [[[../../link/include/ableton/link/Controller.hpp#L169{link/include/ableton/link/Controller.hpp#L169}]]]
++Controller(Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> &&) = deleted : void [[[../../link/include/ableton/link/Controller.hpp#L170{link/include/ableton/link/Controller.hpp#L170}]]]
++~Controller() : void [[[../../link/include/ableton/link/Controller.hpp#L175{link/include/ableton/link/Controller.hpp#L175}]]]
+..
++operator=(const Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> &) = deleted : Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & [[[../../link/include/ableton/link/Controller.hpp#L172{link/include/ableton/link/Controller.hpp#L172}]]]
++operator=(Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> &&) = deleted : Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & [[[../../link/include/ableton/link/Controller.hpp#L173{link/include/ableton/link/Controller.hpp#L173}]]]
+..
++clientState() const : ClientState [[[../../link/include/ableton/link/Controller.hpp#L216{link/include/ableton/link/Controller.hpp#L216}]]]
++clientStateRtSafe() const : ClientState [[[../../link/include/ableton/link/Controller.hpp#L244{link/include/ableton/link/Controller.hpp#L244}]]]
++enable(const bool bEnable) : void [[[../../link/include/ableton/link/Controller.hpp#L197{link/include/ableton/link/Controller.hpp#L197}]]]
++enableStartStopSync(const bool bEnable) : void [[[../../link/include/ableton/link/Controller.hpp#L208{link/include/ableton/link/Controller.hpp#L208}]]]
++isEnabled() const : bool [[[../../link/include/ableton/link/Controller.hpp#L206{link/include/ableton/link/Controller.hpp#L206}]]]
++isStartStopSyncEnabled() const : bool [[[../../link/include/ableton/link/Controller.hpp#L210{link/include/ableton/link/Controller.hpp#L210}]]]
++numPeers() const : std::size_t [[[../../link/include/ableton/link/Controller.hpp#L212{link/include/ableton/link/Controller.hpp#L212}]]]
++setClientState(IncomingClientState newClientState) : void [[[../../link/include/ableton/link/Controller.hpp#L220{link/include/ableton/link/Controller.hpp#L220}]]]
++setClientStateRtSafe(IncomingClientState newClientState) : void [[[../../link/include/ableton/link/Controller.hpp#L279{link/include/ableton/link/Controller.hpp#L279}]]]
+__
+}
+class "ableton::link::Controller::SessionTimelineCallback" as C_0013290425362827833836
+class C_0013290425362827833836 [[../../link/include/ableton/link/Controller.hpp#L552{link/include/ableton/link/Controller.hpp#L552}]] {
++operator()(SessionId id, Timeline timeline) : void [[[../../link/include/ableton/link/Controller.hpp#L554{link/include/ableton/link/Controller.hpp#L554}]]]
+__
++mController : Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & [[[../../link/include/ableton/link/Controller.hpp#L559{link/include/ableton/link/Controller.hpp#L559}]]]
+}
+class "ableton::link::TripleBuffer<std::pair<std::chrono::duration<int64_t>,ableton::link::Timeline>>" as C_0008575548874153200386
+class C_0008575548874153200386 [[../../link/include/ableton/link/Controller.hpp#L646{link/include/ableton/link/Controller.hpp#L646}]] {
+__
+}
+class "ableton::link::TripleBuffer<ableton::link::ClientStartStopState>" as C_0004544596298097424958
+class C_0004544596298097424958 [[../../link/include/ableton/link/Controller.hpp#L647{link/include/ableton/link/Controller.hpp#L647}]] {
+__
+}
+class "ableton::link::Controller::RtClientStateSetter" as C_0004509800815029520821
+class C_0004509800815029520821 [[../../link/include/ableton/link/Controller.hpp#L562{link/include/ableton/link/Controller.hpp#L562}]] {
++RtClientStateSetter(Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & controller) : void [[[../../link/include/ableton/link/Controller.hpp#L568{link/include/ableton/link/Controller.hpp#L568}]]]
++invoke() : void [[[../../link/include/ableton/link/Controller.hpp#L586{link/include/ableton/link/Controller.hpp#L586}]]]
++processPendingClientStates() : void [[[../../link/include/ableton/link/Controller.hpp#L607{link/include/ableton/link/Controller.hpp#L607}]]]
++push(const IncomingClientState clientState) : void [[[../../link/include/ableton/link/Controller.hpp#L588{link/include/ableton/link/Controller.hpp#L588}]]]
++updateEnabled() : void [[[../../link/include/ableton/link/Controller.hpp#L613{link/include/ableton/link/Controller.hpp#L613}]]]
+__
+}
+class "ableton::link::Controller::SessionStartStopStateCallback" as C_0001848999684698171081
+class C_0001848999684698171081 [[../../link/include/ableton/link/Controller.hpp#L651{link/include/ableton/link/Controller.hpp#L651}]] {
++operator()(SessionId sessionId, StartStopState startStopState) : void [[[../../link/include/ableton/link/Controller.hpp#L653{link/include/ableton/link/Controller.hpp#L653}]]]
+__
++mController : Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & [[[../../link/include/ableton/link/Controller.hpp#L658{link/include/ableton/link/Controller.hpp#L658}]]]
+}
+class "ableton::link::Controller::SessionPeerCounter" as C_0002657429278655465769
+class C_0002657429278655465769 [[../../link/include/ableton/link/Controller.hpp#L661{link/include/ableton/link/Controller.hpp#L661}]] {
++operator()() : void [[[../../link/include/ableton/link/Controller.hpp#L670{link/include/ableton/link/Controller.hpp#L670}]]]
+..
++SessionPeerCounter(Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & controller, PeerCountCallback callback) : void [[[../../link/include/ableton/link/Controller.hpp#L663{link/include/ableton/link/Controller.hpp#L663}]]]
+__
++mCallback : PeerCountCallback [[[../../link/include/ableton/link/Controller.hpp#L688{link/include/ableton/link/Controller.hpp#L688}]]]
++mController : Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & [[[../../link/include/ableton/link/Controller.hpp#L687{link/include/ableton/link/Controller.hpp#L687}]]]
++mSessionPeerCount : std::atomic<std::size_t> [[[../../link/include/ableton/link/Controller.hpp#L689{link/include/ableton/link/Controller.hpp#L689}]]]
+}
+class "ableton::link::Controller::MeasurePeer" as C_0006609274754762915585
+class C_0006609274754762915585 [[../../link/include/ableton/link/Controller.hpp#L692{link/include/ableton/link/Controller.hpp#L692}]] {
++operator()<Peer,Handler>(Peer peer, Handler handler) : void
+__
++mController : Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & [[[../../link/include/ableton/link/Controller.hpp#L718{link/include/ableton/link/Controller.hpp#L718}]]]
+}
+class "ableton::link::Controller::JoinSessionCallback" as C_0001730358650380847755
+class C_0001730358650380847755 [[../../link/include/ableton/link/Controller.hpp#L721{link/include/ableton/link/Controller.hpp#L721}]] {
++operator()(Session session) : void [[[../../link/include/ableton/link/Controller.hpp#L723{link/include/ableton/link/Controller.hpp#L723}]]]
+__
++mController : Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & [[[../../link/include/ableton/link/Controller.hpp#L725{link/include/ableton/link/Controller.hpp#L725}]]]
+}
+class "ableton::link::Gateway<typename ControllerPeers::GatewayObserver,Clock,IoType &>" as C_0007135173034336617849
+class C_0007135173034336617849 [[../../link/include/ableton/link/Controller.hpp#L741{link/include/ableton/link/Controller.hpp#L741}]] {
+__
+}
+class "ableton::link::Controller::GatewayFactory" as C_0011470704149262072807
+class C_0011470704149262072807 [[../../link/include/ableton/link/Controller.hpp#L739{link/include/ableton/link/Controller.hpp#L739}]] {
++operator()(std::pair<NodeState,GhostXForm> state, util::Injected<IoType &> io, const discovery::IpAddress & addr) : GatewayPtr [[[../../link/include/ableton/link/Controller.hpp#L741{link/include/ableton/link/Controller.hpp#L741}]]]
+__
++mController : Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> & [[[../../link/include/ableton/link/Controller.hpp#L754{link/include/ableton/link/Controller.hpp#L754}]]]
+}
+class "ableton::link::Controller::UdpSendExceptionHandler" as C_0005497836592094054396
+class C_0005497836592094054396 [[../../link/include/ableton/link/Controller.hpp#L757{link/include/ableton/link/Controller.hpp#L757}]] {
++operator()(const Exception exception) : void [[[../../link/include/ableton/link/Controller.hpp#L761{link/include/ableton/link/Controller.hpp#L761}]]]
+__
++mpController : Controller<PeerCountCallback,TempoCallback,StartStopStateCallback,Clock,Random,IoContext> * [[[../../link/include/ableton/link/Controller.hpp#L768{link/include/ableton/link/Controller.hpp#L768}]]]
+}
+class "ableton::link::Peers<IoType &,std::reference_wrapper<ableton::extender::Controller::SessionPeerCounter>,ableton::extender::Controller::SessionTimelineCallback,ableton::extender::Controller::SessionStartStopStateCallback>" as C_0015763108226484995546
+class C_0015763108226484995546 [[../../include/Controller.hpp#L174{include/Controller.hpp#L174}]] {
+__
+}
+class "ableton::platforms::link_asio_1_36_0::AsioTimer" as C_0006726947903244173926
+class C_0006726947903244173926 [[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L41{link/include/ableton/platforms/asio/AsioTimer.hpp#L41}]] {
++AsioTimer(IoService & io) : void [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L50{link/include/ableton/platforms/asio/AsioTimer.hpp#L50}]]]
++AsioTimer(const AsioTimer &) = deleted : void [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L66{link/include/ableton/platforms/asio/AsioTimer.hpp#L66}]]]
++AsioTimer(AsioTimer && rhs) : void [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L71{link/include/ableton/platforms/asio/AsioTimer.hpp#L71}]]]
++~AsioTimer() : void [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L56{link/include/ableton/platforms/asio/AsioTimer.hpp#L56}]]]
+..
++operator=(const AsioTimer &) = deleted : AsioTimer & [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L67{link/include/ableton/platforms/asio/AsioTimer.hpp#L67}]]]
+..
++async_wait<Handler>(Handler handler) : void
++cancel() : void [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L88{link/include/ableton/platforms/asio/AsioTimer.hpp#L88}]]]
++expires_at(std::chrono::system_clock::time_point tp) : void [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L77{link/include/ableton/platforms/asio/AsioTimer.hpp#L77}]]]
++expires_from_now<T>(T duration) : void
++now() const : TimePoint [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L106{link/include/ableton/platforms/asio/AsioTimer.hpp#L106}]]]
+__
+}
+class "ableton::platforms::link_asio_1_36_0::AsioTimer::AsyncHandler" as C_0000423369631438061784
+class C_0000423369631438061784 [[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L109{link/include/ableton/platforms/asio/AsioTimer.hpp#L109}]] {
++operator()(ErrorCode ec) : void [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L118{link/include/ableton/platforms/asio/AsioTimer.hpp#L118}]]]
++operator=<Handler>(Handler handler) : AsyncHandler &
+__
++mpHandler : std::function<void (const ErrorCode)> [[[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L126{link/include/ableton/platforms/asio/AsioTimer.hpp#L126}]]]
+}
+class "ableton::platforms::link_asio_1_36_0::LockFreeCallbackDispatcher<Callback,Duration,ThreadFactory>" as C_0010026512982255184757
+class C_0010026512982255184757 [[../../link/include/ableton/platforms/asio/LockFreeCallbackDispatcher.hpp#L42{link/include/ableton/platforms/asio/LockFreeCallbackDispatcher.hpp#L42}]] {
++LockFreeCallbackDispatcher(Callback callback, Duration fallbackPeriod) : void [[[../../link/include/ableton/platforms/asio/LockFreeCallbackDispatcher.hpp#L45{link/include/ableton/platforms/asio/LockFreeCallbackDispatcher.hpp#L45}]]]
++~LockFreeCallbackDispatcher() : void [[[../../link/include/ableton/platforms/asio/LockFreeCallbackDispatcher.hpp#L53{link/include/ableton/platforms/asio/LockFreeCallbackDispatcher.hpp#L53}]]]
+..
++invoke() : void [[[../../link/include/ableton/platforms/asio/LockFreeCallbackDispatcher.hpp#L60{link/include/ableton/platforms/asio/LockFreeCallbackDispatcher.hpp#L60}]]]
+__
+}
+class "ableton::platforms::link_asio_1_36_0::Socket<std::size_t MaxPacketSize>" as C_0005217833332379751619
+class C_0005217833332379751619 [[../../link/include/ableton/platforms/asio/Socket.hpp#L35{link/include/ableton/platforms/asio/Socket.hpp#L35}]] {
++Socket(link_asio_1_36_0::io_context & io, link_asio_1_36_0::ip::udp protocol) : void [[[../../link/include/ableton/platforms/asio/Socket.hpp#L37{link/include/ableton/platforms/asio/Socket.hpp#L37}]]]
++Socket(const Socket<MaxPacketSize> &) = deleted : void [[[../../link/include/ableton/platforms/asio/Socket.hpp#L42{link/include/ableton/platforms/asio/Socket.hpp#L42}]]]
++Socket(Socket<MaxPacketSize> && rhs) : void [[[../../link/include/ableton/platforms/asio/Socket.hpp#L45{link/include/ableton/platforms/asio/Socket.hpp#L45}]]]
+..
++operator=(const Socket<MaxPacketSize> &) = deleted : Socket<MaxPacketSize> & [[[../../link/include/ableton/platforms/asio/Socket.hpp#L43{link/include/ableton/platforms/asio/Socket.hpp#L43}]]]
+..
++endpoint() const : discovery::UdpEndpoint [[[../../link/include/ableton/platforms/asio/Socket.hpp#L68{link/include/ableton/platforms/asio/Socket.hpp#L68}]]]
++receive<Handler>(Handler handler) : void
++send(const uint8_t *const pData, const size_t numBytes, const discovery::UdpEndpoint & to) : std::size_t [[[../../link/include/ableton/platforms/asio/Socket.hpp#L50{link/include/ableton/platforms/asio/Socket.hpp#L50}]]]
+__
++mpImpl : std::shared_ptr<Impl> [[[../../link/include/ableton/platforms/asio/Socket.hpp#L104{link/include/ableton/platforms/asio/Socket.hpp#L104}]]]
+}
+class "ableton::platforms::link_asio_1_36_0::Socket::Impl" as C_0016255881005115250961
+class C_0016255881005115250961 [[../../link/include/ableton/platforms/asio/Socket.hpp#L70{link/include/ableton/platforms/asio/Socket.hpp#L70}]] {
++operator()(const ::link_asio_1_36_0::error_code & error, const std::size_t numBytes) : void [[[../../link/include/ableton/platforms/asio/Socket.hpp#L86{link/include/ableton/platforms/asio/Socket.hpp#L86}]]]
+..
++Impl(link_asio_1_36_0::io_context & io, link_asio_1_36_0::ip::udp protocol) : void [[[../../link/include/ableton/platforms/asio/Socket.hpp#L72{link/include/ableton/platforms/asio/Socket.hpp#L72}]]]
++~Impl() : void [[[../../link/include/ableton/platforms/asio/Socket.hpp#L77{link/include/ableton/platforms/asio/Socket.hpp#L77}]]]
+__
++mHandler : std::function<void (const discovery::UdpEndpoint &,ByteIt,ByteIt)> [[[../../link/include/ableton/platforms/asio/Socket.hpp#L101{link/include/ableton/platforms/asio/Socket.hpp#L101}]]]
++mReceiveBuffer : Buffer [[[../../link/include/ableton/platforms/asio/Socket.hpp#L99{link/include/ableton/platforms/asio/Socket.hpp#L99}]]]
++mSenderEndpoint : discovery::UdpEndpoint [[[../../link/include/ableton/platforms/asio/Socket.hpp#L97{link/include/ableton/platforms/asio/Socket.hpp#L97}]]]
++mSocket : discovery::UdpSocket [[[../../link/include/ableton/platforms/asio/Socket.hpp#L96{link/include/ableton/platforms/asio/Socket.hpp#L96}]]]
+}
+class "ableton::platforms::link_asio_1_36_0::ThreadFactory" as C_0007992948389603145965
+class C_0007992948389603145965 [[../../link/include/ableton/platforms/asio/Context.hpp#L39{link/include/ableton/platforms/asio/Context.hpp#L39}]] {
+{static} +makeThread<Callable,Args...>(std::string, Callable && f, Args &&... args) : std::thread
+__
+}
+class "ableton::platforms::link_asio_1_36_0::Context<ScanIpIfAddrs,LogT,ThreadFactoryT=ThreadFactory>" as C_0018213745905633295181
+class C_0018213745905633295181 [[../../link/include/ableton/platforms/asio/Context.hpp#L51{link/include/ableton/platforms/asio/Context.hpp#L51}]] {
++Context() : void [[[../../link/include/ableton/platforms/asio/Context.hpp#L66{link/include/ableton/platforms/asio/Context.hpp#L66}]]]
++Context(const Context<ScanIpIfAddrs,LogT,ThreadFactoryT> &) = deleted : void [[[../../link/include/ableton/platforms/asio/Context.hpp#L97{link/include/ableton/platforms/asio/Context.hpp#L97}]]]
++Context(Context<ScanIpIfAddrs,LogT,ThreadFactoryT> && rhs) : void [[[../../link/include/ableton/platforms/asio/Context.hpp#L99{link/include/ableton/platforms/asio/Context.hpp#L99}]]]
++Context<ExceptionHandler>(ExceptionHandler exceptHandler) : void
++~Context() : void [[[../../link/include/ableton/platforms/asio/Context.hpp#L108{link/include/ableton/platforms/asio/Context.hpp#L108}]]]
+..
++async<Handler>(Handler handler) : void
++log() : Log & [[[../../link/include/ableton/platforms/asio/Context.hpp#L205{link/include/ableton/platforms/asio/Context.hpp#L205}]]]
++makeTimer() const : Timer [[[../../link/include/ableton/platforms/asio/Context.hpp#L203{link/include/ableton/platforms/asio/Context.hpp#L203}]]]
++openMulticastSocket<std::size_t BufferSize>(const discovery::IpAddress & addr) : Socket<BufferSize>
++openUnicastSocket<std::size_t BufferSize>(const discovery::IpAddress addr) : Socket<BufferSize>
++scanNetworkInterfaces() : std::vector<discovery::IpAddress> [[[../../link/include/ableton/platforms/asio/Context.hpp#L201{link/include/ableton/platforms/asio/Context.hpp#L201}]]]
++stop() : void [[[../../link/include/ableton/platforms/asio/Context.hpp#L117{link/include/ableton/platforms/asio/Context.hpp#L117}]]]
+__
+}
+class "ableton::platforms::link_asio_1_36_0::LockFreeCallbackDispatcher<Handler,Duration,ThreadFactoryT>" as C_0003147155559487256184
+class C_0003147155559487256184 [[../../link/include/ableton/platforms/asio/Context.hpp#L58{link/include/ableton/platforms/asio/Context.hpp#L58}]] {
+__
+}
+class "ableton::platforms::link_asio_1_36_0::Socket<BufferSize>" as C_0005700165624695286141
+class C_0005700165624695286141 [[../../link/include/ableton/platforms/asio/Context.hpp#L62{link/include/ableton/platforms/asio/Context.hpp#L62}]] {
+__
+}
+class "ableton::platforms::link_asio_1_36_0::Context::DefaultHandler" as C_0007046740063223162954
+class C_0007046740063223162954 [[../../link/include/ableton/platforms/asio/Context.hpp#L217{link/include/ableton/platforms/asio/Context.hpp#L217}]] {
++operator()(const Exception &) : void [[[../../link/include/ableton/platforms/asio/Context.hpp#L223{link/include/ableton/platforms/asio/Context.hpp#L223}]]]
+__
+}
+class "ableton::platforms::link_asio_1_36_0::Context::DefaultHandler::Exception" as C_0018314914493619814473
+class C_0018314914493619814473 [[../../link/include/ableton/platforms/asio/Context.hpp#L219{link/include/ableton/platforms/asio/Context.hpp#L219}]] {
+__
+}
+class "ableton::platforms::link_asio_1_36_0::Context<ableton::platforms::posix::ScanIpIfAddrs,ableton::util::NullLog,ableton::platforms::linux_::ThreadFactory>" as C_0011728790663986644745
+class C_0011728790663986644745 [[../../include/LinkExtender.hpp#L28{include/LinkExtender.hpp#L28}]] {
+__
+}
+class "ableton::platforms::linux_::Clock<clockid_t CLOCK>" as C_0016518917347882480378
+class C_0016518917347882480378 [[../../link/include/ableton/platforms/linux/Clock.hpp#L39{link/include/ableton/platforms/linux/Clock.hpp#L39}]] {
++micros() const : std::chrono::microseconds [[[../../link/include/ableton/platforms/linux/Clock.hpp#L42{link/include/ableton/platforms/linux/Clock.hpp#L42}]]]
+__
+}
+class "ableton::platforms::linux_::ThreadFactory" as C_0013476723083132700233
+class C_0013476723083132700233 [[../../link/include/ableton/platforms/linux/ThreadFactory.hpp#L32{link/include/ableton/platforms/linux/ThreadFactory.hpp#L32}]] {
+{static} +makeThread<Callable,Args...>(std::string name, Callable && f, Args &&... args) : std::thread
+__
+}
+class "ableton::platforms::posix::detail::GetIfAddrs" as C_0004354988331420097361
+class C_0004354988331420097361 [[../../link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L40{link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L40}]] {
++GetIfAddrs() : void [[[../../link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L43{link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L43}]]]
++GetIfAddrs(GetIfAddrs &) = deleted : void [[[../../link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L57{link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L57}]]]
++~GetIfAddrs() : void [[[../../link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L50{link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L50}]]]
+..
++operator=(GetIfAddrs &) = deleted : GetIfAddrs & [[[../../link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L58{link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L58}]]]
+..
++withIfAddrs<Function>(Function f) : void
+__
+}
+class "ableton::platforms::posix::ScanIpIfAddrs" as C_0016557247693832345661
+class C_0016557247693832345661 [[../../link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L75{link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L75}]] {
++operator()() : std::vector<discovery::IpAddress> [[[../../link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L79{link/include/ableton/platforms/posix/ScanIpIfAddrs.hpp#L79}]]]
+__
+}
+class "ableton::platforms::stl::Random" as C_0010281717028547746922
+class C_0010281717028547746922 [[../../link/include/ableton/platforms/stl/Random.hpp#L31{link/include/ableton/platforms/stl/Random.hpp#L31}]] {
++Random() : void [[[../../link/include/ableton/platforms/stl/Random.hpp#L33{link/include/ableton/platforms/stl/Random.hpp#L33}]]]
+..
++operator()() : uint8_t [[[../../link/include/ableton/platforms/stl/Random.hpp#L39{link/include/ableton/platforms/stl/Random.hpp#L39}]]]
+__
++dist : std::uniform_int_distribution<unsigned int> [[[../../link/include/ableton/platforms/stl/Random.hpp#L43{link/include/ableton/platforms/stl/Random.hpp#L43}]]]
++gen : std::mt19937 [[[../../link/include/ableton/platforms/stl/Random.hpp#L42{link/include/ableton/platforms/stl/Random.hpp#L42}]]]
++rd : std::random_device [[[../../link/include/ableton/platforms/stl/Random.hpp#L41{link/include/ableton/platforms/stl/Random.hpp#L41}]]]
+}
+enum "ableton::extender::TunnelMessageType" as C_0004541482571396657670
+enum C_0004541482571396657670 [[../../include/Tunnel.hpp#L40{include/Tunnel.hpp#L40}]] {
+TUNNEL_HELLO
+TUNNEL_BYE
+BROADCAST
+UNICAST
+BYEBYE
+MEASUREMENT_PING
+MEASUREMENT_PONG
+}
+abstract "ableton::extender::Tunnel<IoContext,Gateway>" as C_0006459761763011069453
+abstract C_0006459761763011069453 [[../../include/Tunnel.hpp#L52{include/Tunnel.hpp#L52}]] {
++Tunnel(ableton::util::Injected<IoContext> io) : void [[[../../include/Tunnel.hpp#L60{include/Tunnel.hpp#L60}]]]
++~Tunnel() : void [[[../../include/Tunnel.hpp#L64{include/Tunnel.hpp#L64}]]]
+..
++addGateway(GatewayPtr g) : void [[[../../include/Tunnel.hpp#L75{include/Tunnel.hpp#L75}]]]
+#decapsulate(MessageBuffer & msg) : std::optional<std::pair<MessageContext,MessageBuffer>> [[[../../include/Tunnel.hpp#L149{include/Tunnel.hpp#L149}]]]
+#encapsulate<It>(const MessageContext context, const It messageBegin, const It messageEnd) : std::optional<MessageBuffer>
+{abstract} +forward(TunnelMessageType messageType, std::shared_ptr<Gateway> from_gateway, const NodeId & from_node_id, const unsigned char * messageBegin, const unsigned char * messageEnd, const std::optional<NodeId> & to_node_id) = 0 : void [[[../../include/Tunnel.hpp#L66{include/Tunnel.hpp#L66}]]]
+#forward_locally(TunnelMessageType messageType, const NodeId & from_node_id, unsigned char * messageBegin, unsigned char * messageEnd, const std::optional<NodeId> & to_node_id) : void [[[../../include/Tunnel.hpp#L104{include/Tunnel.hpp#L104}]]]
+{abstract} +listen() = 0 : void [[[../../include/Tunnel.hpp#L72{include/Tunnel.hpp#L72}]]]
++removeGateway(GatewayPtr g) : void [[[../../include/Tunnel.hpp#L83{include/Tunnel.hpp#L83}]]]
+{abstract} +stop_listening() = 0 : void [[[../../include/Tunnel.hpp#L73{include/Tunnel.hpp#L73}]]]
+__
+#gateways : std::vector<GatewayPtr> [[[../../include/Tunnel.hpp#L93{include/Tunnel.hpp#L93}]]]
+#mIo : ableton::util::Injected<IoContext> [[[../../include/Tunnel.hpp#L94{include/Tunnel.hpp#L94}]]]
+}
+class "ableton::extender::Tunnel::MessageContext" as C_0012633945119722369964
+class C_0012633945119722369964 [[../../include/Tunnel.hpp#L96{include/Tunnel.hpp#L96}]] {
+__
++from_node : NodeId [[[../../include/Tunnel.hpp#L99{include/Tunnel.hpp#L99}]]]
++size : size_t [[[../../include/Tunnel.hpp#L102{include/Tunnel.hpp#L102}]]]
++to_node : std::optional<NodeId> [[[../../include/Tunnel.hpp#L101{include/Tunnel.hpp#L101}]]]
++type : TunnelMessageType [[[../../include/Tunnel.hpp#L100{include/Tunnel.hpp#L100}]]]
+}
+class "ableton::extender::SharedMessages<MessageBuffer>" as C_0017876867996830728415
+class C_0017876867996830728415 [[../../include/ShmTunnel.hpp#L28{include/ShmTunnel.hpp#L28}]] {
++clear() : void [[[../../include/ShmTunnel.hpp#L73{include/ShmTunnel.hpp#L73}]]]
++is_empty() const : bool [[[../../include/ShmTunnel.hpp#L68{include/ShmTunnel.hpp#L68}]]]
++is_full() const : bool [[[../../include/ShmTunnel.hpp#L69{include/ShmTunnel.hpp#L69}]]]
++pop(size_t & source, MessageBuffer & message) : bool [[[../../include/ShmTunnel.hpp#L53{include/ShmTunnel.hpp#L53}]]]
++push(size_t & source, MessageBuffer & message) : void [[[../../include/ShmTunnel.hpp#L41{include/ShmTunnel.hpp#L41}]]]
+__
++_messages_back : size_t [[[../../include/ShmTunnel.hpp#L39{include/ShmTunnel.hpp#L39}]]]
++_messages_front : size_t [[[../../include/ShmTunnel.hpp#L38{include/ShmTunnel.hpp#L38}]]]
++messages : std::array<Message,MAX_MESSAGES> [[[../../include/ShmTunnel.hpp#L37{include/ShmTunnel.hpp#L37}]]]
++mutex : boost::interprocess::interprocess_mutex [[[../../include/ShmTunnel.hpp#L35{include/ShmTunnel.hpp#L35}]]]
+}
+class "ableton::extender::SharedMessages::Message" as C_0003556045973203622332
+class C_0003556045973203622332 [[../../include/ShmTunnel.hpp#L30{include/ShmTunnel.hpp#L30}]] {
+__
++message : MessageBuffer [[[../../include/ShmTunnel.hpp#L33{include/ShmTunnel.hpp#L33}]]]
++source : size_t [[[../../include/ShmTunnel.hpp#L32{include/ShmTunnel.hpp#L32}]]]
+}
+class "ableton::extender::SharedMemory<MessageBuffer>" as C_0013764544516210845908
+class C_0013764544516210845908 [[../../include/ShmTunnel.hpp#L86{include/ShmTunnel.hpp#L86}]] {
+__
++broadcast : std::array<SharedMessages<MessageBuffer>,MAX_CLIENTS> [[[../../include/ShmTunnel.hpp#L89{include/ShmTunnel.hpp#L89}]]]
++num_clients : size_t [[[../../include/ShmTunnel.hpp#L88{include/ShmTunnel.hpp#L88}]]]
+}
+class "ableton::extender::SharedMemory<std::array<uint8_t,v1::kMaxMessageSize>>" as C_0016379296392773741188
+class C_0016379296392773741188 [[../../include/ShmTunnel.hpp#L279{include/ShmTunnel.hpp#L279}]] {
+__
+}
+class "ableton::extender::ShmTunnel<IoContext,Gateway>" as C_0015762918578374910425
+class C_0015762918578374910425 [[../../include/ShmTunnel.hpp#L96{include/ShmTunnel.hpp#L96}]] {
++ShmTunnel(ableton::util::Injected<IoContext> io) : void [[[../../include/ShmTunnel.hpp#L103{include/ShmTunnel.hpp#L103}]]]
++~ShmTunnel() : void [[[../../include/ShmTunnel.hpp#L141{include/ShmTunnel.hpp#L141}]]]
+..
++forward(TunnelMessageType messageType, std::shared_ptr<Gateway> from_gateway, const NodeId & from_node_id, const unsigned char * messageBegin, const unsigned char * messageEnd, const std::optional<NodeId> & to_node_id) : void [[[../../include/ShmTunnel.hpp#L162{include/ShmTunnel.hpp#L162}]]]
++listen() : void [[[../../include/ShmTunnel.hpp#L210{include/ShmTunnel.hpp#L210}]]]
+#say_in_tunnel(const TunnelMessageType message_type, const std::string msg) : void [[[../../include/ShmTunnel.hpp#L288{include/ShmTunnel.hpp#L288}]]]
++stop_listening() : void [[[../../include/ShmTunnel.hpp#L265{include/ShmTunnel.hpp#L265}]]]
+__
+#is_running : std::atomic<bool> [[[../../include/ShmTunnel.hpp#L284{include/ShmTunnel.hpp#L284}]]]
+#mClientId : size_t [[[../../include/ShmTunnel.hpp#L283{include/ShmTunnel.hpp#L283}]]]
+#mSharedMemory : SharedMemory<MessageBuffer> * [[[../../include/ShmTunnel.hpp#L279{include/ShmTunnel.hpp#L279}]]]
+#region : boost::interprocess::mapped_region [[[../../include/ShmTunnel.hpp#L281{include/ShmTunnel.hpp#L281}]]]
+#remoteNodeIdToTunnelClientIdx : std::map<NodeId,size_t> [[[../../include/ShmTunnel.hpp#L285{include/ShmTunnel.hpp#L285}]]]
+#shm : boost::interprocess::shared_memory_object [[[../../include/ShmTunnel.hpp#L280{include/ShmTunnel.hpp#L280}]]]
+}
+class "ableton::extender::Tunnel<Gateway,TunnelGateway<PeerObserver,IoContext>>" as C_0005373282550404570970
+class C_0005373282550404570970 [[../../include/TunnelGateway.hpp#L40{include/TunnelGateway.hpp#L40}]] {
+__
+}
+class "ableton::extender::TunnelGateway<PeerObserver,IoContext>" as C_0010593313124311170038
+class C_0010593313124311170038 [[../../include/TunnelGateway.hpp#L26{include/TunnelGateway.hpp#L26}]] {
+__
+}
+class "ableton::extender::TunnelGateway::SocketReceiver<Handler>" as C_0008476819794371106395
+class C_0008476819794371106395 [[../../include/TunnelGateway.hpp#L412{include/TunnelGateway.hpp#L412}]] {
++operator()<It>(const ableton::discovery::UdpEndpoint & from, const It messageBegin, const It messageEnd) : void
+..
++SocketReceiver(Handler handler, std::optional<NodeId> to_node_id = std::nullopt) : void [[[../../include/TunnelGateway.hpp#L414{include/TunnelGateway.hpp#L414}]]]
+__
++mHandler : Handler [[[../../include/TunnelGateway.hpp#L428{include/TunnelGateway.hpp#L428}]]]
++mOptionalToNodeId : std::optional<NodeId> [[[../../include/TunnelGateway.hpp#L429{include/TunnelGateway.hpp#L429}]]]
+}
+class "ableton::extender::TunnelGateway::RemoteNodeSurrogate" as C_0008365168909652084304
+class C_0008365168909652084304 [[../../include/TunnelGateway.hpp#L432{include/TunnelGateway.hpp#L432}]] {
++operator()<It>(const ableton::discovery::UdpEndpoint & fromEndpoint, const It messageBegin, const It messageEnd, std::optional<NodeId> to_node_id = std::nullopt) : void
+..
++RemoteNodeSurrogate(ableton::util::Injected<IoContext> io, const NodeId & ident, ableton::discovery::IpAddress & local_interface_address, const std::shared_ptr<TunnelGateway<PeerObserver,IoContext>> & gateway) : void [[[../../include/TunnelGateway.hpp#L434{include/TunnelGateway.hpp#L434}]]]
++listen() : void [[[../../include/TunnelGateway.hpp#L456{include/TunnelGateway.hpp#L456}]]]
++receiveMeasurement<Handler>(Handler handler) : void
++receiveState<Handler>(Handler handler) : void
++stop_listening() : void [[[../../include/TunnelGateway.hpp#L463{include/TunnelGateway.hpp#L463}]]]
+__
++is_running : bool [[[../../include/TunnelGateway.hpp#L506{include/TunnelGateway.hpp#L506}]]]
++mGateway : const std::shared_ptr<TunnelGateway<PeerObserver,IoContext>> [[[../../include/TunnelGateway.hpp#L505{include/TunnelGateway.hpp#L505}]]]
++mRemoteNodeId : const NodeId [[[../../include/TunnelGateway.hpp#L502{include/TunnelGateway.hpp#L502}]]]
++measurementSocket : Socket [[[../../include/TunnelGateway.hpp#L504{include/TunnelGateway.hpp#L504}]]]
++stateSocket : Socket [[[../../include/TunnelGateway.hpp#L503{include/TunnelGateway.hpp#L503}]]]
+}
+class "ableton::extender::TunnelGateway::RemoteMeasurementSurrogate" as C_0010411543860225158201
+class C_0010411543860225158201 [[../../include/TunnelGateway.hpp#L509{include/TunnelGateway.hpp#L509}]] {
++operator()<It>(const ableton::discovery::UdpEndpoint & fromEndpoint, const It messageBegin, const It messageEnd, std::optional<NodeId> to_node_id = std::nullopt) : void
+..
++RemoteMeasurementSurrogate(ableton::util::Injected<IoContext> io, const NodeId & ident, ableton::discovery::IpAddress & local_interface_address, const std::shared_ptr<TunnelGateway<PeerObserver,IoContext>> & gateway) : void [[[../../include/TunnelGateway.hpp#L512{include/TunnelGateway.hpp#L512}]]]
++listen() : void [[[../../include/TunnelGateway.hpp#L524{include/TunnelGateway.hpp#L524}]]]
++stop_listening() : void [[[../../include/TunnelGateway.hpp#L531{include/TunnelGateway.hpp#L531}]]]
+__
++is_running : bool [[[../../include/TunnelGateway.hpp#L558{include/TunnelGateway.hpp#L558}]]]
++mGateway : const std::shared_ptr<TunnelGateway<PeerObserver,IoContext>> [[[../../include/TunnelGateway.hpp#L557{include/TunnelGateway.hpp#L557}]]]
++mRemoteNodeId : const NodeId [[[../../include/TunnelGateway.hpp#L555{include/TunnelGateway.hpp#L555}]]]
++measurementSocket : Socket [[[../../include/TunnelGateway.hpp#L556{include/TunnelGateway.hpp#L556}]]]
+}
+class "ableton::extender::TunnelGateway::LocalNodeEndpoints" as C_0013148409519418638014
+class C_0013148409519418638014 [[../../include/TunnelGateway.hpp#L561{include/TunnelGateway.hpp#L561}]] {
+__
++measurementEndpoint : ableton::discovery::UdpEndpoint [[[../../include/TunnelGateway.hpp#L564{include/TunnelGateway.hpp#L564}]]]
++stateEndpoint : ableton::discovery::UdpEndpoint [[[../../include/TunnelGateway.hpp#L563{include/TunnelGateway.hpp#L563}]]]
+}
+class "ableton::extender::TunnelGateway<typename Peers<typename Injected<type-parameter-0-0>::type &,reference_wrapper<SessionPeerCounter>,SessionTimelineCallback,SessionStartStopStateCallback>::GatewayObserver,typename Injected<type-parameter-0-0>::type &>" as C_0003780551810750959622
+class C_0003780551810750959622 [[../../include/Controller.hpp#L171{include/Controller.hpp#L171}]] {
+__
+}
+class "ableton::extender::Tunnel<IoContext &,ableton::extender::TunnelGateway<typename Peers<typename Injected<type-parameter-0-0>::type &,reference_wrapper<SessionPeerCounter>,SessionTimelineCallback,SessionStartStopStateCallback>::GatewayObserver,typename Injected<type-parameter-0-0>::type &>>" as C_0017728501927810665993
+class C_0017728501927810665993 [[../../include/Controller.hpp#L171{include/Controller.hpp#L171}]] {
+__
+}
+class "ableton::extender::Controller<IoContext>" as C_0005219908206309761451
+class C_0005219908206309761451 [[../../include/Controller.hpp#L28{include/Controller.hpp#L28}]] {
++Controller() : void [[[../../include/Controller.hpp#L85{include/Controller.hpp#L85}]]]
++Controller(const Controller<IoContext> &) = deleted : void [[[../../include/Controller.hpp#L101{include/Controller.hpp#L101}]]]
++Controller(Controller<IoContext> &&) = deleted : void [[[../../include/Controller.hpp#L102{include/Controller.hpp#L102}]]]
++~Controller() : void [[[../../include/Controller.hpp#L107{include/Controller.hpp#L107}]]]
+..
++operator=(const Controller<IoContext> &) = deleted : Controller<IoContext> & [[[../../include/Controller.hpp#L104{include/Controller.hpp#L104}]]]
++operator=(Controller<IoContext> &&) = deleted : Controller<IoContext> & [[[../../include/Controller.hpp#L105{include/Controller.hpp#L105}]]]
+__
+#gatewayDiscovery : TunnelGateways [[[../../include/Controller.hpp#L172{include/Controller.hpp#L172}]]]
+#mIo : ableton::util::Injected<IoContext> [[[../../include/Controller.hpp#L169{include/Controller.hpp#L169}]]]
+#mLocalPeers : ControllerPeers [[[../../include/Controller.hpp#L174{include/Controller.hpp#L174}]]]
+#mSessionPeerCounter : SessionPeerCounter [[[../../include/Controller.hpp#L173{include/Controller.hpp#L173}]]]
+#mTunnel : TunnelPtr<IoContext &,ControllerTunnelGateway> [[[../../include/Controller.hpp#L171{include/Controller.hpp#L171}]]]
+#notParticipatingNodeState : NodeState [[[../../include/Controller.hpp#L170{include/Controller.hpp#L170}]]]
+}
+class "ableton::extender::Controller::SessionTimelineCallback" as C_0012137232085835393161
+class C_0012137232085835393161 [[../../include/Controller.hpp#L31{include/Controller.hpp#L31}]] {
++operator()(ableton::link::NodeId id, ableton::link::Timeline timeline) : void [[[../../include/Controller.hpp#L33{include/Controller.hpp#L33}]]]
+__
++mController : Controller<IoContext> & [[[../../include/Controller.hpp#L38{include/Controller.hpp#L38}]]]
+}
+class "ableton::extender::Controller::SessionStartStopStateCallback" as C_0014893914361701937548
+class C_0014893914361701937548 [[../../include/Controller.hpp#L41{include/Controller.hpp#L41}]] {
++operator()(ableton::link::NodeId sessionId, ableton::link::StartStopState startStopState) : void [[[../../include/Controller.hpp#L43{include/Controller.hpp#L43}]]]
+__
++mController : Controller<IoContext> & [[[../../include/Controller.hpp#L50{include/Controller.hpp#L50}]]]
+}
+class "ableton::extender::Controller::SessionPeerCounter" as C_0003180397618426701989
+class C_0003180397618426701989 [[../../include/Controller.hpp#L53{include/Controller.hpp#L53}]] {
++operator()() : void [[[../../include/Controller.hpp#L62{include/Controller.hpp#L62}]]]
+..
++SessionPeerCounter(Controller<IoContext> & controller, PeerCountCallback callback) : void [[[../../include/Controller.hpp#L55{include/Controller.hpp#L55}]]]
+__
++mCallback : PeerCountCallback [[[../../include/Controller.hpp#L69{include/Controller.hpp#L69}]]]
++mController : Controller<IoContext> & [[[../../include/Controller.hpp#L68{include/Controller.hpp#L68}]]]
++mSessionPeerCount : std::atomic<std::size_t> [[[../../include/Controller.hpp#L70{include/Controller.hpp#L70}]]]
+}
+class "ableton::extender::TunnelGateway<typename ControllerPeers::GatewayObserver,IoType &>" as C_0007081774418164518505
+class C_0007081774418164518505 [[../../include/Controller.hpp#L133{include/Controller.hpp#L133}]] {
+__
+}
+class "ableton::extender::Controller::GatewayFactory" as C_0008893932608749322217
+class C_0008893932608749322217 [[../../include/Controller.hpp#L131{include/Controller.hpp#L131}]] {
++operator()(NodeState state, ableton::util::Injected<IoContext &> io, const ableton::discovery::IpAddress & addr) : TunnelGatewayPtr [[[../../include/Controller.hpp#L133{include/Controller.hpp#L133}]]]
+__
++mController : Controller<IoContext> & [[[../../include/Controller.hpp#L148{include/Controller.hpp#L148}]]]
+}
+class "ableton::extender::Controller::UdpSendExceptionHandler" as C_0001511337248524793897
+class C_0001511337248524793897 [[../../include/Controller.hpp#L151{include/Controller.hpp#L151}]] {
++operator()(const Exception exception) : void [[[../../include/Controller.hpp#L154{include/Controller.hpp#L154}]]]
+__
++mpController : Controller<IoContext> * [[[../../include/Controller.hpp#L163{include/Controller.hpp#L163}]]]
+}
+class "ableton::extender::Controller<ableton::platforms::link_asio_1_36_0::Context<ableton::platforms::posix::ScanIpIfAddrs,ableton::util::NullLog,ableton::platforms::linux_::ThreadFactory>>" as C_0009153599117261602804
+class C_0009153599117261602804 [[../../include/LinkExtender.hpp#L28{include/LinkExtender.hpp#L28}]] {
+__
+}
+class "ableton::LinkExtender" as C_0016499713838075782238
+class C_0016499713838075782238 [[../../include/LinkExtender.hpp#L13{include/LinkExtender.hpp#L13}]] {
++LinkExtender() : void [[[../../include/LinkExtender.hpp#L16{include/LinkExtender.hpp#L16}]]]
++LinkExtender(const LinkExtender &) = deleted : void [[[../../include/LinkExtender.hpp#L22{include/LinkExtender.hpp#L22}]]]
++LinkExtender(LinkExtender &&) = deleted : void [[[../../include/LinkExtender.hpp#L24{include/LinkExtender.hpp#L24}]]]
+..
++operator=(const LinkExtender &) = deleted : LinkExtender & [[[../../include/LinkExtender.hpp#L23{include/LinkExtender.hpp#L23}]]]
++operator=(LinkExtender &&) = deleted : LinkExtender & [[[../../include/LinkExtender.hpp#L25{include/LinkExtender.hpp#L25}]]]
+__
+}
+C_0010801333231220822629 ..> C_0013581892756519222113 [[../../link/include/ableton/discovery/InterfaceScanner.hpp#L41{link/include/ableton/discovery/InterfaceScanner.hpp#L41}]]
+C_0010801333231220822629 o-- C_0001698883805709756903 [[../../link/include/ableton/discovery/InterfaceScanner.hpp#L88{link/include/ableton/discovery/InterfaceScanner.hpp#L88}]] : -mCallback
+C_0010801333231220822629 o-- C_0001131375505872234058 [[../../link/include/ableton/discovery/InterfaceScanner.hpp#L89{link/include/ableton/discovery/InterfaceScanner.hpp#L89}]] : -mIo
+C_0003563244451697180624 ..|> C_0010801333231220822629
+C_0013802940721661779804 ..> C_0013581892756519222113 [[../../link/include/ableton/discovery/PeerGateways.hpp#L47{link/include/ableton/discovery/PeerGateways.hpp#L47}]]
+C_0013802940721661779804 --> C_0010714917652904163251 [[../../link/include/ableton/discovery/PeerGateways.hpp#L168{link/include/ableton/discovery/PeerGateways.hpp#L168}]] : -mpScannerCallback
+C_0013802940721661779804 --> C_0003563244451697180624 [[../../link/include/ableton/discovery/PeerGateways.hpp#L169{link/include/ableton/discovery/PeerGateways.hpp#L169}]] : -mpScanner
+C_0013802940721661779804 --> C_0010801333231220822629 [[../../link/include/ableton/discovery/PeerGateways.hpp#L169{link/include/ableton/discovery/PeerGateways.hpp#L169}]] : -mpScanner
+C_0013802940721661779804 --> C_0010714917652904163251 [[../../link/include/ableton/discovery/PeerGateways.hpp#L169{link/include/ableton/discovery/PeerGateways.hpp#L169}]] : -mpScanner
+C_0013802940721661779804 o-- C_0001131375505872234058 [[../../link/include/ableton/discovery/PeerGateways.hpp#L170{link/include/ableton/discovery/PeerGateways.hpp#L170}]] : -mIo
+C_0010714917652904163251 --+ C_0013802940721661779804
+C_0006424294050233763729 ..|> C_0002512565736647136797
+C_0011064066113342029543 ..|> C_0002512565736647136797
+C_0013546123254254775234 ..|> C_0002512565736647136797
+C_0011911876659799547412 ..|> C_0002512565736647136797
+C_0012838556365628964914 ..|> C_0002512565736647136797
+C_0000699250995018310177 ..|> C_0002512565736647136797
+C_0014521211024571418724 ..|> C_0002512565736647136797
+C_0017556403166313372610 ..|> C_0002512565736647136797
+C_0004141783550612757629 ..|> C_0002512565736647136797
+C_0018317091001461730051 ..|> C_0002512565736647136797
+C_0011193628347038778664 ..|> C_0002512565736647136797
+C_0005582217907409001752 ..|> C_0002512565736647136797
+C_0008803437031140057065 o-- C_0008358062763648939093 [[../../link/include/ableton/discovery/Payload.hpp#L74{link/include/ableton/discovery/Payload.hpp#L74}]] : +header
+C_0010098493565584955814 ..|> C_0008803437031140057065
+C_0007354179710940522949 ..> C_0008803437031140057065 [[../../link/include/ableton/discovery/Payload.hpp#L157{link/include/ableton/discovery/Payload.hpp#L157}]]
+C_0007354179710940522949 o-- C_0010098493565584955814 [[../../link/include/ableton/discovery/Payload.hpp#L187{link/include/ableton/discovery/Payload.hpp#L187}]] : +mFirst
+C_0007354179710940522949 ..|> C_0012940325434723429245
+C_0016726667155816225509 ..|> C_0007354179710940522949
+C_0000890742123370368023 ..|> C_0012940325434723429245
+C_0005277782623133209182 ..|> C_0007354179710940522949
+C_0011436920561936035426 ..|> C_0007354179710940522949
+C_0016766644618547657595 ..> C_0011436920561936035426 [[../../link/include/ableton/discovery/Payload.hpp#L226{link/include/ableton/discovery/Payload.hpp#L226}]]
+C_0016766644618547657595 ..> C_0012940325434723429245 [[../../link/include/ableton/discovery/Payload.hpp#L226{link/include/ableton/discovery/Payload.hpp#L226}]]
+C_0016766644618547657595 ..|> C_0012496071311098332204
+C_0004847241280408100073 ..|> C_0012940325434723429245
+C_0012590555721609716177 ..|> C_0016766644618547657595
+C_0012590555721609716177 ..> C_0004847241280408100073 [[../../link/include/ableton/discovery/Payload.hpp#L236{link/include/ableton/discovery/Payload.hpp#L236}]]
+C_0012590555721609716177 ..> C_0012940325434723429245 [[../../link/include/ableton/discovery/Payload.hpp#L236{link/include/ableton/discovery/Payload.hpp#L236}]]
+C_0017713990521407097466 ..|> C_0004079989425912614956
+C_0007445534281458187237 ..|> C_0017713990521407097466
+C_0010578368793271117596 ..> C_0001131375505872234058 [[../../link/include/ableton/discovery/Service.hpp#L35{link/include/ableton/discovery/Service.hpp#L35}]]
+C_0010578368793271117596 ..> C_0013581892756519222113 [[../../link/include/ableton/discovery/Service.hpp#L35{link/include/ableton/discovery/Service.hpp#L35}]]
+C_0010578368793271117596 o-- C_0013802940721661779804 [[../../link/include/ableton/discovery/Service.hpp#L70{link/include/ableton/discovery/Service.hpp#L70}]] : -mGateways
+C_0018261845080078739121 ..> C_0013581892756519222113 [[../../link/include/ableton/discovery/IpInterface.hpp#L55{link/include/ableton/discovery/IpInterface.hpp#L55}]]
+C_0018261845080078739121 ..> C_0017850078988099263980 [[../../link/include/ableton/discovery/IpInterface.hpp#L81{link/include/ableton/discovery/IpInterface.hpp#L81}]]
+C_0018261845080078739121 ..> C_0000385411989440441507 [[../../link/include/ableton/discovery/IpInterface.hpp#L87{link/include/ableton/discovery/IpInterface.hpp#L87}]]
+C_0018261845080078739121 o-- C_0001131375505872234058 [[../../link/include/ableton/discovery/IpInterface.hpp#L113{link/include/ableton/discovery/IpInterface.hpp#L113}]] : -mIo
+C_0002204141851795717953 --+ C_0018261845080078739121
+C_0006851389819286352582 ..|> C_0003927926216785781661
+C_0013562556874899788780 ..|> C_0003927926216785781661
+C_0010328755427029039962 ..> C_0005730378100413264976 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L95{link/include/ableton/discovery/UdpMessenger.hpp#L95}]]
+C_0010328755427029039962 ..> C_0013581892756519222113 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L95{link/include/ableton/discovery/UdpMessenger.hpp#L95}]]
+C_0010328755427029039962 ..> C_0001131375505872234058 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L97{link/include/ableton/discovery/UdpMessenger.hpp#L97}]]
+C_0010328755427029039962 --> C_0013489500845632598080 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L359{link/include/ableton/discovery/UdpMessenger.hpp#L359}]] : -mpImpl
+C_0013667285622749176957 ..|> C_0000450715258589324147
+C_0017901378165358784580 ..|> C_0008791563982771445444
+C_0013489500845632598080 --+ C_0010328755427029039962
+C_0013489500845632598080 ..> C_0013581892756519222113 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L153{link/include/ableton/discovery/UdpMessenger.hpp#L153}]]
+C_0013489500845632598080 ..> C_0006851389819286352582 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L320{link/include/ableton/discovery/UdpMessenger.hpp#L320}]]
+C_0013489500845632598080 ..> C_0003927926216785781661 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L320{link/include/ableton/discovery/UdpMessenger.hpp#L320}]]
+C_0013489500845632598080 o-- C_0001131375505872234058 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L348{link/include/ableton/discovery/UdpMessenger.hpp#L348}]] : +mIo
+C_0013489500845632598080 o-- C_0005730378100413264976 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L349{link/include/ableton/discovery/UdpMessenger.hpp#L349}]] : +mInterface
+C_0013489500845632598080 ..> C_0013667285622749176957
+C_0013489500845632598080 ..> C_0013667285622749176957 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L355{link/include/ableton/discovery/UdpMessenger.hpp#L355}]] : +mPeerStateHandler
+C_0013489500845632598080 ..> C_0000450715258589324147 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L355{link/include/ableton/discovery/UdpMessenger.hpp#L355}]] : +mPeerStateHandler
+C_0013489500845632598080 ..> C_0017901378165358784580
+C_0013489500845632598080 ..> C_0017901378165358784580 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L356{link/include/ableton/discovery/UdpMessenger.hpp#L356}]] : +mByeByeHandler
+C_0013489500845632598080 ..> C_0008791563982771445444 [[../../link/include/ableton/discovery/UdpMessenger.hpp#L356{link/include/ableton/discovery/UdpMessenger.hpp#L356}]] : +mByeByeHandler
+C_0005620174876014784655 ..> C_0006889781714772074265 [[../../link/include/ableton/discovery/PeerGateway.hpp#L44{link/include/ableton/discovery/PeerGateway.hpp#L44}]]
+C_0005620174876014784655 ..> C_0013581892756519222113 [[../../link/include/ableton/discovery/PeerGateway.hpp#L44{link/include/ableton/discovery/PeerGateway.hpp#L44}]]
+C_0005620174876014784655 ..> C_0004203259649320686375 [[../../link/include/ableton/discovery/PeerGateway.hpp#L45{link/include/ableton/discovery/PeerGateway.hpp#L45}]]
+C_0005620174876014784655 ..> C_0001131375505872234058 [[../../link/include/ableton/discovery/PeerGateway.hpp#L46{link/include/ableton/discovery/PeerGateway.hpp#L46}]]
+C_0005620174876014784655 --> C_0014540213220201370165 [[../../link/include/ableton/discovery/PeerGateway.hpp#L205{link/include/ableton/discovery/PeerGateway.hpp#L205}]] : -mpImpl
+C_0004205106482456937806 ..|> C_0000450715258589324147
+C_0010864505122247594342 ..|> C_0008791563982771445444
+C_0014540213220201370165 --+ C_0005620174876014784655
+C_0014540213220201370165 ..> C_0013581892756519222113 [[../../link/include/ableton/discovery/PeerGateway.hpp#L68{link/include/ableton/discovery/PeerGateway.hpp#L68}]]
+C_0014540213220201370165 ..> C_0004205106482456937806 [[../../link/include/ableton/discovery/PeerGateway.hpp#L94{link/include/ableton/discovery/PeerGateway.hpp#L94}]]
+C_0014540213220201370165 ..> C_0000450715258589324147 [[../../link/include/ableton/discovery/PeerGateway.hpp#L94{link/include/ableton/discovery/PeerGateway.hpp#L94}]]
+C_0014540213220201370165 ..> C_0010864505122247594342 [[../../link/include/ableton/discovery/PeerGateway.hpp#L100{link/include/ableton/discovery/PeerGateway.hpp#L100}]]
+C_0014540213220201370165 ..> C_0008791563982771445444 [[../../link/include/ableton/discovery/PeerGateway.hpp#L100{link/include/ableton/discovery/PeerGateway.hpp#L100}]]
+C_0014540213220201370165 o-- C_0006889781714772074265 [[../../link/include/ableton/discovery/PeerGateway.hpp#L198{link/include/ableton/discovery/PeerGateway.hpp#L198}]] : +mMessenger
+C_0014540213220201370165 o-- C_0004203259649320686375 [[../../link/include/ableton/discovery/PeerGateway.hpp#L199{link/include/ableton/discovery/PeerGateway.hpp#L199}]] : +mObserver
+C_0014540213220201370165 o-- C_0001131375505872234058 [[../../link/include/ableton/discovery/PeerGateway.hpp#L200{link/include/ableton/discovery/PeerGateway.hpp#L200}]] : +mIo
+C_0015875017611847239944 --+ C_0014540213220201370165
+C_0001033370335415138704 ..|> C_0018261845080078739121
+C_0017020981135476273418 ..> C_0001033370335415138704
+C_0017020981135476273418 ..|> C_0010328755427029039962
+C_0016724000551276772567 ..|> C_0018261845080078739121
+C_0003493492831138280571 ..> C_0016724000551276772567
+C_0003493492831138280571 ..|> C_0010328755427029039962
+C_0007302803573088901537 ..> C_0003493492831138280571
+C_0007302803573088901537 ..|> C_0005620174876014784655
+C_0001188318156174048628 ..|> C_0018261845080078739121
+C_0014884097652378661816 ..> C_0001188318156174048628
+C_0014884097652378661816 ..> C_0000308584798729065537
+C_0014884097652378661816 ..|> C_0010328755427029039962
+C_0012143698072862709836 ..> C_0014884097652378661816
+C_0012143698072862709836 ..|> C_0005620174876014784655
+C_0010876146078925346743 ..|> C_0010578368793271117596
+C_0007860177675989104079 ..|> C_0013802940721661779804
+C_0002080611009329811424 ..|> C_0013581892756519222113
+C_0018095692230321134971 ..|> C_0013581892756519222113
+C_0007967254320476320108 ..|> C_0013581892756519222113
+C_0001698883805709756903 ..|> C_0013581892756519222113
+C_0001131375505872234058 ..|> C_0013581892756519222113
+C_0005730378100413264976 ..|> C_0013581892756519222113
+C_0006889781714772074265 ..|> C_0013581892756519222113
+C_0004203259649320686375 ..|> C_0013581892756519222113
+C_0009222341400250365243 ..|> C_0013581892756519222113
+C_0004391464078061842940 ..|> C_0013581892756519222113
+C_0017875042668168701430 ..|> C_0013581892756519222113
+C_0002407369522403782728 --+ C_0006922602263282024425
+C_0002960393695025038999 ..|> C_0013581892756519222113
+C_0007261919447689901158 ..> C_0013581892756519222113 [[../../link/include/ableton/util/Log.hpp#L104{link/include/ableton/util/Log.hpp#L104}]]
+C_0007261919447689901158 o-- C_0002960393695025038999 [[../../link/include/ableton/util/Log.hpp#L109{link/include/ableton/util/Log.hpp#L109}]] : +mLog
+C_0008175913117146309467 o-- C_0012617968137351947864 [[../../link/include/ableton/link/SessionId.hpp#L59{link/include/ableton/link/SessionId.hpp#L59}]] : +sessionId
+C_0012358011593250270552 o-- C_0015108871955745513405 [[../../link/include/ableton/link/StartStopState.hpp#L90{link/include/ableton/link/StartStopState.hpp#L90}]] : +beats
+C_0011912240950756466864 ..> C_0015108871955745513405 [[../../link/include/ableton/link/Tempo.hpp#L53{link/include/ableton/link/Tempo.hpp#L53}]]
+C_0011645384771427925717 o-- C_0011912240950756466864 [[../../link/include/ableton/link/Timeline.hpp#L92{link/include/ableton/link/Timeline.hpp#L92}]] : +tempo
+C_0011645384771427925717 o-- C_0015108871955745513405 [[../../link/include/ableton/link/Timeline.hpp#L93{link/include/ableton/link/Timeline.hpp#L93}]] : +beatOrigin
+C_0009894789101290506274 o-- C_0012617968137351947864 [[../../link/include/ableton/link/NodeState.hpp#L68{link/include/ableton/link/NodeState.hpp#L68}]] : +nodeId
+C_0009894789101290506274 o-- C_0012617968137351947864 [[../../link/include/ableton/link/NodeState.hpp#L69{link/include/ableton/link/NodeState.hpp#L69}]] : +sessionId
+C_0009894789101290506274 o-- C_0011645384771427925717 [[../../link/include/ableton/link/NodeState.hpp#L70{link/include/ableton/link/NodeState.hpp#L70}]] : +timeline
+C_0009894789101290506274 o-- C_0012358011593250270552 [[../../link/include/ableton/link/NodeState.hpp#L71{link/include/ableton/link/NodeState.hpp#L71}]] : +startStopState
+C_0000308584798729065537 ..> C_0012617968137351947864 [[../../link/include/ableton/link/PeerState.hpp#L40{link/include/ableton/link/PeerState.hpp#L40}]]
+C_0000308584798729065537 ..> C_0011645384771427925717 [[../../link/include/ableton/link/PeerState.hpp#L44{link/include/ableton/link/PeerState.hpp#L44}]]
+C_0000308584798729065537 ..> C_0012358011593250270552 [[../../link/include/ableton/link/PeerState.hpp#L46{link/include/ableton/link/PeerState.hpp#L46}]]
+C_0000308584798729065537 o-- C_0009894789101290506274 [[../../link/include/ableton/link/PeerState.hpp#L81{link/include/ableton/link/PeerState.hpp#L81}]] : +nodeState
+C_0014262394471254652999 ..> C_0000308584798729065537 [[../../link/include/ableton/link/Measurement.hpp#L46{link/include/ableton/link/Measurement.hpp#L46}]]
+C_0014262394471254652999 ..> C_0013581892756519222113 [[../../link/include/ableton/link/Measurement.hpp#L50{link/include/ableton/link/Measurement.hpp#L50}]]
+C_0014262394471254652999 o-- C_0001131375505872234058 [[../../link/include/ableton/link/Measurement.hpp#L256{link/include/ableton/link/Measurement.hpp#L256}]] : +mIo
+C_0014262394471254652999 --> C_0014207555924708176052 [[../../link/include/ableton/link/Measurement.hpp#L257{link/include/ableton/link/Measurement.hpp#L257}]] : +mpImpl
+C_0014207555924708176052 --+ C_0014262394471254652999
+C_0014207555924708176052 ..> C_0000308584798729065537 [[../../link/include/ableton/link/Measurement.hpp#L70{link/include/ableton/link/Measurement.hpp#L70}]]
+C_0014207555924708176052 ..> C_0001131375505872234058 [[../../link/include/ableton/link/Measurement.hpp#L74{link/include/ableton/link/Measurement.hpp#L74}]]
+C_0014207555924708176052 ..> C_0013581892756519222113 [[../../link/include/ableton/link/Measurement.hpp#L74{link/include/ableton/link/Measurement.hpp#L74}]]
+C_0014207555924708176052 o-- C_0012617968137351947864 [[../../link/include/ableton/link/Measurement.hpp#L245{link/include/ableton/link/Measurement.hpp#L245}]] : +mSessionId
+C_0002062278969528170761 ..> C_0012617968137351947864 [[../../link/include/ableton/link/PingResponder.hpp#L44{link/include/ableton/link/PingResponder.hpp#L44}]]
+C_0002062278969528170761 ..> C_0013510428399531029150 [[../../link/include/ableton/link/PingResponder.hpp#L45{link/include/ableton/link/PingResponder.hpp#L45}]]
+C_0002062278969528170761 ..> C_0013581892756519222113 [[../../link/include/ableton/link/PingResponder.hpp#L47{link/include/ableton/link/PingResponder.hpp#L47}]]
+C_0002062278969528170761 o-- C_0009222341400250365243 [[../../link/include/ableton/link/PingResponder.hpp#L154{link/include/ableton/link/PingResponder.hpp#L154}]] : -mIo
+C_0002062278969528170761 --> C_0016144381113229487086 [[../../link/include/ableton/link/PingResponder.hpp#L155{link/include/ableton/link/PingResponder.hpp#L155}]] : -mpImpl
+C_0016144381113229487086 --+ C_0002062278969528170761
+C_0016144381113229487086 ..> C_0009222341400250365243 [[../../link/include/ableton/link/PingResponder.hpp#L80{link/include/ableton/link/PingResponder.hpp#L80}]]
+C_0016144381113229487086 ..> C_0013581892756519222113 [[../../link/include/ableton/link/PingResponder.hpp#L80{link/include/ableton/link/PingResponder.hpp#L80}]]
+C_0016144381113229487086 o-- C_0012617968137351947864 [[../../link/include/ableton/link/PingResponder.hpp#L147{link/include/ableton/link/PingResponder.hpp#L147}]] : +mSessionId
+C_0016144381113229487086 o-- C_0013510428399531029150 [[../../link/include/ableton/link/PingResponder.hpp#L148{link/include/ableton/link/PingResponder.hpp#L148}]] : +mGhostXForm
+C_0017491529114499315868 ..> C_0013510428399531029150 [[../../link/include/ableton/link/MeasurementService.hpp#L47{link/include/ableton/link/MeasurementService.hpp#L47}]]
+C_0017491529114499315868 ..> C_0013581892756519222113 [[../../link/include/ableton/link/MeasurementService.hpp#L49{link/include/ableton/link/MeasurementService.hpp#L49}]]
+C_0017491529114499315868 ..> C_0000308584798729065537 [[../../link/include/ableton/link/MeasurementService.hpp#L72{link/include/ableton/link/MeasurementService.hpp#L72}]]
+C_0017491529114499315868 o-- C_0012617968137351947864 [[../../link/include/ableton/link/MeasurementService.hpp#L134{link/include/ableton/link/MeasurementService.hpp#L134}]] : -mMeasurementMap
+C_0017491529114499315868 o-- C_0014262394471254652999 [[../../link/include/ableton/link/MeasurementService.hpp#L134{link/include/ableton/link/MeasurementService.hpp#L134}]] : -mMeasurementMap
+C_0017491529114499315868 o-- C_0001131375505872234058 [[../../link/include/ableton/link/MeasurementService.hpp#L136{link/include/ableton/link/MeasurementService.hpp#L136}]] : -mIo
+C_0017491529114499315868 o-- C_0002062278969528170761 [[../../link/include/ableton/link/MeasurementService.hpp#L137{link/include/ableton/link/MeasurementService.hpp#L137}]] : -mPingResponder
+C_0011198482714382928025 --+ C_0017491529114499315868
+C_0011198482714382928025 o-- C_0012617968137351947864 [[../../link/include/ableton/link/MeasurementService.hpp#L126{link/include/ableton/link/MeasurementService.hpp#L126}]] : +mNodeId
+C_0011111560964845290770 ..|> C_0017491529114499315868
+C_0008638512425111603009 ..> C_0013581892756519222113 [[../../link/include/ableton/link/Gateway.hpp#L35{link/include/ableton/link/Gateway.hpp#L35}]]
+C_0008638512425111603009 ..> C_0004203259649320686375 [[../../link/include/ableton/link/Gateway.hpp#L37{link/include/ableton/link/Gateway.hpp#L37}]]
+C_0008638512425111603009 ..> C_0009894789101290506274 [[../../link/include/ableton/link/Gateway.hpp#L38{link/include/ableton/link/Gateway.hpp#L38}]]
+C_0008638512425111603009 ..> C_0013510428399531029150 [[../../link/include/ableton/link/Gateway.hpp#L39{link/include/ableton/link/Gateway.hpp#L39}]]
+C_0008638512425111603009 ..> C_0000308584798729065537 [[../../link/include/ableton/link/Gateway.hpp#L80{link/include/ableton/link/Gateway.hpp#L80}]]
+C_0008638512425111603009 o-- C_0001131375505872234058 [[../../link/include/ableton/link/Gateway.hpp#L86{link/include/ableton/link/Gateway.hpp#L86}]] : -mIo
+C_0008638512425111603009 o-- C_0011111560964845290770 [[../../link/include/ableton/link/Gateway.hpp#L87{link/include/ableton/link/Gateway.hpp#L87}]] : -mMeasurement
+C_0008638512425111603009 o-- C_0012143698072862709836 [[../../link/include/ableton/link/Gateway.hpp#L89{link/include/ableton/link/Gateway.hpp#L89}]] : -mPeerGateway
+C_0000948620248279302697 ..> C_0001131375505872234058 [[../../link/include/ableton/link/Peers.hpp#L52{link/include/ableton/link/Peers.hpp#L52}]]
+C_0000948620248279302697 ..> C_0013581892756519222113 [[../../link/include/ableton/link/Peers.hpp#L52{link/include/ableton/link/Peers.hpp#L52}]]
+C_0000948620248279302697 ..> C_0012617968137351947864 [[../../link/include/ableton/link/Peers.hpp#L64{link/include/ableton/link/Peers.hpp#L64}]]
+C_0000948620248279302697 ..> C_0000308584798729065537 [[../../link/include/ableton/link/Peers.hpp#L64{link/include/ableton/link/Peers.hpp#L64}]]
+C_0000948620248279302697 ..> C_0011645384771427925717 [[../../link/include/ableton/link/Peers.hpp#L85{link/include/ableton/link/Peers.hpp#L85}]]
+C_0000948620248279302697 --> C_0001035599776538190079 [[../../link/include/ableton/link/Peers.hpp#L351{link/include/ableton/link/Peers.hpp#L351}]] : -mpImpl
+C_0001127802194691244914 --+ C_0000948620248279302697
+C_0001127802194691244914 --> C_0001035599776538190079 [[../../link/include/ableton/link/Peers.hpp#L166{link/include/ableton/link/Peers.hpp#L166}]] : +mpImpl
+C_0001035599776538190079 --+ C_0000948620248279302697
+C_0001035599776538190079 ..> C_0013581892756519222113 [[../../link/include/ableton/link/Peers.hpp#L179{link/include/ableton/link/Peers.hpp#L179}]]
+C_0001035599776538190079 ..> C_0012617968137351947864 [[../../link/include/ableton/link/Peers.hpp#L258{link/include/ableton/link/Peers.hpp#L258}]]
+C_0001035599776538190079 ..> C_0011645384771427925717 [[../../link/include/ableton/link/Peers.hpp#L306{link/include/ableton/link/Peers.hpp#L306}]]
+C_0001035599776538190079 ..> C_0012358011593250270552 [[../../link/include/ableton/link/Peers.hpp#L314{link/include/ableton/link/Peers.hpp#L314}]]
+C_0001035599776538190079 o-- C_0001131375505872234058 [[../../link/include/ableton/link/Peers.hpp#L337{link/include/ableton/link/Peers.hpp#L337}]] : +mIo
+C_0001035599776538190079 o-- C_0000308584798729065537 [[../../link/include/ableton/link/Peers.hpp#L341{link/include/ableton/link/Peers.hpp#L341}]] : +mPeers
+C_0005432132762106152081 --+ C_0001035599776538190079
+C_0005432132762106152081 ..> C_0000308584798729065537 [[../../link/include/ableton/link/Peers.hpp#L323{link/include/ableton/link/Peers.hpp#L323}]]
+C_0000589431344028888711 --+ C_0001035599776538190079
+C_0000589431344028888711 ..> C_0000308584798729065537 [[../../link/include/ableton/link/Peers.hpp#L331{link/include/ableton/link/Peers.hpp#L331}]]
+C_0008852077351697300514 --+ C_0000948620248279302697
+C_0008852077351697300514 ..> C_0000308584798729065537 [[../../link/include/ableton/link/Peers.hpp#L346{link/include/ableton/link/Peers.hpp#L346}]]
+C_0008852077351697300514 --> C_0012617968137351947864 [[../../link/include/ableton/link/Peers.hpp#L348{link/include/ableton/link/Peers.hpp#L348}]] : +sid
+C_0010154884633107695036 ..> C_0018217046274144954853 [[../../link/include/ableton/link/TripleBuffer.hpp#L60{link/include/ableton/link/TripleBuffer.hpp#L60}]]
+C_0006528244793579092272 o-- C_0011645384771427925717 [[../../link/include/ableton/link/SessionState.hpp#L39{link/include/ableton/link/SessionState.hpp#L39}]] : +timeline
+C_0006528244793579092272 o-- C_0012358011593250270552 [[../../link/include/ableton/link/SessionState.hpp#L40{link/include/ableton/link/SessionState.hpp#L40}]] : +startStopState
+C_0006528244793579092272 o-- C_0013510428399531029150 [[../../link/include/ableton/link/SessionState.hpp#L41{link/include/ableton/link/SessionState.hpp#L41}]] : +ghostXForm
+C_0016988520896126150923 o-- C_0011645384771427925717 [[../../link/include/ableton/link/SessionState.hpp#L57{link/include/ableton/link/SessionState.hpp#L57}]] : +timeline
+C_0016988520896126150923 o-- C_0017288818338831973044 [[../../link/include/ableton/link/SessionState.hpp#L58{link/include/ableton/link/SessionState.hpp#L58}]] : +startStopState
+C_0014273705094975702091 ..> C_0016988520896126150923
+C_0014273705094975702091 ..|> C_0010154884633107695036
+C_0007373617270378440618 o-- C_0016988520896126150923 [[../../link/include/ableton/link/SessionState.hpp#L87{link/include/ableton/link/SessionState.hpp#L87}]] : -mState
+C_0007373617270378440618 o-- C_0014273705094975702091 [[../../link/include/ableton/link/SessionState.hpp#L88{link/include/ableton/link/SessionState.hpp#L88}]] : -mRtState
+C_0005798267089558824068 o-- C_0011645384771427925717 [[../../link/include/ableton/link/SessionState.hpp#L93{link/include/ableton/link/SessionState.hpp#L93}]] : +timeline
+C_0005798267089558824068 o-- C_0017288818338831973044 [[../../link/include/ableton/link/SessionState.hpp#L94{link/include/ableton/link/SessionState.hpp#L94}]] : +startStopState
+C_0004871818730877239039 ..> C_0011645384771427925717
+C_0004871818730877239039 ..|> C_0018217046274144954853
+C_0011589413040359344663 ..> C_0017288818338831973044
+C_0011589413040359344663 ..|> C_0018217046274144954853
+C_0011204211524726445450 o-- C_0004871818730877239039 [[../../link/include/ableton/link/SessionState.hpp#L101{link/include/ableton/link/SessionState.hpp#L101}]] : +timeline
+C_0011204211524726445450 o-- C_0011589413040359344663 [[../../link/include/ableton/link/SessionState.hpp#L102{link/include/ableton/link/SessionState.hpp#L102}]] : +startStopState
+C_0009432981908971746053 o-- C_0011645384771427925717 [[../../link/include/ableton/link/SessionState.hpp#L108{link/include/ableton/link/SessionState.hpp#L108}]] : +timeline
+C_0009432981908971746053 o-- C_0017326837616585458791 [[../../link/include/ableton/link/SessionState.hpp#L109{link/include/ableton/link/SessionState.hpp#L109}]] : +startStopState
+C_0005688216107647678470 o-- C_0013510428399531029150 [[../../link/include/ableton/link/Sessions.hpp#L33{link/include/ableton/link/Sessions.hpp#L33}]] : +xform
+C_0009091506509306271937 o-- C_0012617968137351947864 [[../../link/include/ableton/link/Sessions.hpp#L39{link/include/ableton/link/Sessions.hpp#L39}]] : +sessionId
+C_0009091506509306271937 o-- C_0011645384771427925717 [[../../link/include/ableton/link/Sessions.hpp#L40{link/include/ableton/link/Sessions.hpp#L40}]] : +timeline
+C_0009091506509306271937 o-- C_0005688216107647678470 [[../../link/include/ableton/link/Sessions.hpp#L41{link/include/ableton/link/Sessions.hpp#L41}]] : +measurement
+C_0001368357810380146546 ..> C_0013581892756519222113 [[../../link/include/ableton/link/Sessions.hpp#L55{link/include/ableton/link/Sessions.hpp#L55}]]
+C_0001368357810380146546 ..> C_0011645384771427925717 [[../../link/include/ableton/link/Sessions.hpp#L76{link/include/ableton/link/Sessions.hpp#L76}]]
+C_0001368357810380146546 ..> C_0012617968137351947864 [[../../link/include/ableton/link/Sessions.hpp#L80{link/include/ableton/link/Sessions.hpp#L80}]]
+C_0001368357810380146546 ..> C_0013510428399531029150 [[../../link/include/ableton/link/Sessions.hpp#L131{link/include/ableton/link/Sessions.hpp#L131}]]
+C_0001368357810380146546 o-- C_0004391464078061842940 [[../../link/include/ableton/link/Sessions.hpp#L273{link/include/ableton/link/Sessions.hpp#L273}]] : -mPeers
+C_0001368357810380146546 o-- C_0009091506509306271937 [[../../link/include/ableton/link/Sessions.hpp#L276{link/include/ableton/link/Sessions.hpp#L276}]] : -mCurrent
+C_0001368357810380146546 o-- C_0001131375505872234058 [[../../link/include/ableton/link/Sessions.hpp#L277{link/include/ableton/link/Sessions.hpp#L277}]] : -mIo
+C_0001368357810380146546 o-- C_0009091506509306271937 [[../../link/include/ableton/link/Sessions.hpp#L280{link/include/ableton/link/Sessions.hpp#L280}]] : -mOtherSessions
+C_0004145133301196481424 --+ C_0001368357810380146546
+C_0004145133301196481424 ..> C_0013510428399531029150 [[../../link/include/ableton/link/Sessions.hpp#L246{link/include/ableton/link/Sessions.hpp#L246}]]
+C_0004145133301196481424 o-- C_0012617968137351947864 [[../../link/include/ableton/link/Sessions.hpp#L261{link/include/ableton/link/Sessions.hpp#L261}]] : +mSessionId
+C_0009965850489372808437 --+ C_0001368357810380146546
+C_0009965850489372808437 ..> C_0009091506509306271937 [[../../link/include/ableton/link/Sessions.hpp#L266{link/include/ableton/link/Sessions.hpp#L266}]]
+C_0009061327468577160716 ..|> C_0000948620248279302697
+C_0015723257742234779664 ..> C_0009061327468577160716
+C_0015723257742234779664 ..|> C_0001368357810380146546
+C_0017261369167630401119 ..> C_0011912240950756466864 [[../../link/include/ableton/link/Controller.hpp#L128{link/include/ableton/link/Controller.hpp#L128}]]
+C_0017261369167630401119 ..> C_0016988520896126150923 [[../../link/include/ableton/link/Controller.hpp#L216{link/include/ableton/link/Controller.hpp#L216}]]
+C_0017261369167630401119 ..> C_0011204211524726445450 [[../../link/include/ableton/link/Controller.hpp#L220{link/include/ableton/link/Controller.hpp#L220}]]
+C_0017261369167630401119 ..> C_0011645384771427925717 [[../../link/include/ableton/link/Controller.hpp#L350{link/include/ableton/link/Controller.hpp#L350}]]
+C_0017261369167630401119 ..> C_0013510428399531029150 [[../../link/include/ableton/link/Controller.hpp#L350{link/include/ableton/link/Controller.hpp#L350}]]
+C_0017261369167630401119 ..> C_0012358011593250270552 [[../../link/include/ableton/link/Controller.hpp#L405{link/include/ableton/link/Controller.hpp#L405}]]
+C_0017261369167630401119 ..> C_0009091506509306271937 [[../../link/include/ableton/link/Controller.hpp#L504{link/include/ableton/link/Controller.hpp#L504}]]
+C_0017261369167630401119 o-- C_0012617968137351947864 [[../../link/include/ableton/link/Controller.hpp#L774{link/include/ableton/link/Controller.hpp#L774}]] : -mNodeId
+C_0017261369167630401119 o-- C_0012617968137351947864 [[../../link/include/ableton/link/Controller.hpp#L775{link/include/ableton/link/Controller.hpp#L775}]] : -mSessionId
+C_0017261369167630401119 o-- C_0006528244793579092272 [[../../link/include/ableton/link/Controller.hpp#L778{link/include/ableton/link/Controller.hpp#L778}]] : -mSessionState
+C_0017261369167630401119 o-- C_0007373617270378440618 [[../../link/include/ableton/link/Controller.hpp#L780{link/include/ableton/link/Controller.hpp#L780}]] : -mClientState
+C_0017261369167630401119 o-- C_0005798267089558824068 [[../../link/include/ableton/link/Controller.hpp#L783{link/include/ableton/link/Controller.hpp#L783}]] : -mRtClientState
+C_0017261369167630401119 o-- C_0002657429278655465769 [[../../link/include/ableton/link/Controller.hpp#L786{link/include/ableton/link/Controller.hpp#L786}]] : -mSessionPeerCounter
+C_0017261369167630401119 o-- C_0001131375505872234058 [[../../link/include/ableton/link/Controller.hpp#L792{link/include/ableton/link/Controller.hpp#L792}]] : -mIo
+C_0017261369167630401119 o-- C_0009061327468577160716 [[../../link/include/ableton/link/Controller.hpp#L794{link/include/ableton/link/Controller.hpp#L794}]] : -mPeers
+C_0017261369167630401119 o-- C_0015723257742234779664 [[../../link/include/ableton/link/Controller.hpp#L801{link/include/ableton/link/Controller.hpp#L801}]] : -mSessions
+C_0017261369167630401119 o-- C_0010876146078925346743 [[../../link/include/ableton/link/Controller.hpp#L806{link/include/ableton/link/Controller.hpp#L806}]] : -mDiscovery
+C_0017261369167630401119 o-- C_0004509800815029520821 [[../../link/include/ableton/link/Controller.hpp#L808{link/include/ableton/link/Controller.hpp#L808}]] : -mRtClientStateSetter
+C_0013290425362827833836 --+ C_0017261369167630401119
+C_0013290425362827833836 ..> C_0012617968137351947864 [[../../link/include/ableton/link/Controller.hpp#L554{link/include/ableton/link/Controller.hpp#L554}]]
+C_0013290425362827833836 ..> C_0011645384771427925717 [[../../link/include/ableton/link/Controller.hpp#L554{link/include/ableton/link/Controller.hpp#L554}]]
+C_0008575548874153200386 ..|> C_0010154884633107695036
+C_0004544596298097424958 ..> C_0017288818338831973044
+C_0004544596298097424958 ..|> C_0010154884633107695036
+C_0004509800815029520821 --+ C_0017261369167630401119
+C_0004509800815029520821 ..> C_0011204211524726445450 [[../../link/include/ableton/link/Controller.hpp#L588{link/include/ableton/link/Controller.hpp#L588}]]
+C_0004509800815029520821 o-- C_0008575548874153200386 [[../../link/include/ableton/link/Controller.hpp#L646{link/include/ableton/link/Controller.hpp#L646}]] : -mTimelineBuffer
+C_0004509800815029520821 o-- C_0004544596298097424958 [[../../link/include/ableton/link/Controller.hpp#L647{link/include/ableton/link/Controller.hpp#L647}]] : -mStartStopStateBuffer
+C_0001848999684698171081 --+ C_0017261369167630401119
+C_0001848999684698171081 ..> C_0012617968137351947864 [[../../link/include/ableton/link/Controller.hpp#L653{link/include/ableton/link/Controller.hpp#L653}]]
+C_0001848999684698171081 ..> C_0012358011593250270552 [[../../link/include/ableton/link/Controller.hpp#L653{link/include/ableton/link/Controller.hpp#L653}]]
+C_0002657429278655465769 --+ C_0017261369167630401119
+C_0006609274754762915585 --+ C_0017261369167630401119
+C_0001730358650380847755 --+ C_0017261369167630401119
+C_0001730358650380847755 ..> C_0009091506509306271937 [[../../link/include/ableton/link/Controller.hpp#L723{link/include/ableton/link/Controller.hpp#L723}]]
+C_0007135173034336617849 ..|> C_0008638512425111603009
+C_0011470704149262072807 --+ C_0017261369167630401119
+C_0011470704149262072807 ..> C_0009894789101290506274 [[../../link/include/ableton/link/Controller.hpp#L741{link/include/ableton/link/Controller.hpp#L741}]]
+C_0011470704149262072807 ..> C_0013510428399531029150 [[../../link/include/ableton/link/Controller.hpp#L741{link/include/ableton/link/Controller.hpp#L741}]]
+C_0011470704149262072807 ..> C_0017875042668168701430 [[../../link/include/ableton/link/Controller.hpp#L742{link/include/ableton/link/Controller.hpp#L742}]]
+C_0011470704149262072807 ..> C_0013581892756519222113 [[../../link/include/ableton/link/Controller.hpp#L742{link/include/ableton/link/Controller.hpp#L742}]]
+C_0011470704149262072807 ..> C_0007135173034336617849
+C_0011470704149262072807 ..> C_0008638512425111603009 [[../../link/include/ableton/link/Controller.hpp#L741{link/include/ableton/link/Controller.hpp#L741}]]
+C_0005497836592094054396 --+ C_0017261369167630401119
+C_0005497836592094054396 ..> C_0004567008859247160437 [[../../link/include/ableton/link/Controller.hpp#L761{link/include/ableton/link/Controller.hpp#L761}]]
+C_0015763108226484995546 ..|> C_0000948620248279302697
+C_0006726947903244173926 --> C_0000423369631438061784 [[../../link/include/ableton/platforms/asio/AsioTimer.hpp#L130{link/include/ableton/platforms/asio/AsioTimer.hpp#L130}]] : -mpAsyncHandler
+C_0000423369631438061784 --+ C_0006726947903244173926
+C_0005217833332379751619 --> C_0016255881005115250961 [[../../link/include/ableton/platforms/asio/Socket.hpp#L104{link/include/ableton/platforms/asio/Socket.hpp#L104}]] : +mpImpl
+C_0016255881005115250961 --+ C_0005217833332379751619
+C_0018213745905633295181 ..> C_0006726947903244173926 [[../../link/include/ableton/platforms/asio/Context.hpp#L203{link/include/ableton/platforms/asio/Context.hpp#L203}]]
+C_0003147155559487256184 ..|> C_0010026512982255184757
+C_0005700165624695286141 ..|> C_0005217833332379751619
+C_0007046740063223162954 --+ C_0018213745905633295181
+C_0007046740063223162954 ..> C_0018314914493619814473 [[../../link/include/ableton/platforms/asio/Context.hpp#L223{link/include/ableton/platforms/asio/Context.hpp#L223}]]
+C_0018314914493619814473 --+ C_0007046740063223162954
+C_0011728790663986644745 ..> C_0016557247693832345661
+C_0011728790663986644745 ..> C_0000397181047301399976
+C_0011728790663986644745 ..> C_0013476723083132700233
+C_0011728790663986644745 ..|> C_0018213745905633295181
+C_0006459761763011069453 ..> C_0013581892756519222113 [[../../include/Tunnel.hpp#L60{include/Tunnel.hpp#L60}]]
+C_0006459761763011069453 ..> C_0004541482571396657670 [[../../include/Tunnel.hpp#L66{include/Tunnel.hpp#L66}]]
+C_0006459761763011069453 ..> C_0012617968137351947864 [[../../include/Tunnel.hpp#L68{include/Tunnel.hpp#L68}]]
+C_0006459761763011069453 ..> C_0012633945119722369964 [[../../include/Tunnel.hpp#L149{include/Tunnel.hpp#L149}]]
+C_0006459761763011069453 o-- C_0001131375505872234058 [[../../include/Tunnel.hpp#L94{include/Tunnel.hpp#L94}]] : #mIo
+C_0012633945119722369964 --+ C_0006459761763011069453
+C_0012633945119722369964 o-- C_0012617968137351947864 [[../../include/Tunnel.hpp#L99{include/Tunnel.hpp#L99}]] : +from_node
+C_0012633945119722369964 o-- C_0004541482571396657670 [[../../include/Tunnel.hpp#L100{include/Tunnel.hpp#L100}]] : +type
+C_0017876867996830728415 o-- C_0003556045973203622332 [[../../include/ShmTunnel.hpp#L37{include/ShmTunnel.hpp#L37}]] : +messages
+C_0003556045973203622332 --+ C_0017876867996830728415
+C_0013764544516210845908 o-- C_0017876867996830728415 [[../../include/ShmTunnel.hpp#L89{include/ShmTunnel.hpp#L89}]] : +broadcast
+C_0016379296392773741188 ..|> C_0013764544516210845908
+C_0015762918578374910425 ..> C_0001131375505872234058 [[../../include/ShmTunnel.hpp#L103{include/ShmTunnel.hpp#L103}]]
+C_0015762918578374910425 ..> C_0013581892756519222113 [[../../include/ShmTunnel.hpp#L103{include/ShmTunnel.hpp#L103}]]
+C_0015762918578374910425 ..> C_0004541482571396657670 [[../../include/ShmTunnel.hpp#L162{include/ShmTunnel.hpp#L162}]]
+C_0015762918578374910425 --> C_0016379296392773741188 [[../../include/ShmTunnel.hpp#L279{include/ShmTunnel.hpp#L279}]] : #mSharedMemory
+C_0015762918578374910425 --> C_0013764544516210845908 [[../../include/ShmTunnel.hpp#L279{include/ShmTunnel.hpp#L279}]] : #mSharedMemory
+C_0015762918578374910425 o-- C_0012617968137351947864 [[../../include/ShmTunnel.hpp#L285{include/ShmTunnel.hpp#L285}]] : #remoteNodeIdToTunnelClientIdx
+C_0006459761763011069453 <|-- C_0015762918578374910425
+C_0005373282550404570970 ..|> C_0006459761763011069453
+C_0010593313124311170038 ..|> C_0010593313124311170038
+C_0008476819794371106395 --+ C_0010593313124311170038
+C_0008476819794371106395 ..> C_0012617968137351947864 [[../../include/TunnelGateway.hpp#L414{include/TunnelGateway.hpp#L414}]]
+C_0008365168909652084304 --+ C_0010593313124311170038
+C_0008365168909652084304 ..> C_0001131375505872234058 [[../../include/TunnelGateway.hpp#L434{include/TunnelGateway.hpp#L434}]]
+C_0008365168909652084304 ..> C_0013581892756519222113 [[../../include/TunnelGateway.hpp#L434{include/TunnelGateway.hpp#L434}]]
+C_0008365168909652084304 o-- C_0012617968137351947864 [[../../include/TunnelGateway.hpp#L502{include/TunnelGateway.hpp#L502}]] : +mRemoteNodeId
+C_0010411543860225158201 --+ C_0010593313124311170038
+C_0010411543860225158201 ..> C_0001131375505872234058 [[../../include/TunnelGateway.hpp#L512{include/TunnelGateway.hpp#L512}]]
+C_0010411543860225158201 ..> C_0013581892756519222113 [[../../include/TunnelGateway.hpp#L512{include/TunnelGateway.hpp#L512}]]
+C_0010411543860225158201 o-- C_0012617968137351947864 [[../../include/TunnelGateway.hpp#L555{include/TunnelGateway.hpp#L555}]] : +mRemoteNodeId
+C_0013148409519418638014 --+ C_0010593313124311170038
+C_0003780551810750959622 ..|> C_0010593313124311170038
+C_0017728501927810665993 ..> C_0003780551810750959622
+C_0017728501927810665993 ..|> C_0006459761763011069453
+C_0005219908206309761451 o-- C_0001131375505872234058 [[../../include/Controller.hpp#L169{include/Controller.hpp#L169}]] : #mIo
+C_0005219908206309761451 o-- C_0009894789101290506274 [[../../include/Controller.hpp#L170{include/Controller.hpp#L170}]] : #notParticipatingNodeState
+C_0005219908206309761451 o-- C_0017728501927810665993 [[../../include/Controller.hpp#L171{include/Controller.hpp#L171}]] : #mTunnel
+C_0005219908206309761451 o-- C_0007860177675989104079 [[../../include/Controller.hpp#L172{include/Controller.hpp#L172}]] : #gatewayDiscovery
+C_0005219908206309761451 o-- C_0003180397618426701989 [[../../include/Controller.hpp#L173{include/Controller.hpp#L173}]] : #mSessionPeerCounter
+C_0005219908206309761451 o-- C_0015763108226484995546 [[../../include/Controller.hpp#L174{include/Controller.hpp#L174}]] : #mLocalPeers
+C_0012137232085835393161 --+ C_0005219908206309761451
+C_0012137232085835393161 ..> C_0012617968137351947864 [[../../include/Controller.hpp#L33{include/Controller.hpp#L33}]]
+C_0012137232085835393161 ..> C_0011645384771427925717 [[../../include/Controller.hpp#L33{include/Controller.hpp#L33}]]
+C_0014893914361701937548 --+ C_0005219908206309761451
+C_0014893914361701937548 ..> C_0012617968137351947864 [[../../include/Controller.hpp#L43{include/Controller.hpp#L43}]]
+C_0014893914361701937548 ..> C_0012358011593250270552 [[../../include/Controller.hpp#L44{include/Controller.hpp#L44}]]
+C_0003180397618426701989 --+ C_0005219908206309761451
+C_0007081774418164518505 ..|> C_0010593313124311170038
+C_0008893932608749322217 --+ C_0005219908206309761451
+C_0008893932608749322217 ..> C_0009894789101290506274 [[../../include/Controller.hpp#L133{include/Controller.hpp#L133}]]
+C_0008893932608749322217 ..> C_0009222341400250365243 [[../../include/Controller.hpp#L134{include/Controller.hpp#L134}]]
+C_0008893932608749322217 ..> C_0013581892756519222113 [[../../include/Controller.hpp#L134{include/Controller.hpp#L134}]]
+C_0008893932608749322217 ..> C_0007081774418164518505
+C_0008893932608749322217 ..> C_0010593313124311170038 [[../../include/Controller.hpp#L133{include/Controller.hpp#L133}]]
+C_0001511337248524793897 --+ C_0005219908206309761451
+C_0001511337248524793897 ..> C_0004567008859247160437 [[../../include/Controller.hpp#L154{include/Controller.hpp#L154}]]
+C_0009153599117261602804 ..> C_0011728790663986644745
+C_0009153599117261602804 ..|> C_0005219908206309761451
+C_0016499713838075782238 o-- C_0009153599117261602804 [[../../include/LinkExtender.hpp#L28{include/LinkExtender.hpp#L28}]] : -mController
+
+'Generated with clang-uml, version 0.6.2
+'LLVM version Ubuntu clang version 18.1.3 (1ubuntu1)
+@enduml

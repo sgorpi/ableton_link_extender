@@ -1,0 +1,122 @@
+@startuml
+class "ableton::extender::Tunnel<IoContext,Gateway>" as C_0006459761763011069453
+class C_0006459761763011069453 [[../../include/Tunnel.hpp#L52{include/Tunnel.hpp#L52}]] {
+__
+}
+class "ableton::extender::Tunnel::MessageContext" as C_0012633945119722369964
+class C_0012633945119722369964 [[../../include/Tunnel.hpp#L96{include/Tunnel.hpp#L96}]] {
+__
+}
+class "ableton::extender::SharedMessages<MessageBuffer>" as C_0017876867996830728415
+class C_0017876867996830728415 [[../../include/ShmTunnel.hpp#L28{include/ShmTunnel.hpp#L28}]] {
+__
+}
+class "ableton::extender::SharedMessages::Message" as C_0003556045973203622332
+class C_0003556045973203622332 [[../../include/ShmTunnel.hpp#L30{include/ShmTunnel.hpp#L30}]] {
+__
+}
+class "ableton::extender::SharedMemory<MessageBuffer>" as C_0013764544516210845908
+class C_0013764544516210845908 [[../../include/ShmTunnel.hpp#L86{include/ShmTunnel.hpp#L86}]] {
+__
+}
+class "ableton::extender::SharedMemory<std::array<uint8_t,v1::kMaxMessageSize>>" as C_0016379296392773741188
+class C_0016379296392773741188 [[../../include/ShmTunnel.hpp#L279{include/ShmTunnel.hpp#L279}]] {
+__
+}
+class "ableton::extender::ShmTunnel<IoContext,Gateway>" as C_0015762918578374910425
+class C_0015762918578374910425 [[../../include/ShmTunnel.hpp#L96{include/ShmTunnel.hpp#L96}]] {
+__
+}
+class "ableton::extender::Tunnel<Gateway,TunnelGateway<PeerObserver,IoContext>>" as C_0005373282550404570970
+class C_0005373282550404570970 [[../../include/TunnelGateway.hpp#L40{include/TunnelGateway.hpp#L40}]] {
+__
+}
+class "ableton::extender::TunnelGateway<PeerObserver,IoContext>" as C_0010593313124311170038
+class C_0010593313124311170038 [[../../include/TunnelGateway.hpp#L26{include/TunnelGateway.hpp#L26}]] {
+__
+}
+class "ableton::extender::TunnelGateway::SocketReceiver<Handler>" as C_0008476819794371106395
+class C_0008476819794371106395 [[../../include/TunnelGateway.hpp#L412{include/TunnelGateway.hpp#L412}]] {
+__
+}
+class "ableton::extender::TunnelGateway::RemoteNodeSurrogate" as C_0008365168909652084304
+class C_0008365168909652084304 [[../../include/TunnelGateway.hpp#L432{include/TunnelGateway.hpp#L432}]] {
+__
+}
+class "ableton::extender::TunnelGateway::RemoteMeasurementSurrogate" as C_0010411543860225158201
+class C_0010411543860225158201 [[../../include/TunnelGateway.hpp#L509{include/TunnelGateway.hpp#L509}]] {
+__
+}
+class "ableton::extender::TunnelGateway::LocalNodeEndpoints" as C_0013148409519418638014
+class C_0013148409519418638014 [[../../include/TunnelGateway.hpp#L561{include/TunnelGateway.hpp#L561}]] {
+__
+}
+class "ableton::extender::TunnelGateway<typename Peers<typename Injected<type-parameter-0-0>::type &,reference_wrapper<SessionPeerCounter>,SessionTimelineCallback,SessionStartStopStateCallback>::GatewayObserver,typename Injected<type-parameter-0-0>::type &>" as C_0003780551810750959622
+class C_0003780551810750959622 [[../../include/Controller.hpp#L171{include/Controller.hpp#L171}]] {
+__
+}
+class "ableton::extender::Tunnel<IoContext &,ableton::extender::TunnelGateway<typename Peers<typename Injected<type-parameter-0-0>::type &,reference_wrapper<SessionPeerCounter>,SessionTimelineCallback,SessionStartStopStateCallback>::GatewayObserver,typename Injected<type-parameter-0-0>::type &>>" as C_0017728501927810665993
+class C_0017728501927810665993 [[../../include/Controller.hpp#L171{include/Controller.hpp#L171}]] {
+__
+}
+class "ableton::extender::Controller<IoContext>" as C_0005219908206309761451
+class C_0005219908206309761451 [[../../include/Controller.hpp#L28{include/Controller.hpp#L28}]] {
+__
+}
+class "ableton::extender::Controller::SessionTimelineCallback" as C_0012137232085835393161
+class C_0012137232085835393161 [[../../include/Controller.hpp#L31{include/Controller.hpp#L31}]] {
+__
+}
+class "ableton::extender::Controller::SessionStartStopStateCallback" as C_0014893914361701937548
+class C_0014893914361701937548 [[../../include/Controller.hpp#L41{include/Controller.hpp#L41}]] {
+__
+}
+class "ableton::extender::Controller::SessionPeerCounter" as C_0003180397618426701989
+class C_0003180397618426701989 [[../../include/Controller.hpp#L53{include/Controller.hpp#L53}]] {
+__
+}
+class "ableton::extender::TunnelGateway<typename ControllerPeers::GatewayObserver,IoType &>" as C_0007081774418164518505
+class C_0007081774418164518505 [[../../include/Controller.hpp#L133{include/Controller.hpp#L133}]] {
+__
+}
+class "ableton::extender::Controller::GatewayFactory" as C_0008893932608749322217
+class C_0008893932608749322217 [[../../include/Controller.hpp#L131{include/Controller.hpp#L131}]] {
+__
+}
+class "ableton::extender::Controller::UdpSendExceptionHandler" as C_0001511337248524793897
+class C_0001511337248524793897 [[../../include/Controller.hpp#L151{include/Controller.hpp#L151}]] {
+__
+}
+C_0006459761763011069453 ..> C_0012633945119722369964 [[../../include/Tunnel.hpp#L149{include/Tunnel.hpp#L149}]]
+C_0012633945119722369964 --+ C_0006459761763011069453
+C_0017876867996830728415 o-- C_0003556045973203622332 [[../../include/ShmTunnel.hpp#L37{include/ShmTunnel.hpp#L37}]] : +messages
+C_0003556045973203622332 --+ C_0017876867996830728415
+C_0013764544516210845908 o-- C_0017876867996830728415 [[../../include/ShmTunnel.hpp#L89{include/ShmTunnel.hpp#L89}]] : +broadcast
+C_0016379296392773741188 ..|> C_0013764544516210845908
+C_0015762918578374910425 --> C_0016379296392773741188 [[../../include/ShmTunnel.hpp#L279{include/ShmTunnel.hpp#L279}]] : #mSharedMemory
+C_0015762918578374910425 --> C_0013764544516210845908 [[../../include/ShmTunnel.hpp#L279{include/ShmTunnel.hpp#L279}]] : #mSharedMemory
+C_0006459761763011069453 <|-- C_0015762918578374910425
+C_0005373282550404570970 ..|> C_0006459761763011069453
+C_0010593313124311170038 ..|> C_0010593313124311170038
+C_0008476819794371106395 --+ C_0010593313124311170038
+C_0008365168909652084304 --+ C_0010593313124311170038
+C_0010411543860225158201 --+ C_0010593313124311170038
+C_0013148409519418638014 --+ C_0010593313124311170038
+C_0003780551810750959622 ..|> C_0010593313124311170038
+C_0017728501927810665993 ..> C_0003780551810750959622
+C_0017728501927810665993 ..|> C_0006459761763011069453
+C_0005219908206309761451 o-- C_0017728501927810665993 [[../../include/Controller.hpp#L171{include/Controller.hpp#L171}]] : #mTunnel
+C_0005219908206309761451 o-- C_0008893932608749322217 [[../../include/Controller.hpp#L172{include/Controller.hpp#L172}]] : #gatewayDiscovery
+C_0005219908206309761451 o-- C_0003180397618426701989 [[../../include/Controller.hpp#L173{include/Controller.hpp#L173}]] : #mSessionPeerCounter
+C_0012137232085835393161 --+ C_0005219908206309761451
+C_0014893914361701937548 --+ C_0005219908206309761451
+C_0003180397618426701989 --+ C_0005219908206309761451
+C_0007081774418164518505 ..|> C_0010593313124311170038
+C_0008893932608749322217 --+ C_0005219908206309761451
+C_0008893932608749322217 ..> C_0007081774418164518505
+C_0008893932608749322217 ..> C_0010593313124311170038 [[../../include/Controller.hpp#L133{include/Controller.hpp#L133}]]
+C_0001511337248524793897 --+ C_0005219908206309761451
+
+'Generated with clang-uml, version 0.6.2
+'LLVM version Ubuntu clang version 18.1.3 (1ubuntu1)
+@enduml

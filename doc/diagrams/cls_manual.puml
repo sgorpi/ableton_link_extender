@@ -1,0 +1,56 @@
+@startuml
+
+skinparam backgroundColor grey
+
+class "ableton::discovery::Discovery" as Discovery
+
+LinkExtender *-- Controller
+Controller *-- Discovery
+Controller *-- LocalPeers
+Controller *-- RemotePeers
+Controller *-- Tunnel
+Controller *-- GatewayFactory
+GatewayFactory --> Tunnel
+GatewayFactory --> TunnelGateway : builds
+Discovery --> "1..*" GatewayFactory
+Tunnel <|-- ShmTunnel
+Tunnel <|-- UdpTunnel
+Tunnel o-- "1..*" TunnelGateway
+TunnelGateway *-- "1..*" RemoteNodeSurrogate
+TunnelGateway *-- "1..*" RemoteMeasurementSurrogate
+TunnelGateway "1..1" *-- Socket
+TunnelGateway --> LocalPeers : Observer
+TunnelGateway --> RemotePeers : Observer
+TunnelGateway --> Tunnel
+UdpTunnel "1..2" *-- Socket
+
+RemoteNodeSurrogate "1..2" *-- Socket
+RemoteMeasurementSurrogate "1..1" *-- Socket
+
+class Tunnel {
+  #std::vector<TunnelGateway> gateways
+  
+  +void forward()
+  #void forward_locally()
+  #... encapsulate(...)
+  #... decapsulate(...)
+}
+
+class TunnelGateway {
+  #TunnelPtr tunnel
+  #Socket multicastReceiveSocket
+  #std::map<NodeId, RemoteNodeSurrogate*> remote_nodes
+  #std::map<NodeId, RemoteMeasurementSurrogate*> remote_measurement_endpoints
+
+}
+
+class RemoteNodeSurrogate {
+  +Socket stateSocket
+  +Socket measurementSocket
+}
+
+class RemoteMeasurementSurrogate {
+  +Socket measurementSocket
+}
+
+@enduml
