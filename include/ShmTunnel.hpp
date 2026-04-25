@@ -99,6 +99,13 @@ class ShmTunnel : public Tunnel<IoContext, Gateway>
     using MessageBuffer = ableton::discovery::v1::MessageBuffer;
     using NodeId = ableton::link::NodeId;
 
+    enum TunnelClientState
+    {
+        TUNNEL_CLIENT_STATE_UNKNOWN = 0,
+        TUNNEL_CLIENT_STATE_HELLO,
+        TUNNEL_CLIENT_STATE_CONNECTED,
+    };
+
 
     ShmTunnel(ableton::util::Injected<IoContext> io)
         : Tunnel<IoContext, Gateway>(std::move(io))
@@ -224,8 +231,21 @@ class ShmTunnel : public Tunnel<IoContext, Gateway>
                 case TUNNEL_HELLO:
                     // todo: have some ping-pong protocol to check if the other end of the
                     // tunnel is alive
+                    if (tunnelClientStates.find(source) == tunnelClientStates.end())
+                    {
+                        tunnelClientStates[source] = TUNNEL_CLIENT_STATE_HELLO;
+                        debug(this->mIo->log()) << "Tunnel client observed: " << source;
+                        say_in_tunnel(TUNNEL_HELLO, "ello", source);
+                    }
+                    else
+                    {
+                        tunnelClientStates[source] = TUNNEL_CLIENT_STATE_CONNECTED;
+                        debug(this->mIo->log()) << "Tunnel client connected: " << source;
+                    }
                     break;
                 case TUNNEL_BYE:
+                    tunnelClientStates.erase(source);
+                    debug(this->mIo->log()) << "Tunnel client disconnected: " << source;
                     break;
                 case BYEBYE:
                 {
@@ -283,9 +303,12 @@ class ShmTunnel : public Tunnel<IoContext, Gateway>
     size_t mClientId;
     std::atomic<bool> is_running;
     std::map<NodeId, size_t> remoteNodeIdToTunnelClientIdx;
+    std::map<size_t, TunnelClientState> tunnelClientStates;
 
 
-    void say_in_tunnel(const TunnelMessageType message_type, const std::string msg)
+    void say_in_tunnel(const TunnelMessageType message_type,
+                       const std::string msg,
+                       std::optional<size_t> to_tunnel_client_idx = std::nullopt)
     {
         // ToDo: expect other Tunnel instance to say 'ello' if they haven't seen me
         // before
@@ -296,11 +319,20 @@ class ShmTunnel : public Tunnel<IoContext, Gateway>
         if (!optional_msg)
             return;
 
-        for (size_t clientIdx = 0; clientIdx < mSharedMemory->num_clients; ++clientIdx)
+        if (to_tunnel_client_idx)
         {
-            if (mClientId != clientIdx)
+            mSharedMemory->broadcast[*to_tunnel_client_idx].push(
+                mClientId, *optional_msg);
+        }
+        else
+        {
+            for (size_t clientIdx = 0; clientIdx < mSharedMemory->num_clients;
+                 ++clientIdx)
             {
-                mSharedMemory->broadcast[clientIdx].push(mClientId, *optional_msg);
+                if (mClientId != clientIdx)
+                {
+                    mSharedMemory->broadcast[clientIdx].push(mClientId, *optional_msg);
+                }
             }
         }
     }

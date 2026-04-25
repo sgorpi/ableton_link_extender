@@ -378,6 +378,7 @@ class TunnelGateway
             default:
                 to = localNodeIdToEndpointMap.at(*to_node_id).stateEndpoint;
                 socket = getSocketForRemoteNode(from_node_id);
+                break;
             }
 
             if (messageType != MEASUREMENT_PING && messageType != BYEBYE)
