@@ -13,8 +13,10 @@ using IoContext = link::platform::IoContext;
 class LinkExtender
 {
   public:
-    LinkExtender()
-        : mController()
+    using Config = extender::Controller<IoContext>::Config;
+
+    explicit LinkExtender(Config config = {})
+        : mController(std::move(config))
     {
     }
 
@@ -24,7 +26,20 @@ class LinkExtender
     LinkExtender(LinkExtender&&) = delete;
     LinkExtender& operator=(LinkExtender&&) = delete;
 
+    // Add a remote peer to the UDP tunnel at runtime.
+    // No-op when running in shared-memory (local) mode.
+    void addPeer(LINK_ASIO_NAMESPACE::ip::udp::endpoint ep)
+    {
+        mController.addPeer(std::move(ep));
+    }
+
+    // Remove a previously added peer from the UDP tunnel.
+    void removePeer(LINK_ASIO_NAMESPACE::ip::udp::endpoint ep)
+    {
+        mController.removePeer(std::move(ep));
+    }
+
   private:
-    ableton::extender::Controller<IoContext> mController;
+    extender::Controller<IoContext> mController;
 };
 } // namespace ableton

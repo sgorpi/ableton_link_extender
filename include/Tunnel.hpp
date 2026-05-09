@@ -39,8 +39,9 @@ multiple times.
 
 enum TunnelMessageType : uint8_t
 {
-    TUNNEL_HELLO = 'i',     // in tunnel only
-    TUNNEL_BYE = 'y',       // in tunnel only
+    TUNNEL_HELLO = 'i',     // in tunnel only: connection handshake
+    TUNNEL_BYE = 'y',       // in tunnel only: graceful disconnect
+    TUNNEL_KEEPALIVE = 'k', // in tunnel only: keepalive/heartbeat
     BROADCAST = 'b',        // ableton discovery
     UNICAST = 'u',          // ableton discovery
     BYEBYE = 'z',           // ableton discovery
@@ -167,6 +168,10 @@ class Tunnel
         switch (context.type)
         {
         case TUNNEL_HELLO:
+        case TUNNEL_BYE:
+        case TUNNEL_KEEPALIVE:
+        case BROADCAST:
+        case BYEBYE:
             break;
         case MEASUREMENT_PING:
         case MEASUREMENT_PONG:
@@ -174,8 +179,7 @@ class Tunnel
             std::tie(context.to_node, begin) =
                 ableton::discovery::Deserialize<NodeId>::fromNetworkByteStream(
                     begin, end);
-            // fall through
-        case BROADCAST:
+            break;
         default:
             break;
         }

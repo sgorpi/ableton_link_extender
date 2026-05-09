@@ -6,6 +6,10 @@
 
 #include "ShmTunnel.hpp"
 #include "TunnelGateway.hpp"
+#include "UdpTunnel.hpp"
+
+#include <iostream>
+#include <vector>
 
 namespace ableton
 {
@@ -82,10 +86,19 @@ class Controller
         TunnelGateway<typename ControllerPeers::GatewayObserver, IoType&>;
     using TunnelGatewayPtr = std::shared_ptr<ControllerTunnelGateway>;
 
-    Controller()
+    // Configuration passed at construction time. When peers is non-empty a
+    // UdpTunnel is created; otherwise the ShmTunnel proof-of-concept is used.
+    struct Config
+    {
+        uint16_t tunnel_port = 12345;
+        std::vector<LINK_ASIO_NAMESPACE::ip::udp::endpoint> peers;
+    };
+
+    Controller(Config config = {})
         : mIo(IoContext{UdpSendExceptionHandler{this}})
+        , mConfig(std::move(config))
         , notParticipatingNodeState({})
-        , mTunnel(makeShmTunnel<IoType&, ControllerTunnelGateway>(util::injectRef(*mIo)))
+        , mTunnel(createTunnel())
         , gatewayDiscovery(std::chrono::seconds(5),
                            std::move(notParticipatingNodeState),
                            GatewayFactory{*this},
@@ -127,6 +140,22 @@ class Controller
         mIo->stop();
     }
 
+    // Add a remote peer to the UdpTunnel at runtime (no-op if using ShmTunnel).
+    void addPeer(LINK_ASIO_NAMESPACE::ip::udp::endpoint ep)
+    {
+        using UdpT = UdpTunnel<IoType&, ControllerTunnelGateway>;
+        if (auto* t = dynamic_cast<UdpT*>(mTunnel.get()))
+            t->addPeer(std::move(ep));
+    }
+
+    // Remove a previously added peer (no-op if using ShmTunnel).
+    void removePeer(LINK_ASIO_NAMESPACE::ip::udp::endpoint ep)
+    {
+        using UdpT = UdpTunnel<IoType&, ControllerTunnelGateway>;
+        if (auto* t = dynamic_cast<UdpT*>(mTunnel.get()))
+            t->removePeer(std::move(ep));
+    }
+
   protected:
     struct GatewayFactory
     {
@@ -166,9 +195,20 @@ class Controller
     using TunnelGateways =
         ableton::discovery::PeerGateways<NodeState, GatewayFactory, IoType&>;
 
+    TunnelPtr<IoType&, ControllerTunnelGateway> createTunnel()
+    {
+        if (mConfig.peers.empty())
+        {
+            return makeShmTunnel<IoType&, ControllerTunnelGateway>(util::injectRef(*mIo));
+        }
+        return makeUdpTunnel<IoType&, ControllerTunnelGateway>(
+            util::injectRef(*mIo), mConfig.tunnel_port, mConfig.peers);
+    }
+
     ableton::util::Injected<IoContext> mIo;
+    Config mConfig;
     NodeState notParticipatingNodeState;
-    TunnelPtr<IoContext&, ControllerTunnelGateway> mTunnel;
+    TunnelPtr<IoType&, ControllerTunnelGateway> mTunnel;
     TunnelGateways gatewayDiscovery;
     SessionPeerCounter mSessionPeerCounter;
     ControllerPeers mLocalPeers;

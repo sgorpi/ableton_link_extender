@@ -2,6 +2,7 @@
 #include <exception>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #if defined(LINK_PLATFORM_UNIX)
@@ -18,9 +19,9 @@ struct State
     std::atomic<bool> running;
     ableton::LinkExtender linkExtender;
 
-    State()
+    explicit State(ableton::LinkExtender::Config config)
         : running(true)
-        , linkExtender()
+        , linkExtender(std::move(config))
     {
     }
 };
@@ -119,44 +120,96 @@ void input(State& state)
         }
     }
 }
+
+// Parse "host:port" into a UDP endpoint.  Only dotted-decimal IPv4 addresses
+// are accepted for now; hostname resolution can be added later.
+LINK_ASIO_NAMESPACE::ip::udp::endpoint parseEndpoint(const std::string& s)
+{
+    const auto colon = s.rfind(':');
+    if (colon == std::string::npos || colon == 0 || colon + 1 == s.size())
+        throw std::invalid_argument("peer must be in host:port form, got: " + s);
+
+    const std::string host = s.substr(0, colon);
+    const uint16_t port = static_cast<uint16_t>(std::stoul(s.substr(colon + 1)));
+
+    LINK_ASIO_NAMESPACE::error_code ec;
+    const auto addr = LINK_ASIO_NAMESPACE::ip::make_address(host, ec);
+    if (ec)
+        throw std::invalid_argument("cannot parse IP address '" + host + "': " + ec.message()
+                                    + "  (hostname resolution not yet supported)");
+
+    return {addr, port};
+}
+
+void printUsage(const char* prog)
+{
+    std::cerr << "Usage: " << prog << " [--port N] [--peer host:port] ...\n"
+              << "\n"
+              << "  --port N           Local UDP port to listen on (default: 12345)\n"
+              << "  --peer host:port   Remote ALE instance to connect to (repeatable)\n"
+              << "\n"
+              << "  When no --peer is given the shared-memory tunnel is used instead\n"
+              << "  (useful for testing with network namespaces on the same host).\n"
+              << "\n"
+              << "  Keys while running:\n"
+              << "    q   quit\n";
+}
+
+ableton::LinkExtender::Config parseArgs(int argc, char** argv)
+{
+    ableton::LinkExtender::Config config;
+
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg = argv[i];
+
+        if (arg == "--help" || arg == "-h")
+        {
+            printUsage(argv[0]);
+            std::exit(0);
+        }
+        else if (arg == "--port")
+        {
+            if (++i >= argc)
+                throw std::invalid_argument("--port requires a value");
+            config.tunnel_port = static_cast<uint16_t>(std::stoul(argv[i]));
+        }
+        else if (arg == "--peer")
+        {
+            if (++i >= argc)
+                throw std::invalid_argument("--peer requires a value");
+            config.peers.push_back(parseEndpoint(argv[i]));
+        }
+        else
+        {
+            throw std::invalid_argument("unknown argument: " + arg);
+        }
+    }
+
+    return config;
+}
+
 } // namespace
 
-int main(int, char**)
+int main(int argc, char** argv)
 {
     try
     {
-        // TODO: add option to bind to specific subnet / interface only (if system
-        // has multiple) i.s.o. using all
+        auto config = parseArgs(argc, argv);
 
-        /**
-         * Ableton Link Extender (ALE)
-         *   extend LAN link to WAN peers
-         *
-         * A 'peer' is a unique ableton link client.
-         * - If on the same network (LAN-peer, local), it is identified by (source IP,
-         * port)
-         * - If on a different network (WAN-peer, remote), it is identified by a port
-         * (owned by ALE)
-         *
-         * Overview:
-         *   Listen on interface (create 2 sockets):
-         *   1) a multicast-receive socket,
-         *   2) a unicast-remote-receive socket.
-         * For each received LAN state (unicast/broadcast):
-         *   - if from broadcast: re-broadcast at WAN-peer
-         *   - if from unicast: re-cast at WAN-peer
-         * For each received LAN measurement (unicast)
-         *   - if ping: 'from' is a random endpoint, 'to' is the measurement endpoint of a
-         * RemoteNodeSurrogate
-         *   - if pong: 'from' is a measurement endpoint of a LAN node, 'to' is a created
-         * measurement endpoint For each remote received message:
-         *   - if it is a state message from a new WAN-peer: Create new
-         *     RemoteNodeSurrogate with relevant sockets
-         *   - if it is a measurement message from a new WAN-peer: Create new
-         *     RemoteMeasurementSurrogate with socket. Create a random NodeId for it.
-         */
+        if (config.peers.empty())
+        {
+            std::cout << "No --peer arguments given; using shared-memory tunnel.\n";
+        }
+        else
+        {
+            std::cout << "UDP tunnel on port " << config.tunnel_port << " with "
+                      << config.peers.size() << " peer(s):\n";
+            for (const auto& ep : config.peers)
+                std::cout << "  " << ep << "\n";
+        }
 
-        State state;
+        State state{std::move(config)};
         std::thread thread(input, std::ref(state));
         disableBufferedInput();
 
@@ -170,7 +223,12 @@ int main(int, char**)
         enableBufferedInput();
         thread.join();
     }
-
+    catch (const std::invalid_argument& e)
+    {
+        std::cerr << "Error: " << e.what() << "\n\n";
+        printUsage(argv[0]);
+        return 1;
+    }
     catch (std::exception& e)
     {
         print_exception(e);
