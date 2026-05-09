@@ -1,0 +1,34 @@
+# CMake
+build*/
+.cache/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+_deps/
+
+# C/C++ compiled artifacts
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+*.out
+*.exe
+*.dSYM/
+
+# Valgrind
+valgrind.out
+*.valgrind
+
+# clang-uml diagram backups
+*.puml.bak
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
