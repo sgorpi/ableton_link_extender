@@ -5,6 +5,8 @@ on:
     branches: [ master, main ]
   pull_request:
     branches: [ master, main ]
+  release:
+    types: [ published ]
 
 jobs:
   build:
@@ -31,6 +33,9 @@ jobs:
             name: macos-x86_64
             cmake_extra: -DCMAKE_OSX_ARCHITECTURES=x86_64
             binary: ableton_link_extender
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -60,3 +65,9 @@ jobs:
         with:
           name: ${{ matrix.name }}
           path: build/${{ matrix.binary }}
+
+      - name: Upload to release
+        if: github.event_name == 'release'
+        run: gh release upload ${{ github.ref_name }} build/${{ matrix.binary }}#${{ matrix.name }}-${{ matrix.binary }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

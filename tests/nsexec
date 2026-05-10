@@ -1,0 +1,10 @@
+#! /bin/bash
+if [[ "$USER" != "root" || "$SUDO_USER" == "" ]]; then
+        echo Call this script from sudo
+        exit 1
+fi
+NS="$1"
+shift
+PWD=`pwd`
+ip netns exec "$NS" su - "$SUDO_USER" -c "cd '$PWD'; $*"
+
