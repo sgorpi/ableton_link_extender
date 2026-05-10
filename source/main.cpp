@@ -133,24 +133,54 @@ void input(State& state)
     }
 }
 
-// Parse "host:port" into a UDP endpoint.  Only dotted-decimal IPv4 addresses
-// are accepted for now; hostname resolution can be added later.
+// Parse "host:port" or "[ipv6]:port" into a UDP endpoint.
+// Accepts numeric IPv4/IPv6 addresses and hostnames (resolved via DNS).
 LINK_ASIO_NAMESPACE::ip::udp::endpoint parseEndpoint(const std::string& s)
 {
-    const auto colon = s.rfind(':');
-    if (colon == std::string::npos || colon == 0 || colon + 1 == s.size())
-        throw std::invalid_argument("peer must be in host:port form, got: " + s);
+    std::string host;
+    std::string portStr;
 
-    const std::string host = s.substr(0, colon);
-    const uint16_t port = static_cast<uint16_t>(std::stoul(s.substr(colon + 1)));
+    if (!s.empty() && s.front() == '[')
+    {
+        // IPv6 bracketed form: [addr]:port
+        const auto close = s.find(']');
+        if (close == std::string::npos)
+            throw std::invalid_argument("peer has unmatched '[', got: " + s);
+        if (close + 1 >= s.size() || s[close + 1] != ':')
+            throw std::invalid_argument("peer must be in [ipv6]:port form, got: " + s);
+        host = s.substr(1, close - 1);
+        portStr = s.substr(close + 2);
+    }
+    else
+    {
+        // IPv4 form: addr:port
+        const auto colon = s.rfind(':');
+        if (colon == std::string::npos || colon == 0 || colon + 1 == s.size())
+            throw std::invalid_argument("peer must be in host:port form, got: " + s);
+        host = s.substr(0, colon);
+        portStr = s.substr(colon + 1);
+    }
 
+    if (portStr.empty())
+        throw std::invalid_argument("peer is missing port, got: " + s);
+
+    // Try numeric address first (no DNS round-trip needed for the common case).
     LINK_ASIO_NAMESPACE::error_code ec;
     const auto addr = LINK_ASIO_NAMESPACE::ip::make_address(host, ec);
-    if (ec)
-        throw std::invalid_argument("cannot parse IP address '" + host + "': " + ec.message()
-                                    + "  (hostname resolution not yet supported)");
+    if (!ec)
+        return {addr, static_cast<uint16_t>(std::stoul(portStr))};
 
-    return {addr, port};
+    // Fall back to hostname resolution.
+    LINK_ASIO_NAMESPACE::io_context ioc;
+    LINK_ASIO_NAMESPACE::ip::udp::resolver resolver{ioc};
+    const auto results = resolver.resolve(host, portStr, ec);
+    if (ec)
+        throw std::invalid_argument(
+            "cannot resolve '" + host + "': " + ec.message());
+    if (results.empty())
+        throw std::invalid_argument("no addresses found for '" + host + "'");
+
+    return results.begin()->endpoint();
 }
 
 void printUsage(const char* prog)
@@ -159,6 +189,7 @@ void printUsage(const char* prog)
               << "\n"
               << "  --port N           Local UDP port to listen on (default: 12345)\n"
               << "  --peer host:port   Remote ALE instance to connect to (repeatable)\n"
+              << "                     host may be a hostname, IPv4, or [IPv6] address\n"
               << "\n"
               << "  When no --peer is given the shared-memory tunnel is used instead\n"
               << "  (useful for testing with network namespaces on the same host).\n"
