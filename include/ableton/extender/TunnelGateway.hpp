@@ -517,8 +517,8 @@ class TunnelGateway : public std::enable_shared_from_this<
         void listen()
         {
             is_running = true;
-            measurementSocket.receive(SocketReceiver(
-                util::makeAsyncSafe(this->shared_from_this()), mRemoteNodeId));
+            auto h = util::makeAsyncSafe(this->shared_from_this());
+            measurementSocket.receive(SocketReceiver<decltype(h)>(std::move(h), mRemoteNodeId));
         }
 
         void stop_listening() { is_running = false; }
