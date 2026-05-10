@@ -224,8 +224,8 @@ class ShmTunnel : public Tunnel<IoContext, Gateway>
             if (optional_msg_and_context)
             {
                 auto context = optional_msg_and_context.value().first;
-                auto messageBegin = optional_msg_and_context.value().second.begin();
-                auto messageEnd = messageBegin + context.size;
+                auto* messageBegin = optional_msg_and_context.value().second.data();
+                auto* messageEnd = messageBegin + context.size;
                 switch (context.type)
                 {
                 case TUNNEL_HELLO:

@@ -257,8 +257,8 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
             return;
 
         auto& [context, payload_buf] = *result;
-        auto messageBegin = payload_buf.begin();
-        auto messageEnd = messageBegin + static_cast<ptrdiff_t>(context.size);
+        auto* messageBegin = payload_buf.data();
+        auto* messageEnd = messageBegin + context.size;
 
         auto idxIt = mEndpointToPeerIdx.find(from);
 
