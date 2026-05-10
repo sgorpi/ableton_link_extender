@@ -85,6 +85,9 @@ jobs:
 
       - name: Upload to release
         if: github.event_name == 'release'
-        run: gh release upload ${{ github.ref_name }} build/${{ matrix.binary }}#${{ matrix.name }}-${{ matrix.binary }}
+        shell: bash
+        run: |
+          cp build/${{ matrix.binary }} build/${{ matrix.name }}-${{ matrix.binary }}
+          gh release upload ${{ github.ref_name }} build/${{ matrix.name }}-${{ matrix.binary }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
