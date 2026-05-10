@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <map>
 #include <memory>
 
@@ -22,9 +23,10 @@ namespace extender
 using UdpEndpoint = LINK_ASIO_NAMESPACE::ip::udp::endpoint;
 
 
-template <typename PeerObserver, typename IoContext>
+template <typename LocalPeerObserver, typename RemotePeerObserver, typename IoContext>
 class TunnelGateway
-    : public std::enable_shared_from_this<TunnelGateway<PeerObserver, IoContext>>
+    : public std::enable_shared_from_this<
+          TunnelGateway<LocalPeerObserver, RemotePeerObserver, IoContext>>
 {
   public:
     using NodeState = ableton::link::NodeState;
@@ -33,18 +35,26 @@ class TunnelGateway
 
     using Socket = typename util::Injected<IoContext>::type::template Socket<
         ableton::discovery::v1::kMaxMessageSize>;
+    using Timer = typename util::Injected<IoContext>::type::Timer;
+    using TimerError = typename Timer::ErrorCode;
+    using PeerTimeout = std::pair<std::chrono::system_clock::time_point, NodeId>;
+    using PeerTimeouts = std::vector<PeerTimeout>;
 
     TunnelGateway(ableton::util::Injected<IoContext> io,
                   ableton::discovery::IpAddress interface_address,
-                  util::Injected<PeerObserver> observer,
+                  util::Injected<LocalPeerObserver> local_observer,
+                  util::Injected<RemotePeerObserver> remote_observer,
                   TunnelPtr<IoContext, TunnelGateway> tunnel)
         : mIo(std::move(io))
         , local_interface_address(std::move(interface_address))
-        , mObserver(std::move(observer))
+        , mLocalObserver(std::move(local_observer))
+        , mRemoteObserver(std::move(remote_observer))
         , mTunnel(std::move(tunnel))
         , mMulticastReceiveSocket(
               mIo->template openMulticastSocket<ableton::discovery::v1::kMaxMessageSize>(
                   interface_address))
+        , mLocalPruneTimer(mIo->makeTimer())
+        , mRemotePruneTimer(mIo->makeTimer())
     {
         debug(mIo->log()) << "TunnelGateway constructor";
     }
@@ -79,6 +89,8 @@ class TunnelGateway
         mRemoteNodeIdToRemoteMeasurementSurrogate.clear();
         localNodeIdToEndpointMap.clear();
         localMeasurementEndpointToNodeId.clear();
+        mLocalPeerTimeouts.clear();
+        mRemotePeerTimeouts.clear();
     }
 
     template <typename Handler>
@@ -99,6 +111,11 @@ class TunnelGateway
                        std::optional<NodeId> to_node_id = std::nullopt)
     {
         forwardMessage(BYEBYE, from_node_id, messageBegin, messageEnd, to_node_id);
+        peerLeft(*mLocalObserver, from_node_id);
+        mLocalPeerTimeouts.erase(
+            std::remove_if(mLocalPeerTimeouts.begin(), mLocalPeerTimeouts.end(),
+                [&from_node_id](const PeerTimeout& pt) { return pt.second == from_node_id; }),
+            mLocalPeerTimeouts.end());
         // and clean up local administration
         localMeasurementEndpointToNodeId.erase(createKeyFromEndpoint(
             localNodeIdToEndpointMap[from_node_id].measurementEndpoint));
@@ -124,6 +141,8 @@ class TunnelGateway
             auto key = createKeyFromEndpoint(state.endpoint);
             debug(mIo->log()) << "Received peer state with endpoint: " << key;
             localMeasurementEndpointToNodeId[key] = header.ident;
+            sawPeer(*mLocalObserver, state);
+            updateLocalPeerTimeout(state.ident(), header.ttl);
 
             // we don't really care about the content, but the measurement endpoint at
             // the end shall be stripped out, so that on the other end of the tunnel
@@ -379,6 +398,15 @@ class TunnelGateway
                 to = localNodeIdToEndpointMap.at(*to_node_id).stateEndpoint;
                 socket = getSocketForRemoteNode(from_node_id);
                 break;
+            }
+
+            if (messageType == BROADCAST || messageType == UNICAST)
+            {
+                observeRemotePeerState(from_node_id, messageBegin, messageEnd);
+            }
+            else if (messageType == BYEBYE)
+            {
+                onRemotePeerLeft(from_node_id);
             }
 
             if (messageType != MEASUREMENT_PING && messageType != BYEBYE)
@@ -643,12 +671,162 @@ class TunnelGateway
         return {v6Address, endpoint.port()};
     }
 
+    struct TimeoutCompare
+    {
+        bool operator()(const PeerTimeout& lhs, const PeerTimeout& rhs) const
+        {
+            return lhs.first < rhs.first;
+        }
+    };
+
+    void updateLocalPeerTimeout(const NodeId& nodeId, uint8_t ttl)
+    {
+        using namespace std;
+        mLocalPeerTimeouts.erase(
+            remove_if(mLocalPeerTimeouts.begin(), mLocalPeerTimeouts.end(),
+                [&nodeId](const PeerTimeout& pt) { return pt.second == nodeId; }),
+            mLocalPeerTimeouts.end());
+        auto newTimeout = make_pair(mLocalPruneTimer.now() + chrono::seconds(ttl), nodeId);
+        mLocalPeerTimeouts.insert(
+            upper_bound(mLocalPeerTimeouts.begin(), mLocalPeerTimeouts.end(),
+                        newTimeout, TimeoutCompare{}),
+            move(newTimeout));
+        scheduleLocalPruning();
+    }
+
+    void scheduleLocalPruning()
+    {
+        if (!mLocalPeerTimeouts.empty())
+        {
+            const auto t = mLocalPeerTimeouts.front().first + std::chrono::seconds(1);
+            mLocalPruneTimer.expires_at(t);
+            mLocalPruneTimer.async_wait([this](const TimerError e)
+            {
+                if (!e)
+                    pruneLocalPeers();
+            });
+        }
+    }
+
+    void pruneLocalPeers()
+    {
+        using namespace std;
+        if (!is_running)
+            return;
+        const auto test = make_pair(mLocalPruneTimer.now(), NodeId{});
+        const auto endExpired = lower_bound(
+            mLocalPeerTimeouts.begin(), mLocalPeerTimeouts.end(), test, TimeoutCompare{});
+        for_each(mLocalPeerTimeouts.begin(), endExpired, [this](const PeerTimeout& pto)
+        {
+            peerTimedOut(*mLocalObserver, pto.second);
+            auto endpointIt = localNodeIdToEndpointMap.find(pto.second);
+            if (endpointIt != localNodeIdToEndpointMap.end())
+            {
+                localMeasurementEndpointToNodeId.erase(
+                    createKeyFromEndpoint(endpointIt->second.measurementEndpoint));
+                localNodeIdToEndpointMap.erase(endpointIt);
+            }
+        });
+        mLocalPeerTimeouts.erase(mLocalPeerTimeouts.begin(), endExpired);
+        scheduleLocalPruning();
+    }
+
+    template <typename It>
+    void observeRemotePeerState(const NodeId& from_node_id, It messageBegin, It messageEnd)
+    {
+        try
+        {
+            const auto result =
+                ableton::discovery::v1::parseMessageHeader<NodeId>(messageBegin, messageEnd);
+            auto peerState = PeerState::fromPayload(from_node_id, result.second, messageEnd);
+            sawPeer(*mRemoteObserver, peerState);
+            updateRemotePeerTimeout(peerState.ident(), result.first.ttl);
+        }
+        catch (const std::runtime_error& err)
+        {
+            debug(mIo->log()) << "Could not parse remote peer state for observation: "
+                              << err.what();
+        }
+    }
+
+    void onRemotePeerLeft(const NodeId& nodeId)
+    {
+        peerLeft(*mRemoteObserver, nodeId);
+        mRemotePeerTimeouts.erase(
+            std::remove_if(mRemotePeerTimeouts.begin(), mRemotePeerTimeouts.end(),
+                [&nodeId](const PeerTimeout& pt) { return pt.second == nodeId; }),
+            mRemotePeerTimeouts.end());
+    }
+
+    void updateRemotePeerTimeout(const NodeId& nodeId, uint8_t ttl)
+    {
+        using namespace std;
+        mRemotePeerTimeouts.erase(
+            remove_if(mRemotePeerTimeouts.begin(), mRemotePeerTimeouts.end(),
+                [&nodeId](const PeerTimeout& pt) { return pt.second == nodeId; }),
+            mRemotePeerTimeouts.end());
+        auto newTimeout = make_pair(mRemotePruneTimer.now() + chrono::seconds(ttl), nodeId);
+        mRemotePeerTimeouts.insert(
+            upper_bound(mRemotePeerTimeouts.begin(), mRemotePeerTimeouts.end(),
+                        newTimeout, TimeoutCompare{}),
+            move(newTimeout));
+        scheduleRemotePruning();
+    }
+
+    void scheduleRemotePruning()
+    {
+        if (!mRemotePeerTimeouts.empty())
+        {
+            const auto t = mRemotePeerTimeouts.front().first + std::chrono::seconds(1);
+            mRemotePruneTimer.expires_at(t);
+            mRemotePruneTimer.async_wait([this](const TimerError e)
+            {
+                if (!e)
+                    pruneRemotePeers();
+            });
+        }
+    }
+
+    void pruneRemotePeers()
+    {
+        using namespace std;
+        if (!is_running)
+            return;
+        const auto test = make_pair(mRemotePruneTimer.now(), NodeId{});
+        const auto endExpired = lower_bound(
+            mRemotePeerTimeouts.begin(), mRemotePeerTimeouts.end(), test, TimeoutCompare{});
+        for_each(mRemotePeerTimeouts.begin(), endExpired, [this](const PeerTimeout& pto)
+        {
+            peerTimedOut(*mRemoteObserver, pto.second);
+            auto it = mRemoteNodeIdToRemoteNodeSurrogate.find(pto.second);
+            if (it != mRemoteNodeIdToRemoteNodeSurrogate.end())
+            {
+                it->second->stop_listening();
+                mRemoteNodeIdToRemoteNodeSurrogate.erase(it);
+            }
+            auto mit = mRemoteNodeIdToRemoteMeasurementSurrogate.find(pto.second);
+            if (mit != mRemoteNodeIdToRemoteMeasurementSurrogate.end())
+            {
+                mit->second->stop_listening();
+                mRemoteNodeIdToRemoteMeasurementSurrogate.erase(mit);
+            }
+        });
+        mRemotePeerTimeouts.erase(mRemotePeerTimeouts.begin(), endExpired);
+        scheduleRemotePruning();
+    }
+
     ableton::util::Injected<IoContext> mIo;
     ableton::discovery::IpAddress local_interface_address;
-    util::Injected<PeerObserver> mObserver;
+    util::Injected<LocalPeerObserver> mLocalObserver;
+    util::Injected<RemotePeerObserver> mRemoteObserver;
     TunnelPtr<IoContext, TunnelGateway> mTunnel;
 
     Socket mMulticastReceiveSocket;
+    Timer mLocalPruneTimer;
+    Timer mRemotePruneTimer;
+    PeerTimeouts mLocalPeerTimeouts;
+    PeerTimeouts mRemotePeerTimeouts;
+
     using RemoteNodeSurrogatePtr = std::shared_ptr<RemoteNodeSurrogate>;
     std::map<NodeId, RemoteNodeSurrogatePtr> mRemoteNodeIdToRemoteNodeSurrogate;
 

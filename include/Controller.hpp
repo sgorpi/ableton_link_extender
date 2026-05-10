@@ -23,9 +23,13 @@ using PeerCountCallback = std::function<void(std::size_t)>;
 using TempoCallback = std::function<void(ableton::link::Tempo)>;
 using StartStopStateCallback = std::function<void(bool)>;
 
-void cb_peer_count(std::size_t count)
+void cb_peer_count_local(std::size_t count)
 {
-    std::cout << "Peer count: " << count << std::endl;
+    std::cout << "Local peer count: " << count << std::endl;
+}
+void cb_peer_count_remote(std::size_t count)
+{
+    std::cout << "Remote peer count: " << count << std::endl;
 }
 
 template <typename IoContext>
@@ -34,9 +38,11 @@ class Controller
   protected:
     struct SessionTimelineCallback
     {
-        void operator()(ableton::link::NodeId id, ableton::link::Timeline timeline)
+        void operator()(ableton::link::SessionId id, ableton::link::Timeline timeline)
         {
-            std::cout << "Session " << id << ": Timeline tempo: " << timeline.tempo.bpm();
+            mController.mSessionId = id;
+            std::cout << "Session " << id << ": Timeline tempo: " << timeline.tempo.bpm()
+                      << std::endl;
         }
 
         Controller& mController;
@@ -56,8 +62,10 @@ class Controller
 
     struct SessionPeerCounter
     {
-        SessionPeerCounter(Controller& controller, PeerCountCallback callback)
-            : mController(controller)
+        using CountFn = std::function<std::size_t()>;
+
+        SessionPeerCounter(CountFn countFn, PeerCountCallback callback)
+            : mCountFn(std::move(countFn))
             , mCallback(std::move(callback))
             , mSessionPeerCount(0)
         {
@@ -65,11 +73,15 @@ class Controller
 
         void operator()()
         {
-            std::cout << "Session Peer Count callback" << mSessionPeerCount << std::endl;
-            mCallback(mSessionPeerCount);
+            const auto count = mCountFn();
+            const auto oldCount = mSessionPeerCount.exchange(count);
+            if (oldCount != count)
+            {
+                mCallback(count);
+            }
         }
 
-        Controller& mController;
+        CountFn mCountFn;
         PeerCountCallback mCallback;
         std::atomic<std::size_t> mSessionPeerCount;
     };
@@ -83,7 +95,9 @@ class Controller
                              SessionStartStopStateCallback>;
 
     using ControllerTunnelGateway =
-        TunnelGateway<typename ControllerPeers::GatewayObserver, IoType&>;
+        TunnelGateway<typename ControllerPeers::GatewayObserver,
+                      typename ControllerPeers::GatewayObserver,
+                      IoType&>;
     using TunnelGatewayPtr = std::shared_ptr<ControllerTunnelGateway>;
 
     // Configuration passed at construction time. When peers is non-empty a
@@ -103,11 +117,20 @@ class Controller
                            std::move(notParticipatingNodeState),
                            GatewayFactory{*this},
                            util::injectRef(*mIo))
-        , mSessionPeerCounter(*this, &cb_peer_count)
+        , mSessionPeerCounter(
+              [this]() { return mLocalPeers.uniqueSessionPeerCount(mSessionId); },
+              &cb_peer_count_local)
         , mLocalPeers(util::injectRef(*mIo),
                       std::ref(mSessionPeerCounter),
                       SessionTimelineCallback{*this},
                       SessionStartStopStateCallback{*this})
+        , mRemoteSessionPeerCounter(
+              [this]() { return mRemotePeers.uniqueSessionPeerCount(mSessionId); },
+              &cb_peer_count_remote)
+        , mRemotePeers(util::injectRef(*mIo),
+                       std::ref(mRemoteSessionPeerCounter),
+                       SessionTimelineCallback{*this},
+                       SessionStartStopStateCallback{*this})
     {
         gatewayDiscovery.enable(true);
     }
@@ -169,6 +192,7 @@ class Controller
                 std::move(io),
                 addr,
                 util::injectVal(makeGatewayObserver(mController.mLocalPeers, addr)),
+                util::injectVal(makeGatewayObserver(mController.mRemotePeers, addr)),
                 mController.mTunnel);
             t->listen();
 
@@ -208,10 +232,13 @@ class Controller
     ableton::util::Injected<IoContext> mIo;
     Config mConfig;
     NodeState notParticipatingNodeState;
+    ableton::link::SessionId mSessionId;
     TunnelPtr<IoType&, ControllerTunnelGateway> mTunnel;
     TunnelGateways gatewayDiscovery;
     SessionPeerCounter mSessionPeerCounter;
     ControllerPeers mLocalPeers;
+    SessionPeerCounter mRemoteSessionPeerCounter;
+    ControllerPeers mRemotePeers;
 };
 } // namespace extender
 } // namespace ableton
