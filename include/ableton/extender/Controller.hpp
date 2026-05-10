@@ -9,6 +9,7 @@
 #include "ableton/extender/UdpTunnel.hpp"
 
 #include <iostream>
+#include <mutex>
 #include <vector>
 
 namespace ableton
@@ -19,18 +20,9 @@ namespace extender
 using NodeState = ableton::link::NodeState;
 using IoContext = ableton::link::platform::IoContext;
 
-using PeerCountCallback = std::function<void(std::size_t)>;
+using PeerCountCallback = std::function<void(std::size_t localPeers, std::size_t remotePeers)>;
 using TempoCallback = std::function<void(ableton::link::Tempo)>;
 using StartStopStateCallback = std::function<void(bool)>;
-
-void cb_peer_count_local(std::size_t count)
-{
-    std::cout << "Local peer count: " << count << std::endl;
-}
-void cb_peer_count_remote(std::size_t count)
-{
-    std::cout << "Remote peer count: " << count << std::endl;
-}
 
 template <typename IoContext>
 class Controller
@@ -41,8 +33,8 @@ class Controller
         void operator()(ableton::link::SessionId id, ableton::link::Timeline timeline)
         {
             mController.mSessionId = id;
-            std::cout << "Session " << id << ": Timeline tempo: " << timeline.tempo.bpm()
-                      << std::endl;
+            std::lock_guard<std::mutex> lock(mController.mCallbackMutex);
+            mController.mTempoCallback(timeline.tempo);
         }
 
         Controller& mController;
@@ -50,11 +42,11 @@ class Controller
 
     struct SessionStartStopStateCallback
     {
-        void operator()(ableton::link::NodeId sessionId,
+        void operator()(ableton::link::NodeId /*sessionId*/,
                         ableton::link::StartStopState startStopState)
         {
-            std::cout << "Session " << sessionId
-                      << " is playing: " << startStopState.isPlaying;
+            std::lock_guard<std::mutex> lock(mController.mCallbackMutex);
+            mController.mStartStopCallback(startStopState.isPlaying);
         }
 
         Controller& mController;
@@ -63,10 +55,11 @@ class Controller
     struct SessionPeerCounter
     {
         using CountFn = std::function<std::size_t()>;
+        using NotifyFn = std::function<void(std::size_t)>;
 
-        SessionPeerCounter(CountFn countFn, PeerCountCallback callback)
+        SessionPeerCounter(CountFn countFn, NotifyFn notify)
             : mCountFn(std::move(countFn))
-            , mCallback(std::move(callback))
+            , mNotify(std::move(notify))
             , mSessionPeerCount(0)
         {
         }
@@ -77,12 +70,12 @@ class Controller
             const auto oldCount = mSessionPeerCount.exchange(count);
             if (oldCount != count)
             {
-                mCallback(count);
+                mNotify(count);
             }
         }
 
         CountFn mCountFn;
-        PeerCountCallback mCallback;
+        NotifyFn mNotify;
         std::atomic<std::size_t> mSessionPeerCount;
     };
 
@@ -119,14 +112,14 @@ class Controller
                            util::injectRef(*mIo))
         , mSessionPeerCounter([this]()
                               { return mLocalPeers.uniqueSessionPeerCount(mSessionId); },
-                              &cb_peer_count_local)
+                              [this](std::size_t) { notifyPeerCount(); })
         , mLocalPeers(util::injectRef(*mIo),
                       std::ref(mSessionPeerCounter),
                       SessionTimelineCallback{*this},
                       SessionStartStopStateCallback{*this})
         , mRemoteSessionPeerCounter(
               [this]() { return mRemotePeers.uniqueSessionPeerCount(mSessionId); },
-              &cb_peer_count_remote)
+              [this](std::size_t) { notifyPeerCount(); })
         , mRemotePeers(util::injectRef(*mIo),
                        std::ref(mRemoteSessionPeerCounter),
                        SessionTimelineCallback{*this},
@@ -179,6 +172,28 @@ class Controller
             t->removePeer(std::move(ep));
     }
 
+    template <typename Callback>
+    void setNumPeersCallback(Callback callback)
+    {
+        std::lock_guard<std::mutex> lock(mCallbackMutex);
+        mPeerCountCallback = [callback](const std::size_t local, const std::size_t remote)
+        { callback(local, remote); };
+    }
+
+    template <typename Callback>
+    void setTempoCallback(Callback callback)
+    {
+        std::lock_guard<std::mutex> lock(mCallbackMutex);
+        mTempoCallback = [callback](const ableton::link::Tempo tempo) { callback(tempo.bpm()); };
+    }
+
+    template <typename Callback>
+    void setStartStopCallback(Callback callback)
+    {
+        std::lock_guard<std::mutex> lock(mCallbackMutex);
+        mStartStopCallback = callback;
+    }
+
   protected:
     struct GatewayFactory
     {
@@ -216,6 +231,14 @@ class Controller
         Controller* mpController;
     };
 
+    void notifyPeerCount()
+    {
+        const auto local = mLocalPeers.uniqueSessionPeerCount(mSessionId);
+        const auto remote = mRemotePeers.uniqueSessionPeerCount(mSessionId);
+        std::lock_guard<std::mutex> lock(mCallbackMutex);
+        mPeerCountCallback(local, remote);
+    }
+
     using TunnelGateways =
         ableton::discovery::PeerGateways<NodeState, GatewayFactory, IoType&>;
 
@@ -228,6 +251,11 @@ class Controller
         return makeUdpTunnel<IoType&, ControllerTunnelGateway>(
             util::injectRef(*mIo), mConfig.tunnel_port, mConfig.peers);
     }
+
+    std::mutex mCallbackMutex;
+    PeerCountCallback mPeerCountCallback = [](std::size_t, std::size_t) {};
+    TempoCallback mTempoCallback = [](ableton::link::Tempo) {};
+    StartStopStateCallback mStartStopCallback = [](bool) {};
 
     ableton::util::Injected<IoContext> mIo;
     Config mConfig;

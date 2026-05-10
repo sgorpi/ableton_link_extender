@@ -17,12 +17,28 @@ namespace
 struct State
 {
     std::atomic<bool> running;
+    std::atomic<std::size_t> localPeers;
+    std::atomic<std::size_t> remotePeers;
+    std::atomic<double> tempo;
+    std::atomic<bool> isPlaying;
     ableton::LinkExtender linkExtender;
 
     explicit State(ableton::LinkExtender::Config config)
         : running(true)
+        , localPeers(0)
+        , remotePeers(0)
+        , tempo(0.0)
+        , isPlaying(false)
         , linkExtender(std::move(config))
     {
+        linkExtender.setNumPeersCallback(
+            [this](std::size_t local, std::size_t remote)
+            {
+                localPeers = local;
+                remotePeers = remote;
+            });
+        linkExtender.setTempoCallback([this](double bpm) { tempo = bpm; });
+        linkExtender.setStartStopCallback([this](bool playing) { isPlaying = playing; });
     }
 };
 
@@ -70,19 +86,15 @@ void clearLine()
 
 void printStateHeader()
 {
-    std::cout << "enabled | num peers | quantum | start stop sync | tempo   | "
-                 "beats   | metro"
-              << std::endl;
+    std::cout << "local peers | remote peers | tempo   | playing" << std::endl;
 }
 
-void printState(State& state)
+void printState(const State& state)
 {
     using namespace std;
-    int numPeers = 0;
-    float beats = 0.0;
-
-    cout << defaultfloat << left << setw(7) << state.running << " | " << setw(9)
-         << numPeers << " | " << fixed << setprecision(2) << setw(7) << beats << " | ";
+    const auto playing = state.isPlaying ? "[playing]" : "[stopped]";
+    cout << left << setw(11) << state.localPeers << " | " << setw(12) << state.remotePeers
+         << " | " << fixed << setprecision(2) << setw(7) << state.tempo << " | " << playing;
     clearLine();
 }
 

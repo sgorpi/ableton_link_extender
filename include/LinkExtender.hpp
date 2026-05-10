@@ -39,6 +39,30 @@ class LinkExtender
         mController.removePeer(std::move(ep));
     }
 
+    // Callback invoked on a Link-managed thread when either the local or remote
+    // peer count changes. Signature: void(std::size_t localPeers, std::size_t remotePeers)
+    template <typename Callback>
+    void setNumPeersCallback(Callback callback)
+    {
+        mController.setNumPeersCallback(std::move(callback));
+    }
+
+    // Callback invoked on a Link-managed thread when the session tempo changes.
+    // Signature: void(double bpm)
+    template <typename Callback>
+    void setTempoCallback(Callback callback)
+    {
+        mController.setTempoCallback(std::move(callback));
+    }
+
+    // Callback invoked on a Link-managed thread when the transport start/stop
+    // state changes. Signature: void(bool isPlaying)
+    template <typename Callback>
+    void setStartStopCallback(Callback callback)
+    {
+        mController.setStartStopCallback(std::move(callback));
+    }
+
   private:
     extender::Controller<IoContext> mController;
 };
