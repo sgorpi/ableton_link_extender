@@ -565,11 +565,16 @@ class TunnelGateway : public std::enable_shared_from_this<
                         const It messageEnd,
                         std::optional<NodeId> to_node_id = std::nullopt)
     {
+        // Bridge from Ableton Link's template-It world to the virtual forward()
+        // interface, which uses raw pointers so it can be virtual. All message
+        // buffers are std::array<uint8_t,N> (contiguous), so this is always safe.
+        const auto* begin_ptr =
+            reinterpret_cast<const unsigned char*>(std::addressof(*messageBegin));
         mTunnel->forward(messageType,
                          this->shared_from_this(),
                          from_node_id,
-                         messageBegin,
-                         messageEnd,
+                         begin_ptr,
+                         begin_ptr + std::distance(messageBegin, messageEnd),
                          to_node_id);
     }
 
