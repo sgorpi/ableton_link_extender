@@ -4,7 +4,11 @@ VERSION 0.1.0
 LANGUAGES C CXX
 )
 
-add_compile_options(-Wall -Wextra -Wpedantic -Wzero-as-null-pointer-constant -Wno-unused-parameter)
+if(MSVC)
+  add_compile_options(/W4 /wd4100)
+else()
+  add_compile_options(-Wall -Wextra -Wpedantic -Wzero-as-null-pointer-constant -Wno-unused-parameter)
+endif()
 
 include(CMakeDependentOption)
 include(CheckSymbolExists)
@@ -20,3 +24,7 @@ target_include_directories(ableton_link_extender PUBLIC ${CMAKE_CURRENT_SOURCE_D
 
 include(link/AbletonLinkConfig.cmake)
 target_link_libraries(ableton_link_extender Ableton::Link)
+
+if(WIN32)
+  target_link_libraries(ableton_link_extender ws2_32 iphlpapi)
+endif()

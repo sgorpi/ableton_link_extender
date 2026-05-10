@@ -1,0 +1,62 @@
+name: Build
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            name: windows-x86_64
+            binary: ableton_link_extender.exe
+
+          - os: ubuntu-24.04
+            name: linux-x86_64
+            binary: ableton_link_extender
+
+          - os: macos-14
+            name: macos-arm64
+            cmake_extra: -DCMAKE_OSX_ARCHITECTURES=arm64
+            binary: ableton_link_extender
+
+          - os: macos-14
+            name: macos-x86_64
+            cmake_extra: -DCMAKE_OSX_ARCHITECTURES=x86_64
+            binary: ableton_link_extender
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Ninja (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y ninja-build
+
+      - name: Set up MSVC environment (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure
+        run: >
+          cmake -G Ninja -B build
+          -DCMAKE_BUILD_TYPE=Release
+          ${{ matrix.cmake_extra }}
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: build/${{ matrix.binary }}
