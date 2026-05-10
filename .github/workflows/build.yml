@@ -51,11 +51,24 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install boost ninja
 
+      - name: Install Boost (Windows)
+        if: runner.os == 'Windows'
+        run: vcpkg install boost-interprocess:x64-windows
+
       - name: Set up MSVC environment (Windows)
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Configure
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        run: >
+          cmake -G Ninja -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DVCPKG_TARGET_TRIPLET=x64-windows
+
+      - name: Configure (non-Windows)
+        if: runner.os != 'Windows'
         run: >
           cmake -G Ninja -B build
           -DCMAKE_BUILD_TYPE=Release

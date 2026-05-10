@@ -541,8 +541,9 @@ class TunnelGateway : public std::enable_shared_from_this<
                                                  mRemoteNodeId);
             if (is_running)
             {
-                measurementSocket.receive(SocketReceiver(
-                    util::makeAsyncSafe(this->shared_from_this()), mRemoteNodeId));
+                auto h2 = util::makeAsyncSafe(this->shared_from_this());
+                measurementSocket.receive(
+                    SocketReceiver<decltype(h2)>(std::move(h2), mRemoteNodeId));
             }
         }
         const NodeId mRemoteNodeId;
