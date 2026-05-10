@@ -43,9 +43,20 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Ninja (Ubuntu)
+      - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get install -y ninja-build
+        run: sudo apt-get install -y ninja-build libboost-dev
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install boost ninja
+
+      - name: Set Boost root (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $d = Get-ChildItem "C:\local" -Filter "boost_*" | Sort-Object -Descending | Select-Object -First 1 -ExpandProperty FullName
+          "BOOST_ROOT=$d" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Set up MSVC environment (Windows)
         if: runner.os == 'Windows'
