@@ -4,7 +4,7 @@
 #include <ableton/link/NodeState.hpp>
 #include <ableton/platforms/Config.hpp>
 
-#include "Controller.hpp"
+#include "ableton/extender/Controller.hpp"
 
 namespace ableton
 {

@@ -5,7 +5,7 @@
 #include <ableton/link/PeerState.hpp>
 #include <ableton/util/Injected.hpp>
 
-#include "Tunnel.hpp"
+#include "ableton/extender/Tunnel.hpp"
 // #include <boost/circular_buffer.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>

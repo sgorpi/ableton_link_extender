@@ -4,7 +4,7 @@
 #include <ableton/link/NodeId.hpp>
 #include <ableton/util/Injected.hpp>
 
-#include "Tunnel.hpp"
+#include "ableton/extender/Tunnel.hpp"
 
 #include <algorithm>
 #include <atomic>

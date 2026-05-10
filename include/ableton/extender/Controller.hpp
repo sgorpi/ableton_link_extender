@@ -4,9 +4,9 @@
 #include <ableton/link/NodeState.hpp>
 #include <ableton/platforms/Config.hpp>
 
-#include "ShmTunnel.hpp"
-#include "TunnelGateway.hpp"
-#include "UdpTunnel.hpp"
+#include "ableton/extender/ShmTunnel.hpp"
+#include "ableton/extender/TunnelGateway.hpp"
+#include "ableton/extender/UdpTunnel.hpp"
 
 #include <iostream>
 #include <vector>
@@ -117,9 +117,9 @@ class Controller
                            std::move(notParticipatingNodeState),
                            GatewayFactory{*this},
                            util::injectRef(*mIo))
-        , mSessionPeerCounter(
-              [this]() { return mLocalPeers.uniqueSessionPeerCount(mSessionId); },
-              &cb_peer_count_local)
+        , mSessionPeerCounter([this]()
+                              { return mLocalPeers.uniqueSessionPeerCount(mSessionId); },
+                              &cb_peer_count_local)
         , mLocalPeers(util::injectRef(*mIo),
                       std::ref(mSessionPeerCounter),
                       SessionTimelineCallback{*this},

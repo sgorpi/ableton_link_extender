@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-ALE="${1:-$(dirname "$0")/build/ableton_link_extender}"
+ALE="${1:-$(dirname "$0")/../build/ableton_link_extender}"
 
 NS0="ns0"
 NS1="ns1"

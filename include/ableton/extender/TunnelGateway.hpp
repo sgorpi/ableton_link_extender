@@ -13,7 +13,7 @@
 #include <ableton/link/PeerState.hpp>
 #include <ableton/link/v1/Messages.hpp>
 
-#include "Tunnel.hpp"
+#include "ableton/extender/Tunnel.hpp"
 
 namespace ableton
 {
@@ -24,9 +24,8 @@ using UdpEndpoint = LINK_ASIO_NAMESPACE::ip::udp::endpoint;
 
 
 template <typename LocalPeerObserver, typename RemotePeerObserver, typename IoContext>
-class TunnelGateway
-    : public std::enable_shared_from_this<
-          TunnelGateway<LocalPeerObserver, RemotePeerObserver, IoContext>>
+class TunnelGateway : public std::enable_shared_from_this<
+                          TunnelGateway<LocalPeerObserver, RemotePeerObserver, IoContext>>
 {
   public:
     using NodeState = ableton::link::NodeState;
@@ -112,10 +111,11 @@ class TunnelGateway
     {
         forwardMessage(BYEBYE, from_node_id, messageBegin, messageEnd, to_node_id);
         peerLeft(*mLocalObserver, from_node_id);
-        mLocalPeerTimeouts.erase(
-            std::remove_if(mLocalPeerTimeouts.begin(), mLocalPeerTimeouts.end(),
-                [&from_node_id](const PeerTimeout& pt) { return pt.second == from_node_id; }),
-            mLocalPeerTimeouts.end());
+        mLocalPeerTimeouts.erase(std::remove_if(mLocalPeerTimeouts.begin(),
+                                                mLocalPeerTimeouts.end(),
+                                                [&from_node_id](const PeerTimeout& pt)
+                                                { return pt.second == from_node_id; }),
+                                 mLocalPeerTimeouts.end());
         // and clean up local administration
         localMeasurementEndpointToNodeId.erase(createKeyFromEndpoint(
             localNodeIdToEndpointMap[from_node_id].measurementEndpoint));
@@ -683,14 +683,17 @@ class TunnelGateway
     {
         using namespace std;
         mLocalPeerTimeouts.erase(
-            remove_if(mLocalPeerTimeouts.begin(), mLocalPeerTimeouts.end(),
-                [&nodeId](const PeerTimeout& pt) { return pt.second == nodeId; }),
+            remove_if(mLocalPeerTimeouts.begin(),
+                      mLocalPeerTimeouts.end(),
+                      [&nodeId](const PeerTimeout& pt) { return pt.second == nodeId; }),
             mLocalPeerTimeouts.end());
-        auto newTimeout = make_pair(mLocalPruneTimer.now() + chrono::seconds(ttl), nodeId);
-        mLocalPeerTimeouts.insert(
-            upper_bound(mLocalPeerTimeouts.begin(), mLocalPeerTimeouts.end(),
-                        newTimeout, TimeoutCompare{}),
-            move(newTimeout));
+        auto newTimeout =
+            make_pair(mLocalPruneTimer.now() + chrono::seconds(ttl), nodeId);
+        mLocalPeerTimeouts.insert(upper_bound(mLocalPeerTimeouts.begin(),
+                                              mLocalPeerTimeouts.end(),
+                                              newTimeout,
+                                              TimeoutCompare{}),
+                                  move(newTimeout));
         scheduleLocalPruning();
     }
 
@@ -700,11 +703,12 @@ class TunnelGateway
         {
             const auto t = mLocalPeerTimeouts.front().first + std::chrono::seconds(1);
             mLocalPruneTimer.expires_at(t);
-            mLocalPruneTimer.async_wait([this](const TimerError e)
-            {
-                if (!e)
-                    pruneLocalPeers();
-            });
+            mLocalPruneTimer.async_wait(
+                [this](const TimerError e)
+                {
+                    if (!e)
+                        pruneLocalPeers();
+                });
         }
     }
 
@@ -716,29 +720,34 @@ class TunnelGateway
         const auto test = make_pair(mLocalPruneTimer.now(), NodeId{});
         const auto endExpired = lower_bound(
             mLocalPeerTimeouts.begin(), mLocalPeerTimeouts.end(), test, TimeoutCompare{});
-        for_each(mLocalPeerTimeouts.begin(), endExpired, [this](const PeerTimeout& pto)
-        {
-            peerTimedOut(*mLocalObserver, pto.second);
-            auto endpointIt = localNodeIdToEndpointMap.find(pto.second);
-            if (endpointIt != localNodeIdToEndpointMap.end())
-            {
-                localMeasurementEndpointToNodeId.erase(
-                    createKeyFromEndpoint(endpointIt->second.measurementEndpoint));
-                localNodeIdToEndpointMap.erase(endpointIt);
-            }
-        });
+        for_each(mLocalPeerTimeouts.begin(),
+                 endExpired,
+                 [this](const PeerTimeout& pto)
+                 {
+                     peerTimedOut(*mLocalObserver, pto.second);
+                     auto endpointIt = localNodeIdToEndpointMap.find(pto.second);
+                     if (endpointIt != localNodeIdToEndpointMap.end())
+                     {
+                         localMeasurementEndpointToNodeId.erase(createKeyFromEndpoint(
+                             endpointIt->second.measurementEndpoint));
+                         localNodeIdToEndpointMap.erase(endpointIt);
+                     }
+                 });
         mLocalPeerTimeouts.erase(mLocalPeerTimeouts.begin(), endExpired);
         scheduleLocalPruning();
     }
 
     template <typename It>
-    void observeRemotePeerState(const NodeId& from_node_id, It messageBegin, It messageEnd)
+    void observeRemotePeerState(const NodeId& from_node_id,
+                                It messageBegin,
+                                It messageEnd)
     {
         try
         {
-            const auto result =
-                ableton::discovery::v1::parseMessageHeader<NodeId>(messageBegin, messageEnd);
-            auto peerState = PeerState::fromPayload(from_node_id, result.second, messageEnd);
+            const auto result = ableton::discovery::v1::parseMessageHeader<NodeId>(
+                messageBegin, messageEnd);
+            auto peerState =
+                PeerState::fromPayload(from_node_id, result.second, messageEnd);
             sawPeer(*mRemoteObserver, peerState);
             updateRemotePeerTimeout(peerState.ident(), result.first.ttl);
         }
@@ -752,24 +761,28 @@ class TunnelGateway
     void onRemotePeerLeft(const NodeId& nodeId)
     {
         peerLeft(*mRemoteObserver, nodeId);
-        mRemotePeerTimeouts.erase(
-            std::remove_if(mRemotePeerTimeouts.begin(), mRemotePeerTimeouts.end(),
-                [&nodeId](const PeerTimeout& pt) { return pt.second == nodeId; }),
-            mRemotePeerTimeouts.end());
+        mRemotePeerTimeouts.erase(std::remove_if(mRemotePeerTimeouts.begin(),
+                                                 mRemotePeerTimeouts.end(),
+                                                 [&nodeId](const PeerTimeout& pt)
+                                                 { return pt.second == nodeId; }),
+                                  mRemotePeerTimeouts.end());
     }
 
     void updateRemotePeerTimeout(const NodeId& nodeId, uint8_t ttl)
     {
         using namespace std;
         mRemotePeerTimeouts.erase(
-            remove_if(mRemotePeerTimeouts.begin(), mRemotePeerTimeouts.end(),
-                [&nodeId](const PeerTimeout& pt) { return pt.second == nodeId; }),
+            remove_if(mRemotePeerTimeouts.begin(),
+                      mRemotePeerTimeouts.end(),
+                      [&nodeId](const PeerTimeout& pt) { return pt.second == nodeId; }),
             mRemotePeerTimeouts.end());
-        auto newTimeout = make_pair(mRemotePruneTimer.now() + chrono::seconds(ttl), nodeId);
-        mRemotePeerTimeouts.insert(
-            upper_bound(mRemotePeerTimeouts.begin(), mRemotePeerTimeouts.end(),
-                        newTimeout, TimeoutCompare{}),
-            move(newTimeout));
+        auto newTimeout =
+            make_pair(mRemotePruneTimer.now() + chrono::seconds(ttl), nodeId);
+        mRemotePeerTimeouts.insert(upper_bound(mRemotePeerTimeouts.begin(),
+                                               mRemotePeerTimeouts.end(),
+                                               newTimeout,
+                                               TimeoutCompare{}),
+                                   move(newTimeout));
         scheduleRemotePruning();
     }
 
@@ -779,11 +792,12 @@ class TunnelGateway
         {
             const auto t = mRemotePeerTimeouts.front().first + std::chrono::seconds(1);
             mRemotePruneTimer.expires_at(t);
-            mRemotePruneTimer.async_wait([this](const TimerError e)
-            {
-                if (!e)
-                    pruneRemotePeers();
-            });
+            mRemotePruneTimer.async_wait(
+                [this](const TimerError e)
+                {
+                    if (!e)
+                        pruneRemotePeers();
+                });
         }
     }
 
@@ -793,24 +807,29 @@ class TunnelGateway
         if (!is_running)
             return;
         const auto test = make_pair(mRemotePruneTimer.now(), NodeId{});
-        const auto endExpired = lower_bound(
-            mRemotePeerTimeouts.begin(), mRemotePeerTimeouts.end(), test, TimeoutCompare{});
-        for_each(mRemotePeerTimeouts.begin(), endExpired, [this](const PeerTimeout& pto)
-        {
-            peerTimedOut(*mRemoteObserver, pto.second);
-            auto it = mRemoteNodeIdToRemoteNodeSurrogate.find(pto.second);
-            if (it != mRemoteNodeIdToRemoteNodeSurrogate.end())
-            {
-                it->second->stop_listening();
-                mRemoteNodeIdToRemoteNodeSurrogate.erase(it);
-            }
-            auto mit = mRemoteNodeIdToRemoteMeasurementSurrogate.find(pto.second);
-            if (mit != mRemoteNodeIdToRemoteMeasurementSurrogate.end())
-            {
-                mit->second->stop_listening();
-                mRemoteNodeIdToRemoteMeasurementSurrogate.erase(mit);
-            }
-        });
+        const auto endExpired = lower_bound(mRemotePeerTimeouts.begin(),
+                                            mRemotePeerTimeouts.end(),
+                                            test,
+                                            TimeoutCompare{});
+        for_each(mRemotePeerTimeouts.begin(),
+                 endExpired,
+                 [this](const PeerTimeout& pto)
+                 {
+                     peerTimedOut(*mRemoteObserver, pto.second);
+                     auto it = mRemoteNodeIdToRemoteNodeSurrogate.find(pto.second);
+                     if (it != mRemoteNodeIdToRemoteNodeSurrogate.end())
+                     {
+                         it->second->stop_listening();
+                         mRemoteNodeIdToRemoteNodeSurrogate.erase(it);
+                     }
+                     auto mit =
+                         mRemoteNodeIdToRemoteMeasurementSurrogate.find(pto.second);
+                     if (mit != mRemoteNodeIdToRemoteMeasurementSurrogate.end())
+                     {
+                         mit->second->stop_listening();
+                         mRemoteNodeIdToRemoteMeasurementSurrogate.erase(mit);
+                     }
+                 });
         mRemotePeerTimeouts.erase(mRemotePeerTimeouts.begin(), endExpired);
         scheduleRemotePruning();
     }
