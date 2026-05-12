@@ -1,7 +1,13 @@
 #include <chrono>
+#include <cstdint>
 #include <exception>
+#include <functional>
 #include <iomanip>
 #include <iostream>
+#include <memory>
+#include <mutex>
+#include <optional>
+#include <queue>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -23,6 +29,23 @@ struct State
     std::atomic<bool> isPlaying;
     ableton::LinkExtender linkExtender;
 
+    struct PendingApproval
+    {
+        uint64_t id;
+        LINK_ASIO_NAMESPACE::ip::udp::endpoint ep;
+        std::function<void()> accept;
+        std::function<void()> reject;
+    };
+
+    struct SharedPending
+    {
+        std::mutex mutex;
+        std::queue<PendingApproval> approvals;
+        uint64_t nextId{0};
+        bool alive{true};
+    };
+    std::shared_ptr<SharedPending> pending{std::make_shared<SharedPending>()};
+
     explicit State(ableton::LinkExtender::Config config)
         : running(true)
         , localPeers(0)
@@ -39,6 +62,76 @@ struct State
             });
         linkExtender.setTempoCallback([this](double bpm) { tempo = bpm; });
         linkExtender.setStartStopCallback([this](bool playing) { isPlaying = playing; });
+
+        auto sp = pending;
+        auto printNextPrompt = [sp]()
+        {
+            // caller must hold sp->mutex
+            std::cout << "\nUnknown peer: " << sp->approvals.front().ep
+                      << " — [a]ccept [d]eny (auto-reject in 60s)\n"
+                      << std::flush;
+        };
+
+        linkExtender.setUnknownPeerCallback(
+            [sp, printNextPrompt](LINK_ASIO_NAMESPACE::ip::udp::endpoint ep,
+                                  std::function<void()> accept,
+                                  std::function<void()> reject)
+            {
+                uint64_t id;
+                bool wasEmpty;
+                {
+                    std::lock_guard<std::mutex> lock(sp->mutex);
+                    id = sp->nextId++;
+                    wasEmpty = sp->approvals.empty();
+                    sp->approvals.push({id, ep, std::move(accept), std::move(reject)});
+                    if (wasEmpty)
+                        printNextPrompt();
+                }
+
+                std::thread(
+                    [sp, id, ep, printNextPrompt]()
+                    {
+                        std::this_thread::sleep_for(std::chrono::seconds(60));
+
+                        std::optional<PendingApproval> entry;
+                        {
+                            std::lock_guard<std::mutex> lock(sp->mutex);
+                            if (!sp->alive)
+                                return;
+                            if (!sp->approvals.empty() && sp->approvals.front().id == id)
+                            {
+                                entry = sp->approvals.front();
+                                sp->approvals.pop();
+                            }
+                        }
+                        if (!entry)
+                            return;
+
+                        entry->reject();
+                        std::cout << "\nAuto-rejected " << ep << "\n" << std::flush;
+                        {
+                            std::lock_guard<std::mutex> lock(sp->mutex);
+                            if (!sp->approvals.empty() && sp->alive)
+                                printNextPrompt();
+                        }
+                    })
+                    .detach();
+            });
+    }
+
+    ~State()
+    {
+        // Set alive=false and drain under the mutex. Timer threads capture 'pending'
+        // by shared_ptr, so the allocation outlives State — they will find
+        // alive==false and become no-ops. reject() is called at most once per
+        // entry: drain and timer both hold the mutex while popping.
+        std::lock_guard<std::mutex> lock(pending->mutex);
+        pending->alive = false;
+        while (!pending->approvals.empty())
+        {
+            pending->approvals.front().reject();
+            pending->approvals.pop();
+        }
     }
 };
 
@@ -94,8 +187,46 @@ void printState(const State& state)
     using namespace std;
     const auto playing = state.isPlaying ? "[playing]" : "[stopped]";
     cout << left << setw(11) << state.localPeers << " | " << setw(12) << state.remotePeers
-         << " | " << fixed << setprecision(2) << setw(7) << state.tempo << " | " << playing;
+         << " | " << fixed << setprecision(2) << setw(7) << state.tempo << " | "
+         << playing;
     clearLine();
+}
+
+void resolvePendingApproval(State& state, bool accept)
+{
+    std::optional<State::PendingApproval> entry;
+    bool hasNext = false;
+    {
+        std::lock_guard<std::mutex> lock(state.pending->mutex);
+        if (!state.pending->approvals.empty())
+        {
+            entry = state.pending->approvals.front();
+            state.pending->approvals.pop();
+            hasNext = !state.pending->approvals.empty();
+        }
+    }
+    if (!entry)
+        return;
+
+    if (accept)
+    {
+        std::cout << "Accepting " << entry->ep << std::endl;
+        entry->accept();
+    }
+    else
+    {
+        std::cout << "Rejecting " << entry->ep << std::endl;
+        entry->reject();
+    }
+
+    if (hasNext)
+    {
+        std::lock_guard<std::mutex> lock(state.pending->mutex);
+        if (!state.pending->approvals.empty())
+            std::cout << "\nUnknown peer: " << state.pending->approvals.front().ep
+                      << " — [a]ccept [d]eny (auto-reject in 60s)\n"
+                      << std::flush;
+    }
 }
 
 void input(State& state)
@@ -125,7 +256,10 @@ void input(State& state)
             clearLine();
             return;
         case 'a':
-            // state.link.enable(!state.link.isEnabled());
+            resolvePendingApproval(state, true);
+            break;
+        case 'd':
+            resolvePendingApproval(state, false);
             break;
         default:
             break;
@@ -175,8 +309,7 @@ LINK_ASIO_NAMESPACE::ip::udp::endpoint parseEndpoint(const std::string& s)
     LINK_ASIO_NAMESPACE::ip::udp::resolver resolver{ioc};
     const auto results = resolver.resolve(host, portStr, ec);
     if (ec)
-        throw std::invalid_argument(
-            "cannot resolve '" + host + "': " + ec.message());
+        throw std::invalid_argument("cannot resolve '" + host + "': " + ec.message());
     if (results.empty())
         throw std::invalid_argument("no addresses found for '" + host + "'");
 
@@ -187,15 +320,17 @@ void printUsage(const char* prog)
 {
     std::cerr << "Usage: " << prog << " [--port N] [--peer host:port] ...\n"
               << "\n"
-              << "  --port N           Local UDP port to listen on (default: 12345)\n"
+              << "  --port N           Local UDP port to listen on (default: 20909)\n"
               << "  --peer host:port   Remote ALE instance to connect to (repeatable)\n"
               << "                     host may be a hostname, IPv4, or [IPv6] address\n"
-              << "\n"
-              << "  When no --peer is given the shared-memory tunnel is used instead\n"
-              << "  (useful for testing with network namespaces on the same host).\n"
+              << "  --shm              Use shared-memory tunnel instead of UDP\n"
+              << "                     (useful for testing with network namespaces on "
+                 "the same host)\n"
               << "\n"
               << "  Keys while running:\n"
-              << "    q   quit\n";
+              << "    q   quit\n"
+              << "    a   accept pending unknown peer\n"
+              << "    d   deny pending unknown peer\n";
 }
 
 ableton::LinkExtender::Config parseArgs(int argc, char** argv)
@@ -223,6 +358,10 @@ ableton::LinkExtender::Config parseArgs(int argc, char** argv)
                 throw std::invalid_argument("--peer requires a value");
             config.peers.push_back(parseEndpoint(argv[i]));
         }
+        else if (arg == "--shm")
+        {
+            config.use_shm = true;
+        }
         else
         {
             throw std::invalid_argument("unknown argument: " + arg);
@@ -240,16 +379,23 @@ int main(int argc, char** argv)
     {
         auto config = parseArgs(argc, argv);
 
-        if (config.peers.empty())
+        if (config.use_shm)
         {
-            std::cout << "No --peer arguments given; using shared-memory tunnel.\n";
+            std::cout << "Using shared-memory tunnel.\n";
         }
         else
         {
-            std::cout << "UDP tunnel on port " << config.tunnel_port << " with "
-                      << config.peers.size() << " peer(s):\n";
-            for (const auto& ep : config.peers)
-                std::cout << "  " << ep << "\n";
+            std::cout << "UDP tunnel on port " << config.tunnel_port;
+            if (config.peers.empty())
+            {
+                std::cout << " (no configured peers — awaiting incoming connections)\n";
+            }
+            else
+            {
+                std::cout << " with " << config.peers.size() << " peer(s):\n";
+                for (const auto& ep : config.peers)
+                    std::cout << "  " << ep << "\n";
+            }
         }
 
         State state{std::move(config)};

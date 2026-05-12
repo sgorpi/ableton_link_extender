@@ -9,9 +9,11 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -30,6 +32,9 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
     using Socket = typename util::Injected<IoContext>::type::template Socket<
         ableton::discovery::v1::kMaxMessageSize>;
     using Timer = typename util::Injected<IoContext>::type::Timer;
+    using UnknownPeerCallback = std::function<void(UdpEndpoint endpoint,
+                                                   std::function<void()> accept,
+                                                   std::function<void()> reject)>;
     // Iterator type produced by the socket's receive buffer (std::array<uint8_t, N>)
     using SocketBufferIt =
         typename std::array<uint8_t,
@@ -122,6 +127,15 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
             });
     }
 
+    // Must be called before listen() starts; not safe to call concurrently with the
+    // receive loop. The callback is invoked on the ASIO thread: it must return quickly
+    // and must not call UdpTunnel methods directly (schedule work via mIo->async
+    // instead).
+    void setUnknownPeerCallback(UnknownPeerCallback cb)
+    {
+        mUnknownPeerCallback = std::move(cb);
+    }
+
     virtual void forward(TunnelMessageType messageType,
                          std::shared_ptr<Gateway> /*from_gateway*/,
                          const NodeId& from_node_id,
@@ -193,6 +207,7 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
             gateway->stop_listening();
         this->gateways.clear();
 
+        mPendingPeers.clear();
         remoteNodeIdToPeerIdx.clear();
         mEndpointToPeerIdx.clear();
     }
@@ -268,8 +283,7 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
         {
             if (idxIt == mEndpointToPeerIdx.end())
             {
-                debug(this->mIo->log()) << "UdpTunnel: HELLO from unconfigured endpoint "
-                                        << from << " – ignoring";
+                handleUnknownPeer(from);
                 return;
             }
             auto& peer = mPeers[idxIt->second];
@@ -279,7 +293,7 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
             if (!wasConnected)
             {
                 std::cout << "UdpTunnel: peer connected: " << from << std::endl;
-                sendHello(from); // complete the handshake
+                sendHello(from);
             }
             break;
         }
@@ -390,6 +404,39 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
     // Helpers
     // -----------------------------------------------------------------------
 
+    void handleUnknownPeer(const UdpEndpoint& from)
+    {
+        if (mPendingPeers.count(from) != 0)
+            return;
+
+        mPendingPeers.insert(from);
+        auto acceptFn = [this, from]()
+        {
+            this->mIo->async(
+                [this, from]()
+                {
+                    mPendingPeers.erase(from);
+                    if (mEndpointToPeerIdx.find(from) == mEndpointToPeerIdx.end())
+                    {
+                        mPeers.push_back({from, PeerConnectionState::DISCONNECTED, {}});
+                        mEndpointToPeerIdx[from] = mPeers.size() - 1;
+                        debug(this->mIo->log()) << "UdpTunnel: added peer " << from;
+                        sendHello(from);
+                    }
+                });
+        };
+        auto rejectFn = [this, from]()
+        {
+            this->mIo->async(
+                [this, from]()
+                {
+                    debug(this->mIo->log()) << "Rejecting " << from;
+                    mPendingPeers.erase(from);
+                });
+        };
+        mUnknownPeerCallback(from, std::move(acceptFn), std::move(rejectFn));
+    }
+
     void erasePeerNodeIds(size_t peerIdx)
     {
         for (auto it = remoteNodeIdToPeerIdx.begin(); it != remoteNodeIdToPeerIdx.end();)
@@ -414,6 +461,12 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
     std::vector<PeerEntry> mPeers;
     std::map<NodeId, size_t> remoteNodeIdToPeerIdx;
     std::map<UdpEndpoint, size_t> mEndpointToPeerIdx;
+    std::set<UdpEndpoint> mPendingPeers; // populated by HELLO handler, used to
+                                         // de-duplicate unknown-peer callbacks
+    UnknownPeerCallback mUnknownPeerCallback = [](UdpEndpoint /*endpoint*/,
+                                                  std::function<void()> /*accept*/,
+                                                  std::function<void()> reject)
+    { reject(); };
 };
 
 template <typename IoContext, typename Gateway>
@@ -423,7 +476,7 @@ TunnelPtr<IoContext, Gateway> makeUdpTunnel(
     std::vector<LINK_ASIO_NAMESPACE::ip::udp::endpoint> peers)
 {
     return std::make_shared<UdpTunnel<IoContext, Gateway>>(
-        injectRef(*io), local_port, std::move(peers));
+        ableton::util::injectRef(*io), local_port, std::move(peers));
 }
 
 } // namespace extender

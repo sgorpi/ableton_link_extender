@@ -341,7 +341,7 @@ class ShmTunnel : public Tunnel<IoContext, Gateway>
 template <typename IoContext, typename Gateway>
 TunnelPtr<IoContext, Gateway> makeShmTunnel(ableton::util::Injected<IoContext> io)
 {
-    return std::make_shared<ShmTunnel<IoContext, Gateway>>(injectRef(*io));
+    return std::make_shared<ShmTunnel<IoContext, Gateway>>(ableton::util::injectRef(*io));
 }
 
 } // namespace extender

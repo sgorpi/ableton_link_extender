@@ -63,6 +63,19 @@ class LinkExtender
         mController.setStartStopCallback(std::move(callback));
     }
 
+    // Callback invoked on the ASIO thread when a TUNNEL_HELLO arrives from an
+    // endpoint not in the configured peer list. Must be set before sessions start;
+    // not safe to change concurrently with the receive loop.
+    // Signature: void(UdpEndpoint ep, std::function<void()> accept, std::function<void()> reject)
+    // The callback must return quickly. Do not call UdpTunnel methods directly;
+    // call accept() or reject() from any thread when the decision is made.
+    // If not set, unknown peers are auto-rejected. No-op in shared-memory mode.
+    template <typename Callback>
+    void setUnknownPeerCallback(Callback callback)
+    {
+        mController.setUnknownPeerCallback(std::move(callback));
+    }
+
   private:
     extender::Controller<IoContext> mController;
 };

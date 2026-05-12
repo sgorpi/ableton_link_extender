@@ -64,7 +64,7 @@ ableton_link_extender --port <N> --peer <HOST>:<PORT> [--peer ...]
 
 | Argument | Description |
 |---|---|
-| `--port <N>` | Local UDP port to listen on (default: `12345`) |
+| `--port <N>` | Local UDP port to listen on (default: `20909`) |
 | `--peer <HOST>:<PORT>` | Remote ALE instance to connect to (repeatable) |
 | `--help` | Show usage and exit |
 

@@ -32,12 +32,17 @@ class Controller
     {
         void operator()(ableton::link::SessionId id, ableton::link::Timeline timeline)
         {
-            mController.mSessionId = id;
-            std::lock_guard<std::mutex> lock(mController.mCallbackMutex);
-            mController.mTempoCallback(timeline.tempo);
+            *mSessionId = id;
+            if (mUpdateTempo)
+            {
+                std::lock_guard<std::mutex> lock(mController.mCallbackMutex);
+                mController.mTempoCallback(timeline.tempo);
+            }
         }
 
         Controller& mController;
+        ableton::link::SessionId* mSessionId;
+        bool mUpdateTempo;
     };
 
     struct SessionStartStopStateCallback
@@ -97,8 +102,9 @@ class Controller
     // UdpTunnel is created; otherwise the ShmTunnel proof-of-concept is used.
     struct Config
     {
-        uint16_t tunnel_port = 12345;
+        uint16_t tunnel_port = 20909;
         std::vector<LINK_ASIO_NAMESPACE::ip::udp::endpoint> peers;
+        bool use_shm = false;
     };
 
     Controller(Config config = {})
@@ -111,18 +117,18 @@ class Controller
                            GatewayFactory{*this},
                            util::injectRef(*mIo))
         , mSessionPeerCounter([this]()
-                              { return mLocalPeers.uniqueSessionPeerCount(mSessionId); },
+                              { return mLocalPeers.uniqueSessionPeerCount(mLocalSessionId); },
                               [this](std::size_t) { notifyPeerCount(); })
         , mLocalPeers(util::injectRef(*mIo),
                       std::ref(mSessionPeerCounter),
-                      SessionTimelineCallback{*this},
+                      SessionTimelineCallback{*this, &mLocalSessionId, true},
                       SessionStartStopStateCallback{*this})
         , mRemoteSessionPeerCounter(
-              [this]() { return mRemotePeers.uniqueSessionPeerCount(mSessionId); },
+              [this]() { return mRemotePeers.uniqueSessionPeerCount(mRemoteSessionId); },
               [this](std::size_t) { notifyPeerCount(); })
         , mRemotePeers(util::injectRef(*mIo),
                        std::ref(mRemoteSessionPeerCounter),
-                       SessionTimelineCallback{*this},
+                       SessionTimelineCallback{*this, &mRemoteSessionId, false},
                        SessionStartStopStateCallback{*this})
     {
         gatewayDiscovery.enable(true);
@@ -170,6 +176,18 @@ class Controller
         using UdpT = UdpTunnel<IoType&, ControllerTunnelGateway>;
         if (auto* t = dynamic_cast<UdpT*>(mTunnel.get()))
             t->removePeer(std::move(ep));
+    }
+
+    using UnknownPeerCallback =
+        typename UdpTunnel<IoType&, ControllerTunnelGateway>::UnknownPeerCallback;
+
+    // Register a callback for unknown peers (no-op in ShmTunnel mode).
+    template <typename Callback>
+    void setUnknownPeerCallback(Callback callback)
+    {
+        using UdpT = UdpTunnel<IoType&, ControllerTunnelGateway>;
+        if (auto* t = dynamic_cast<UdpT*>(mTunnel.get()))
+            t->setUnknownPeerCallback(std::move(callback));
     }
 
     template <typename Callback>
@@ -233,8 +251,8 @@ class Controller
 
     void notifyPeerCount()
     {
-        const auto local = mLocalPeers.uniqueSessionPeerCount(mSessionId);
-        const auto remote = mRemotePeers.uniqueSessionPeerCount(mSessionId);
+        const auto local = mLocalPeers.uniqueSessionPeerCount(mLocalSessionId);
+        const auto remote = mRemotePeers.uniqueSessionPeerCount(mRemoteSessionId);
         std::lock_guard<std::mutex> lock(mCallbackMutex);
         mPeerCountCallback(local, remote);
     }
@@ -244,7 +262,7 @@ class Controller
 
     TunnelPtr<IoType&, ControllerTunnelGateway> createTunnel()
     {
-        if (mConfig.peers.empty())
+        if (mConfig.use_shm)
         {
             return makeShmTunnel<IoType&, ControllerTunnelGateway>(util::injectRef(*mIo));
         }
@@ -260,7 +278,8 @@ class Controller
     ableton::util::Injected<IoContext> mIo;
     Config mConfig;
     NodeState notParticipatingNodeState;
-    ableton::link::SessionId mSessionId;
+    ableton::link::SessionId mLocalSessionId;
+    ableton::link::SessionId mRemoteSessionId;
     TunnelPtr<IoType&, ControllerTunnelGateway> mTunnel;
     TunnelGateways gatewayDiscovery;
     SessionPeerCounter mSessionPeerCounter;

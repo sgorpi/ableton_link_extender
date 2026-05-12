@@ -33,3 +33,31 @@ target_link_libraries(ableton_link_extender Ableton::Link Boost::headers)
 if(WIN32)
   target_link_libraries(ableton_link_extender ws2_32 iphlpapi)
 endif()
+
+# ===== Unit tests =====
+include(link/cmake_include/CatchConfig.cmake)
+enable_testing()
+
+set(TEST_SOURCES
+  tests/tst_TunnelGateway.cpp
+  tests/tst_UdpTunnel.cpp
+  tests/tst_Controller.cpp
+)
+
+foreach(TEST_SOURCE ${TEST_SOURCES})
+  get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
+  add_executable(${TEST_NAME}
+    ${TEST_SOURCE}
+    link/src/ableton/test/catch/CatchMain.cpp
+    link/src/ableton/test/serial_io/SchedulerTree.cpp
+  )
+  target_include_directories(${TEST_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+  target_link_libraries(${TEST_NAME} Catch::Catch Ableton::Link Boost::headers)
+  target_compile_definitions(${TEST_NAME} PRIVATE -DCATCH_CONFIG_ENABLE_BENCHMARKING=1)
+  if(WIN32)
+    target_link_libraries(${TEST_NAME} ws2_32 iphlpapi)
+  endif()
+  add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+endforeach()
