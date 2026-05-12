@@ -178,7 +178,9 @@ class ShmTunnel : public Tunnel<IoContext, Gateway>
                                 << " from " << from_node_id;
         if (to_node_id)
             debug(this->mIo->log()) << " to " << *to_node_id;
-        // TODO: filter double messages from different gateways
+
+        if (!this->shouldForward(messageType, from_node_id, messageBegin, messageEnd))
+            return;
 
         auto optional_msg = this->encapsulate(
             {from_node_id, messageType, to_node_id, {}}, messageBegin, messageEnd);

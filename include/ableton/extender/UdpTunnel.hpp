@@ -143,6 +143,9 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
                          const unsigned char* messageEnd,
                          const std::optional<NodeId>& to_node_id) override
     {
+        if (!this->shouldForward(messageType, from_node_id, messageBegin, messageEnd))
+            return;
+
         auto optional_msg = this->encapsulate(
             {from_node_id, messageType, to_node_id, 0}, messageBegin, messageEnd);
         if (!optional_msg)

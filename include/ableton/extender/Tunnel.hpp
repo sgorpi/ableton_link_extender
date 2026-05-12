@@ -11,6 +11,8 @@
 #include <optional>
 #include <vector>
 
+#include "ableton/extender/DedupCache.hpp"
+
 namespace ableton
 {
 namespace extender
@@ -91,8 +93,29 @@ class Tunnel
     }
 
   protected:
+    // Returns true if the caller should forward this message; false if the
+    // message is a duplicate (already forwarded within kDedupWindow) and
+    // should be dropped. Only BROADCAST / UNICAST / BYEBYE are deduplicated:
+    // MEASUREMENT_PING/PONG ride per-interface surrogate sockets so cannot
+    // duplicate, and TUNNEL_* control messages originate inside the tunnel
+    // itself rather than from gateways.
+    bool shouldForward(TunnelMessageType messageType,
+                       const NodeId& from_node_id,
+                       const unsigned char* messageBegin,
+                       const unsigned char* messageEnd)
+    {
+        if (messageType != BROADCAST && messageType != UNICAST
+            && messageType != BYEBYE)
+            return true;
+        return !mDedupCache.isDuplicate(static_cast<uint8_t>(messageType),
+                                        from_node_id,
+                                        messageBegin,
+                                        messageEnd);
+    }
+
     std::vector<GatewayPtr> gateways;
     ableton::util::Injected<IoContext> mIo;
+    DedupCache mDedupCache;
 
     struct MessageContext
     {

@@ -42,6 +42,7 @@ set(TEST_SOURCES
   tests/tst_TunnelGateway.cpp
   tests/tst_UdpTunnel.cpp
   tests/tst_Controller.cpp
+  tests/tst_TunnelDedup.cpp
 )
 
 foreach(TEST_SOURCE ${TEST_SOURCES})
