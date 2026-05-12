@@ -1,7 +1,7 @@
 @startuml
 
 skinparam actorStyle Hollow
-skinparam backgroundColor lightblue
+skinparam backgroundColor lightpurple
 skinparam shadowing false
 skinparam noteBackgroundColor lightyellow
 
@@ -9,76 +9,104 @@ skinparam noteBackgroundColor lightyellow
 !pragma sequenceMessageSpan true
 skinparam ParticipantPadding 30
 
-/'
-* The tunnel can receive the same broadcast on many interfaces from the same NodeID.
-*   We need to cache the TunnelGateway associated with the peer's NodeID
-*   The TunnelGateway needs to cache the IP/port associated with the NodeID
-*   We need to cache the last broadcast of a Node ID to avoid sending the same broadcast
-multiple times.
-
-* When the unique broadcast of a NodeID is received in the other side of the tunnel, 
-*   it is forwarded to all TunnelGateways.
-* Each TunnelGateway will create/update an Endpoint 
-*   for the NodeID the broadcast came from.
-* The broadcast will then be sent on all Endpoints.
-*
-* When a peer responds to the broadcast, it'll send an unicast to the specific Endpoint.
-*   We need to cache the TunnelGateway associated with the peer's NodeID
-*   The TunnelGateway needs to cache the IP/port associated with the NodeID
-* The unicast will be received and sent to the other side of the tunnel,
-*   where an Endpoint is created/updated for the Node ID of the peer on each interface.
-* The unicast will then be forwarded to the known Peer interface/IP/port.
-'/
-
-/'
-The 'measurements' have a timer of 50 milliseconds.
-'/
-
 actor AbletonLink1
+
+box "Site 1" #PowderBlue
+  participant LAN
+  participant TunnelGateway1
+  participant "UdpTunnel\n(site 1)" as Tunnel1
+end box
+
+box "Site 2" #LightGoldenRodYellow
+  participant "UdpTunnel\n(site 2)" as Tunnel2
+  participant TunnelGateway2
+  participant LAN2
+end box
+
+actor AbletonLink2
+
+== Tunnel Setup ==
+
+Tunnel1 -> Tunnel2 : TUNNEL_HELLO
+Tunnel2 -> Tunnel1 : TUNNEL_HELLO
+note over Tunnel1, Tunnel2
+  Both sides transition DISCONNECTED → CONNECTING → CONNECTED.
+  Keepalive every 5 s; peer considered lost after 15 s without KEEPALIVE.
+end note
+
+== Broadcast: NodeID1 → Site 2 ==
 
 AbletonLink1 -> LAN ++ : broadcast PeerState(NodeID1)
 LAN -> TunnelGateway1 --++ : broadcast PeerState(NodeID1)
+note right
+  One TunnelGateway per local interface.
+  All interfaces may receive the same broadcast.
+end note
 
-TunnelGateway1 -> TunnelGateway1 : store NodeID1 state & measurement UdpEndpoint
-note right: an UdpEndpoint is the combination of IP+port
-TunnelGateway1 -> TunnelGateway1 : remove measurement UdpEndpoint from PeerState message, leave NodeState
-TunnelGateway1 -> Tunnel --++: broadcast NodeState(NodeID1)
+TunnelGateway1 -> TunnelGateway1 : store NodeID1 stateEndpoint & measurementEndpoint
+note right: stateEndpoint = source IP:port of the packet\nmeasurementEndpoint = from PeerState payload
+TunnelGateway1 -> TunnelGateway1 : strip measurement endpoint from PeerState → NodeState bytes
+TunnelGateway1 -> Tunnel1 --++ : forward(BROADCAST, NodeID1, NodeState bytes)
 
-Tunnel -> Tunnel : store NodeID1 TunnelGateway
-note left: We store the first TunnelGateway we see the NodeID on\nWe also store the last time we saw a message from NodeID
+Tunnel1 -> Tunnel1 : isDuplicateBroadcast?\n(key: NodeID1 + hash(bytes))
+note right
+  First gateway call → record {NodeID1: hash, now}, proceed.
+  Further gateway calls within 100 ms with the same hash → silently dropped.
+  A changed hash (different state) always passes through.
+end note
 
-Tunnel -> Tunnel : filter unique broadcast NodeState(NodeID1)
-Tunnel -> Tunnel ++ #gold : encapsulate broadcast NodeState(NodeID1)
-Tunnel -> TunnelGateway2 --++ #gold : decapsulate and broadcast NodeState(NodeID1)
-deactivate Tunnel
+Tunnel1 -> Tunnel1 ++ #gold : encapsulate BROADCAST NodeState(NodeID1)
+Tunnel1 -> Tunnel2 --++ #gold : ─── internet ──→\ndecapsulate BROADCAST NodeState(NodeID1)
+deactivate Tunnel1
+
+Tunnel2 -> Tunnel2 : store NodeID1 → peer index (Tunnel1 connection)
+note left: Used later to route unicasts\naddressed to NodeID1 back to Tunnel1.
+Tunnel2 -> TunnelGateway2 --++ #gold : forward_locally: BROADCAST NodeState(NodeID1)
+deactivate Tunnel2
 
 TunnelGateway2 -> TunnelGateway2 : create/retrieve RemoteNodeSurrogate for NodeID1
-note left: RemoteNodeSurrogate is a proxy for the NodeID, with broadcast and unicast endpoints
-TunnelGateway2 -> TunnelGateway2 : append measurement endpoint from RemoteNodeSurrogate to NodeState
-TunnelGateway2 -> LAN2 --++ #gold : broadcast PeerState(NodeID1)
+note left
+  RemoteNodeSurrogate holds a stateSocket and a measurementSocket,
+  both bound to the local interface.
+end note
+TunnelGateway2 -> TunnelGateway2 : append surrogate measurementSocket endpoint to NodeState bytes
+TunnelGateway2 -> LAN2 --++ #gold : broadcast PeerState(NodeID1) from surrogate stateSocket
 
-actor AbletonLink2
 LAN2 -> AbletonLink2 --++ #gold : receive PeerState(NodeID1)
 
-AbletonLink2 --> LAN2 --++ #gold : unicast PeerState(NodeID2)
-LAN2 --> TunnelGateway2 --++ #gold : receive PeerState(NodeID2) at UdpEndpoint for NodeID1
-TunnelGateway2 --> TunnelGateway2 : lookup NodeID1 for UdpEndpoint
-TunnelGateway2 --> TunnelGateway2 : store NodeID2 UdpEndpoint
-TunnelGateway2 --> TunnelGateway2 : remove measurement UdpEndpoint from PeerState message, leave NodeState
-TunnelGateway2 --> Tunnel --++ #gold: unicast NodeState(NodeID2) to NodeID1
+== Unicast Response: NodeID2 → NodeID1 ==
 
-Tunnel --> Tunnel : store NodeID2 TunnelGateway
-Tunnel --> Tunnel : filter unique NodeState(NodeID2) to NodeID1
-Tunnel --> Tunnel ++ : encapsulate unicast NodeState(NodeID2) to NodeID1
-Tunnel --> Tunnel : decapsulate NodeState(NodeID2) to NodeID1
-Tunnel --> Tunnel : find TunnelGateway for NodeID1
-Tunnel --> TunnelGateway1 --++ : send unicast NodeState(NodeID2) to NodeID1
-deactivate Tunnel
+AbletonLink2 --> LAN2 --++ #gold : unicast PeerState(NodeID2) to NodeID1 surrogate stateSocket
+LAN2 --> TunnelGateway2 --++ #gold : receive PeerState(NodeID2); to_node_id = NodeID1
 
-TunnelGateway1 --> TunnelGateway1 : find Endpoint for NodeID1
+TunnelGateway2 --> TunnelGateway2 : store NodeID2 stateEndpoint & measurementEndpoint
+TunnelGateway2 --> TunnelGateway2 : strip measurement endpoint → NodeState bytes
+TunnelGateway2 --> Tunnel2 --++ #gold : forward(UNICAST, NodeID2, NodeState bytes, to=NodeID1)
+
+Tunnel2 --> Tunnel2 : lookup NodeID1 → peer index (Tunnel1 connection)
+Tunnel2 --> Tunnel2 ++ : encapsulate UNICAST NodeState(NodeID2) to NodeID1
+Tunnel2 --> Tunnel1 --++ : ←── internet ───\ndecapsulate UNICAST NodeState(NodeID2) to NodeID1
+deactivate Tunnel2
+
+Tunnel1 --> Tunnel1 : store NodeID2 → peer index (Tunnel2 connection)
+Tunnel1 --> TunnelGateway1 --++ : forward_locally: UNICAST NodeState(NodeID2) to NodeID1
+note left: All gateways are tried; only the one\nthat knows NodeID1's stateEndpoint delivers.
+deactivate Tunnel1
+
 TunnelGateway1 --> TunnelGateway1 : create/retrieve RemoteNodeSurrogate for NodeID2
-TunnelGateway1 --> TunnelGateway1 : append measurement endpoint from RemoteNodeSurrogate to NodeState
-TunnelGateway1 --> LAN --++ : unicast PeerState(NodeID2) to NodeID1
+TunnelGateway1 --> TunnelGateway1 : resolve NodeID1 → stateEndpoint
+TunnelGateway1 --> TunnelGateway1 : append surrogate measurementSocket endpoint to NodeState bytes
+TunnelGateway1 --> LAN --++ : unicast PeerState(NodeID2) to NodeID1 stateEndpoint
 LAN --> AbletonLink1 -- : receive PeerState(NodeID2)
+
+== Timing Measurements ==
+
+ref over AbletonLink1, AbletonLink2
+  Ableton Link timing measurements (MEASUREMENT_PING / MEASUREMENT_PONG) flow through
+  the same tunnel via each RemoteNodeSurrogate's measurementSocket.
+  The gateway maps measurement source endpoints to synthetic NodeIds and
+  forwards pings/pongs as MEASUREMENT_PING / MEASUREMENT_PONG tunnel messages.
+  See: TunnelGateway::handle_measurement_message()
+end ref
 
 @enduml
