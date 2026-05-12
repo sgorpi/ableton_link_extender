@@ -208,6 +208,7 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
         this->gateways.clear();
 
         mPendingPeers.clear();
+        mRejectedPeers.clear();
         remoteNodeIdToPeerIdx.clear();
         mEndpointToPeerIdx.clear();
     }
@@ -406,6 +407,8 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
 
     void handleUnknownPeer(const UdpEndpoint& from)
     {
+        if (mRejectedPeers.count(from) != 0)
+            return;
         if (mPendingPeers.count(from) != 0)
             return;
 
@@ -432,6 +435,7 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
                 {
                     debug(this->mIo->log()) << "Rejecting " << from;
                     mPendingPeers.erase(from);
+                    mRejectedPeers.insert(from);
                 });
         };
         mUnknownPeerCallback(from, std::move(acceptFn), std::move(rejectFn));
@@ -463,6 +467,7 @@ class UdpTunnel : public Tunnel<IoContext, Gateway>
     std::map<UdpEndpoint, size_t> mEndpointToPeerIdx;
     std::set<UdpEndpoint> mPendingPeers; // populated by HELLO handler, used to
                                          // de-duplicate unknown-peer callbacks
+    std::set<UdpEndpoint> mRejectedPeers;
     UnknownPeerCallback mUnknownPeerCallback = [](UdpEndpoint /*endpoint*/,
                                                   std::function<void()> /*accept*/,
                                                   std::function<void()> reject)

@@ -356,6 +356,26 @@ TEST_CASE("UdpTunnel | C5 | Unknown-peer reject → peer absent, nothing sent")
     CHECK(f.sentMessages().empty());
 }
 
+TEST_CASE("UdpTunnel | C8 | Rejected peer never triggers callback again")
+{
+    Fixture f;
+    int callbackCount = 0;
+    f.tunnel->setUnknownPeerCallback(
+        [&callbackCount](UdpEndpoint, std::function<void()> /*accept*/,
+                         std::function<void()> reject)
+        {
+            ++callbackCount;
+            reject();
+        });
+
+    const auto msg = makeWireMessage(TUNNEL_HELLO, makeNodeId());
+    f.injectWireMessage(kPeerA, msg); // fires callback → reject() called → peer enters mRejectedPeers
+    f.injectWireMessage(kPeerA, msg); // rejected → no callback
+    f.injectWireMessage(kPeerA, msg); // rejected → no callback
+
+    CHECK(callbackCount == 1);
+}
+
 TEST_CASE("UdpTunnel | C6 | TUNNEL_BYE marks peer DISCONNECTED (maintenance reconnects it)")
 {
     Fixture f;
