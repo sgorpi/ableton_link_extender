@@ -330,7 +330,8 @@ class TunnelGateway : public std::enable_shared_from_this<
             static_cast<size_t>(std::distance(messageBegin, messageEnd));
         try
         {
-            socket.send(messageBegin, numBytes, to);
+            const uint8_t* data = (numBytes > 0) ? &*messageBegin : nullptr;
+            socket.send(data, numBytes, to);
         }
         catch (const std::runtime_error& err)
         {
